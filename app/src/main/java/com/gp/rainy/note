@@ -1,0 +1,5 @@
+{"m":"znt_fn24NENzSf26hgR5N08ZiEmSv9UnLic","cmd":"jsPublicAccountinfo","publicId":"65"}
+
+{"m":"znt_fng5pW95ZKcVIryH1pJ9Ju_0BIB_","cmd":"getVoiceText","seconds":10}
+
+javascript:znt.fn.znt_fng5pW95ZKcVIryH1pJ9Ju_0BIB_('{"code":1,"error":{"errorCode":"","msg":""},"data":{"text":"123"}}')

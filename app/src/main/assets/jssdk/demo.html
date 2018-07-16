@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Document</title>
+    <meta charset="UTF-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="viewport"
+          content="width=device-width; initial-scale=1.1; minimum-scale=0.667; maximum-scale=3.0"/>
+    <script type="text/javascript" src="znt.js"></script>
+    <style type="text/css">
+        .p1 {-webkit-user-select:none;}
+    </style>
+    <script type="text/javascript">
+
+
+function btGetVoiceText(){
+    znt.getVoiceText({
+		seconds: 10, // 传值范围[3-60]秒,不传默认为10秒
+		success: function (res) {
+			var text= res.text; // 录音的文字
+			alert(text);
+		},
+		fail:function(res) {
+			// res.errorCode
+			// res.msg 错误信息
+			alert(res.msg)
+		}
+	});
+}
+    </script>
+</head>
+<body>
+<input type="button" onclick="btGetVoiceText();" value="录音并转换成文字"/>
+<br/>
+<br/>
+</body>
+</html>
