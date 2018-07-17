@@ -3,3 +3,12 @@
 {"m":"znt_fng5pW95ZKcVIryH1pJ9Ju_0BIB_","cmd":"getVoiceText","seconds":10}
 
 javascript:znt.fn.znt_fng5pW95ZKcVIryH1pJ9Ju_0BIB_('{"code":1,"error":{"errorCode":"","msg":""},"data":{"text":"123"}}')
+
+
+Geocoder API 提供了进行这项工作的方法（getFromLocation()），但是需要注意到这个API是依赖于web服务的。
+
+如果这项服务在设备上不可用，API将会抛出Service not Available exception异常，或者返回一个空的list。
+
+isPresent() 方法自从Android 2.3 (API level 9)开始被加入，这个方法用于检测服务是否存在。
+
+由于getFromLocation()方法是同步的，因此，它们进行查找时将会阻碍线程，所以不应该放入UI线程，应该放入后台。
