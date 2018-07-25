@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Rainy</string>
+    <string name="js_error">请求数据格式异常</string>
 </resources>

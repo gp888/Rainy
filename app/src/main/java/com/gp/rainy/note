@@ -12,3 +12,36 @@ Geocoder API 提供了进行这项工作的方法（getFromLocation()），但�
 isPresent() 方法自从Android 2.3 (API level 9)开始被加入，这个方法用于检测服务是否存在。
 
 由于getFromLocation()方法是同步的，因此，它们进行查找时将会阻碍线程，所以不应该放入UI线程，应该放入后台。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+webview 调stringByEvaluatingJavaScriptFromString:这个方法传的参数字符串
+znt.fn.znt_fnpGri3qhHDAkeMY('{"error":"","data":{"imgList":[{"uploadUrl":"https:\/\/files.t.nxin.com\/mall\/yuantu\/2018\/7\/20\/05\/998fdefd-1c27-4423-b0ef-1142cae4bbe6.jpg"}]},"code":"1"}')
+
+
+
+
+{
+  "code": "bool值0-失败/取消,1-成功",
+  "data": "此节点为返回数据，为json格式",
+  "error": {
+    "msg": "此节点和同级节点可能为空，为空走取消回调",
+    "errorCode": "父级节点error下有内容为错误，无内容为取消"
+  },
+  "nonstop": "bool值 1-持久调用不删js回调方法体 0-调用一次删除js回调方法体"
+}
+
+javascript:znt.fn.zntfn1n4oFh4ThyQH0loNzATiyz5X7nSSt6vfqInNFT6APkmC7inq4nE3w9gg98B(
+'{"code":1,"error":{"errorCode":"","msg":""},"data":{"text":"hehe"},"nonstop":0}'
+)

@@ -30,10 +30,10 @@ import java.util.Map;
 
 public class LocationManager {
     private static String TAG = LocationManager.class.getSimpleName();
-
     private onLocationListener locationListener;
+    private static LocationManager instance;
 
-    Handler handler = new Handler() {
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -52,6 +52,17 @@ public class LocationManager {
             }
         }
     };
+
+    private LocationManager() {
+
+    }
+
+    public static LocationManager getInstance() {
+        if (instance == null) {
+            instance = new LocationManager();
+        }
+        return instance;
+    }
 
     //监测定位权限
     public static boolean checkLocationPermission(Context mContext) {
@@ -162,10 +173,10 @@ public class LocationManager {
             LocationListener mLocationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(final Location location) {
-                    //获取解码的地理位置
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            //获取解码的地理位置
                             getAddressFromLocation(mContext, location);
                         }
                     }).start();
@@ -192,7 +203,7 @@ public class LocationManager {
                 }
             };
             //设置监听器，自动更新的最小时间为间隔N秒(1秒为1*1000，这样写主要为了方便)或最小位移变化超过N米
-            locationManager.requestLocationUpdates(android.location.LocationManager.NETWORK_PROVIDER,8000,0,mLocationListener);
+            locationManager.requestLocationUpdates(android.location.LocationManager.NETWORK_PROVIDER,8000,1000, mLocationListener);
         }else {
             //获取解码的地理位置
             new Thread(new Runnable() {

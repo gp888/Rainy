@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,7 @@ import com.gp.rainy.location.LocationPresenter;
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +43,16 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "location failed");
                     }
                 });
-
                 lp.doLocation();
+            }
+        });
+
+        findViewById(R.id.write).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (writeToSDCardFile("aa", "bb")) {
+                    Toast.makeText(MainActivity.this, "file success", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -53,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (requestStoagePermission()) {
+            FileUtils.createProjectSdcardFile();
+        }
     }
 
 
@@ -133,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
                     case TelephonyManager.NETWORK_TYPE_LTE:
                         /** 4G网络 */
                         return "NETWORK_4G";
+                    default:
+                        break;
                 }
 
                 netType = "NETWORK_MOBILE";
@@ -141,11 +156,30 @@ public class MainActivity extends AppCompatActivity {
         return netType;
     }
 
-    public boolean getLocationPermission() {
+    public void saveMessage(String key, String value) {
+        PreferenceUtils.setPreferenceString(this, key, value);
+    }
+
+    public void getMessage(String key) {
+        PreferenceUtils.getPreferenceString(this, key, "");
+    }
+
+    //sdcard 目录
+    public boolean writeToSDCardFile(String fileName, String Content) {
+        boolean isSuccess = FileUtils.writeSDCardFile(Environment.getExternalStorageDirectory() + Constants.DIR_DOWNLOAD + fileName, Content, true);
+        return isSuccess;
+    }
+
+    public boolean writeToInnerFile(String fileName, String Content) {
+        boolean isSuccess = FileUtils.writeInnerFile( this, Content, fileName);
+        return isSuccess;
+    }
+
+    public boolean requestStoagePermission() {
         boolean isPermissionAllow = false;
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(MainActivity.this, permissions, 100);
+        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, Constants.STORAGE_PERMISSION_REQ_CODE);
         } else {
             isPermissionAllow = true;
         }
@@ -154,16 +188,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 100) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "permission sucess", Toast.LENGTH_SHORT).show();
-                //成功
-            } else {
-                // Permission Denied
-                Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case Constants.LOCATION_PERMISSION_REQ_CODE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Toast.makeText(this, "permission sucess", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Permission Denied
+//                    Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case Constants.STORAGE_PERMISSION_REQ_CODE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    FileUtils.createProjectSdcardFile();
+                } else {
+                    Toast.makeText(this, "需要开启存储权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

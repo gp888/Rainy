@@ -29,7 +29,7 @@ public class LocationPresenter {
     public void doLocation() {
         if (LocationManager.checkLocationPermission(mContext)) {
             //成功返回地理位置信息结果
-            boolean success = new LocationManager().getMyLocation(mContext, mOnLocationListener);
+            boolean success = LocationManager.getInstance().getMyLocation(mContext, mOnLocationListener);
             if (!success) {
                 mLocation.locationFailed();
             }

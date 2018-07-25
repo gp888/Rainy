@@ -1,37 +1,49 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Document</title>
-    <meta charset="UTF-8"/>
-    <meta name="format-detection" content="telephone=no"/>
-    <meta name="viewport"
-          content="width=device-width; initial-scale=1.1; minimum-scale=0.667; maximum-scale=3.0"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width; initial-scale=1.1; minimum-scale=0.667; maximum-scale=3.0"/>
     <script type="text/javascript" src="znt.js"></script>
     <style type="text/css">
         .p1 {-webkit-user-select:none;}
     </style>
     <script type="text/javascript">
-
-
-function btGetVoiceText(){
-    znt.getVoiceText({
-		seconds: 10, // 传值范围[3-60]秒,不传默认为10秒
-		success: function (res) {
-			var text= res.text; // 录音的文字
-			alert(text);
-		},
-		fail:function(res) {
-			// res.errorCode
-			// res.msg 错误信息
-			alert(res.msg)
-		}
-	});
-}
+        function cacheUserInfo(){
+            znt.cacheUserInfo({
+                              userId:"111",//用户唯一标识，根据此字段读写对应存储，必传
+                              token:"akjsfhlafjalkdj_akjsdnha",
+                              account:"18888838838",
+                              nickname:"呵呵呵",
+                             success: function (res) {
+                             var text= res.msg; // 
+                             alert(text);
+                             console.log("gpp:" + text)
+                             },
+                             fail:function(res) {
+                             // res.errorCode
+                             // res.msg 错误信息
+                             alert(res.msg)
+                             }
+                             });
+        }
+        function getCacheUserInfo(){
+            znt.getCacheUserInfo({
+                                 userId:"111",
+                                 success:function(res){
+                                    var text= res.nickname; //
+                                    alert(text);
+                                 },
+                                 fail:function(res){
+                                    alert(res.msg)
+                                 }
+                                 });
+        }
     </script>
+            
 </head>
 <body>
-<input type="button" onclick="btGetVoiceText();" value="录音并转换成文字"/>
-<br/>
-<br/>
-</body>
-</html>
+    <input type="button" onclick="cacheUserInfo();" value="缓存个人数据测试">
+    <br/>
+    <input type="button" onclick="getCacheUserInfo();" value="获取个人数据测试">
+</body></html>
+
