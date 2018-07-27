@@ -20,5 +20,9 @@ public class Constants {
 
 
     public static final String CacheUserInfo = "CacheUserInfo";
-    public static final int cacheUserInfo = 1900;
+    public static final int cacheUserInfo = 190;
+    public static final String GetCacheUserInfo = "GetCacheUserInfo";
+    public static final int getCacheUserInfo = 191;
+
+    public static final int OPENGJSALERT = 255;
 }

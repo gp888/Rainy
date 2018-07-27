@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import com.google.gson.JsonObject;
 import org.json.JSONException;
@@ -28,7 +29,7 @@ public class WebViewManager {
         String cmd = "";
         try {
             MyLogUtil.i(TAG + "--invoke-request:" + request);
-            final JSONObject jsonObjParent = new JSONObject(request);
+            JSONObject jsonObjParent = new JSONObject(request);
             m = jsonObjParent.getString("m");
             cmd = jsonObjParent.getString("cmd");
 
@@ -40,10 +41,19 @@ public class WebViewManager {
                 String account = jsonObjParent.getString("account");
                 String nickname = jsonObjParent.getString("nickname");
 
+                PreferenceUtils.setPreferenceString(mContext, "userId", userId);
                 if (nickname.equals("呵呵呵") ) {
-                    sendHandler(1, "", "", Constants.CacheUserInfo, Constants.cacheUserInfo, "hehe");
+                    sendHandler(1, "", "", cmd, Constants.cacheUserInfo, "hehe");
                 } else {
-                    sendHandler(0, "-1", "失败", Constants.CacheUserInfo, Constants.cacheUserInfo);
+                    sendHandler(0, "-1", "失败", cmd, Constants.cacheUserInfo);
+                }
+            } else if (cmd.equals(Constants.GetCacheUserInfo)) {
+                String userId = jsonObjParent.getString("userId");
+                String result = PreferenceUtils.getPreferenceString(mContext, "userId", "");
+                if (!TextUtils.isEmpty(result)) {
+                    sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, result);
+                } else {
+                    sendHandler(0, "-1", "失败", cmd, Constants.getCacheUserInfo);
                 }
             }
         } catch (JSONException e) {
@@ -88,7 +98,7 @@ public class WebViewManager {
         jsHandler.sendMessage(msg);
     }
 
-    public Handler jsHandler = new Handler() {
+    private Handler jsHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -114,6 +124,16 @@ public class WebViewManager {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.get("data") != null) {
                         DataJson.addProperty("msg", bundleData.get("data").toString());
+                    }
+                    ParentJson.add("data", DataJson);
+                    ParentJson.addProperty("nonstop", 0);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
+                case Constants.getCacheUserInfo: {
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.get("data") != null) {
+                        DataJson.addProperty("nickname", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
                     ParentJson.addProperty("nonstop", 0);

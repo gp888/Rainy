@@ -17,7 +17,6 @@
                              success: function (res) {
                              var text= res.msg; // 
                              alert(text);
-                             console.log("gpp:" + text)
                              },
                              fail:function(res) {
                              // res.errorCode
@@ -43,6 +42,7 @@
 </head>
 <body>
     <input type="button" onclick="cacheUserInfo();" value="缓存个人数据测试">
+    <br/>
     <br/>
     <input type="button" onclick="getCacheUserInfo();" value="获取个人数据测试">
 </body></html>
