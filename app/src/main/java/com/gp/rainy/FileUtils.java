@@ -78,7 +78,24 @@ public class FileUtils {
         return isSuccess;
     }
 
-    ///data/data/com.xxx.xxx/files - 应用内文件
+    public static String readFile(String filename) {
+        File file = new File(filename);
+        BufferedReader bufferedReader = null;
+        String str = null;
+        try {
+            if (file.exists()) {
+                bufferedReader = new BufferedReader(new FileReader(filename));
+                str = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            closeIO(bufferedReader);
+        }
+        return str;
+    }
+
+    ///data/data/<包名>/files - 应用内文件
     public static boolean writeInnerFile(Context context, String strSave, String fileName) {
         boolean isSuccess = false;
         FileOutputStream out = null;
@@ -99,21 +116,28 @@ public class FileUtils {
         return isSuccess;
     }
 
-    public static String readFile(String filename) {
-        File file = new File(filename);
-        BufferedReader bufferedReader = null;
-        String str = null;
+    // /data/data/<包名>/files/ 目录下根据fileName去加载文件
+    public static String readInnerFile(Context context, String fileName) {
+        FileInputStream in = null;
+        BufferedReader reader = null;
+        StringBuilder content = new StringBuilder();
         try {
-            if (file.exists()) {
-                bufferedReader = new BufferedReader(new FileReader(filename));
-                str = bufferedReader.readLine();
+            //设置将要打开的存储文件名称
+            in = context.openFileInput(fileName);
+            //FileInputStream -> InputStreamReader ->BufferedReader
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = new String();
+            //读取每一行数据，并追加到StringBuilder对象中，直到结束
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            closeIO(bufferedReader);
+            closeIO(reader);
         }
-        return str;
+        return content.toString();
     }
 
     public static StringBuilder readFile(File file, String charsetName) {

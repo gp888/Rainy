@@ -45,3 +45,14 @@ znt.fn.znt_fnpGri3qhHDAkeMY('{"error":"","data":{"imgList":[{"uploadUrl":"https:
 javascript:znt.fn.zntfn1n4oFh4ThyQH0loNzATiyz5X7nSSt6vfqInNFT6APkmC7inq4nE3w9gg98B(
 '{"code":1,"error":{"errorCode":"","msg":""},"data":{"text":"hehe"},"nonstop":0}'
 )
+
+
+/data/data/com.xxx.xxx/cache - 应用内缓存（注：对应方法getCacheDir()）
+/data/data/com.xxx.xxx/databases - 应用内数据库
+/data/data/com.xxx.xxx/shared_prefs - 应用内配置文件
+/data/data/com.xxx.xxx/files - 应用内文件（注：对应方法getFilesDir())
+
+
+外部Cache路径：/mnt/sdcard/android/data/com.xxx.xxx/cache 一般存储缓存数据（注：通过getExternalCacheDir()获取）
+外部File路径：/mnt/sdcard/android/data/com.xxx.xxx/files 存储长时间存在的数据 （注：通过getExternalFilesDir(String type)获取， type为特定类型，可以是以下任何一种
+Environment.DIRECTORY_MUSIC, Environment.DIRECTORY_PODCASTS, Environment.DIRECTORY_RINGTONES, Environment.DIRECTORY_ALARMS, Environment.DIRECTORY_NOTIFICATIONS, Environment.DIRECTORY_PICTURES, or Environment.DIRECTORY_MOVIES. ）

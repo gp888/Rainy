@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -29,44 +30,68 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.location).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LocationPresenter lp = new LocationPresenter(MainActivity.this, new ILocation() {
-                    @Override
-                    public void locationSuccess(String lat, String lon, String location) {
-                        Log.d(TAG, "location-lat:" + lat + "-lon:" + lon + "-address:" + location);
-                    }
+        findViewById(R.id.location).setOnClickListener(listener);
+        findViewById(R.id.writeToSDCard).setOnClickListener(listener);
+        findViewById(R.id.readSDCardFile).setOnClickListener(listener);
 
-                    @Override
-                    public void locationFailed() {
-                        Log.d(TAG, "location failed");
-                    }
-                });
-                lp.doLocation();
-            }
-        });
+        findViewById(R.id.writeToInnerFile).setOnClickListener(listener);
+        findViewById(R.id.readInnerFile).setOnClickListener(listener);
 
-        findViewById(R.id.write).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (writeToSDCardFile("aa", "bb")) {
-                    Toast.makeText(MainActivity.this, "file success", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        findViewById(R.id.toWebview).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, WebViewActivity.class));
-            }
-        });
+        findViewById(R.id.toWebview).setOnClickListener(listener);
 
         if (requestStoagePermission()) {
             FileUtils.createProjectSdcardFile();
         }
     }
+
+    private View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.location:
+                    LocationPresenter lp = new LocationPresenter(MainActivity.this, new ILocation() {
+                        @Override
+                        public void locationSuccess(String lat, String lon, String location) {
+                            Log.d(TAG, "location-lat:" + lat + "-lon:" + lon + "-address:" + location);
+                        }
+
+                        @Override
+                        public void locationFailed() {
+                            Log.d(TAG, "location failed");
+                        }
+                    });
+                    lp.doLocation();
+                    break;
+                case R.id.writeToSDCard:
+                    if (writeToSDCardFile("aa", "bb")) {
+                        Toast.makeText(MainActivity.this, "file success", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.readSDCardFile:
+                    String content = readSDCardFile("aa");
+                    if (!TextUtils.isEmpty(content)) {
+                        Toast.makeText(MainActivity.this, content, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.writeToInnerFile:
+                    if (writeToInnerFile("cc", "dd")) {
+                        Toast.makeText(MainActivity.this, "file success", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.readInnerFile:
+                    String content1 = readInnerFile("cc");
+                    if (!TextUtils.isEmpty(content1)) {
+                        Toast.makeText(MainActivity.this, content1, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.toWebview:
+                    startActivity(new Intent(MainActivity.this, WebViewActivity.class));
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
 
     private void vibrateShort() {
@@ -170,9 +195,19 @@ public class MainActivity extends AppCompatActivity {
         return isSuccess;
     }
 
+    public String readSDCardFile(String fileName) {
+        String content = FileUtils.readFile(Environment.getExternalStorageDirectory() + Constants.DIR_DOWNLOAD + fileName);
+        return content;
+    }
+
     public boolean writeToInnerFile(String fileName, String Content) {
         boolean isSuccess = FileUtils.writeInnerFile( this, Content, fileName);
         return isSuccess;
+    }
+
+    public String readInnerFile(String fileName) {
+        String content = FileUtils.readInnerFile(this, fileName);
+        return content;
     }
 
     public boolean requestStoagePermission() {

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical">
     <Button
         android:id="@+id/location"
         android:layout_width="wrap_content"
@@ -11,10 +12,28 @@
         android:text="location"/>
 
     <Button
-        android:id="@+id/write"
+        android:id="@+id/writeToSDCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="write"/>
+        android:text="writeToSDCard"/>
+
+    <Button
+        android:id="@+id/readSDCardFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="readSDCardFile"/>
+
+    <Button
+        android:id="@+id/writeToInnerFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="writeToInnerFile"/>
+
+    <Button
+        android:id="@+id/readInnerFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="readInnerFile"/>
 
     <TextView
         android:id="@+id/toWebview"
