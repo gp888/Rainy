@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.gp.rainy.fingerprint.FingerPrintActivity;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
 
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.readInnerFile).setOnClickListener(listener);
 
         findViewById(R.id.toWebview).setOnClickListener(listener);
+        findViewById(R.id.download).setOnClickListener(listener);
+        findViewById(R.id.finger).setOnClickListener(listener);
 
         if (requestStoagePermission()) {
             FileUtils.createProjectSdcardFile();
@@ -87,29 +91,20 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.toWebview:
                     startActivity(new Intent(MainActivity.this, WebViewActivity.class));
                     break;
+                case R.id.download:
+                    String ss = "http://img2.cache.netease.com/photo/0001/2017-04-28/CJ45TBS419BR0001.jpg";//http://test.bjyishubiyeji.com:9013/jssdk.zip
+                    FileUtils.downloadFile(MainActivity.this, ss);
+                    break;
+                case R.id.finger:
+                    Intent intent = new Intent(MainActivity.this, FingerPrintActivity.class);
+                    intent.putExtra("type", "clear");
+                    startActivity(intent);
+                    break;
                 default:
                     break;
             }
         }
     };
-
-
-    private void vibrateShort() {
-        Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-        vibrator.vibrate(1000);
-    }
-
-    private void vibrateLong(){
-        Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-        long[] patter = {1000, 1000, 1000, 1000};
-        vibrator.vibrate(patter, 0);
-    }
-
-    private void stopVibrate() {
-        Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
-//        assert vibrator != null;
-        vibrator.cancel();
-    }
 
     /**
      * 获取手机Android 版本（4.4、5.0、5.1 ...）
@@ -244,4 +239,52 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    public class MyTask extends AsyncTask<String, Integer, String>{
+
+        private Context context;
+        private MaterialDialog mProgressDialog;
+
+        public MyTask(Context context) {
+            super();
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = MaterialDialogUtil.showProgress(context, context.getString(R.string.downloading));
+            mProgressDialog.setCancelable(false);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+//            int i = 0;
+//            publishProgress(i);
+            FileUtils.downloadFile(context, params[0]);
+            return "ok";
+        }
+
+        @Override
+        protected void onProgressUpdate (Integer... progress) {
+            super.onProgressUpdate(progress);
+//            mProgressDialog.setProgressPercent(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if ("ok".equals(result)) {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
+
 }

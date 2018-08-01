@@ -1,11 +1,17 @@
 package com.gp.rainy;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Vibrator;;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.Context.VIBRATOR_SERVICE;
 
 /**
  * 设备信息工具类
@@ -113,5 +119,27 @@ public class DeviceUtil {
             ext.printStackTrace();
         }
         return OA_APP_VERSION;
+    }
+
+    public static void phoneCall(Context context, String num) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + num));
+        context.startActivity(intent);
+    }
+
+    public static void vibrateShort(Context context) {
+        Vibrator vibrator = (Vibrator)context.getSystemService(VIBRATOR_SERVICE);
+        vibrator.vibrate(1000);
+    }
+
+    public static void vibrateLong(Context context){
+        Vibrator vibrator = (Vibrator)context.getSystemService(VIBRATOR_SERVICE);
+        long[] patter = {1000, 1000, 1000, 1000};
+        vibrator.vibrate(patter, 0);
+    }
+
+    public static void stopVibrate(Context context) {
+        Vibrator vibrator = (Vibrator)context.getSystemService(VIBRATOR_SERVICE);
+//        assert vibrator != null;
+        vibrator.cancel();
     }
 }

@@ -90,11 +90,19 @@
  var getCacheUserInfo = function(cfg) {
  exec("GetCacheUserInfo", cfg);
  };
+ var call = function(cfg) {
+  exec("Call", cfg);
+ };
+ var vibrate = function(cfg) {
+   exec("PhoneVibration", cfg);
+ };
  var znt = {
  config: config,
  fn: _fns,
  cacheUserInfo: cacheUserInfo,
- getCacheUserInfo: getCacheUserInfo
+ getCacheUserInfo: getCacheUserInfo,
+ call: call,
+ vibrate: vibrate
  };
  w.znt = znt;
  }(window));

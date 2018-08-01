@@ -37,6 +37,26 @@
                                  }
                                  });
         }
+        function call(){
+            znt.call({
+                      phone:"13126668703",
+                      success:function(res){
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
+        function vibrate(){
+            znt.vibrate({
+                      phone:"13126668703",
+                      success:function(res){
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
     </script>
             
 </head>
@@ -47,6 +67,12 @@
     <input type="button" onclick="getCacheUserInfo();" value="获取个人数据测试">
     <br/>
     <br/>
-    <input type="file" value="submit">
+    <input type="file" name="" value="wenjian">
+    <br/>
+    <br/>
+    <input type="button" onclick="call();" value="call">
+    <br/>
+    <br/>
+    <input type="button" onclick="vibrate();" value="vibrate">
 </body></html>
 

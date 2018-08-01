@@ -24,5 +24,8 @@ public class Constants {
     public static final String GetCacheUserInfo = "GetCacheUserInfo";
     public static final int getCacheUserInfo = 191;
 
+    public static final String Call = "Call";
+    public static final String PhoneVibration = "PhoneVibration";
+
     public static final int OPENGJSALERT = 255;
 }

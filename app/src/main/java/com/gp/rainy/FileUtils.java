@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+
 
 public class FileUtils {
 
@@ -140,6 +142,7 @@ public class FileUtils {
         return content.toString();
     }
 
+    //从文件中读取字符串(可设置编码)
     public static StringBuilder readFile(File file, String charsetName) {
         StringBuilder fileContent = new StringBuilder("");
         if (file == null || !file.isFile()) {
@@ -378,11 +381,18 @@ public class FileUtils {
     }
 
     //下载文件
-    public static void downloadFile(Context context, String fileurl) {
+    public static Long downloadFile(Context context, String fileurl) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileurl));
-        request.setDestinationInExternalPublicDir("/Download/", fileurl.substring(fileurl.lastIndexOf("/") + 1));
+        String fileName = fileurl.substring(fileurl.lastIndexOf("/") + 1);
+        request.setDestinationInExternalPublicDir("/rainy/download/", fileName);
+        //设置Notification的标题和描述
+//        request.setTitle("正在下载文件...");
+//        request.setDescription("描述");
+        //设置Notification的显示，和隐藏。
+        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.enqueue(request);
+        //每下载的一个文件对应一个id，通过此id可以查询数据
+        return downloadManager.enqueue(request);
     }
 
 

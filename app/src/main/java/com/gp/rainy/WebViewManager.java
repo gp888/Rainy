@@ -55,6 +55,13 @@ public class WebViewManager {
                 } else {
                     sendHandler(0, "-1", "失败", cmd, Constants.getCacheUserInfo);
                 }
+            } else if (cmd.equals(Constants.Call)) {
+                String phoneNumber = jsonObjParent.getString("phone");
+                DeviceUtil.phoneCall(mContext, phoneNumber);
+                removeFunction(cmd);
+            } else if (cmd.equals(Constants.PhoneVibration)) {
+                DeviceUtil.vibrateShort(mContext);
+                removeFunction(cmd);
             }
         } catch (JSONException e) {
             e.printStackTrace();

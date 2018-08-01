@@ -35,10 +35,22 @@
         android:layout_height="wrap_content"
         android:text="readInnerFile"/>
 
-    <TextView
+    <Button
         android:id="@+id/toWebview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ToWebview" />
+
+    <Button
+        android:id="@+id/download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download" />
+
+    <Button
+        android:id="@+id/finger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="finger" />
 
 </LinearLayout>
