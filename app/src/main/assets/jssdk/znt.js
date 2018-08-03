@@ -96,13 +96,21 @@
  var vibrate = function(cfg) {
    exec("PhoneVibration", cfg);
  };
+ var fingerPrint = function(cfg) {
+    exec("FingerPrint", cfg);
+ };
+ var chooseImage = function(cfg) {
+    exec("ChooseImage", cfg);
+ };
  var znt = {
  config: config,
  fn: _fns,
  cacheUserInfo: cacheUserInfo,
  getCacheUserInfo: getCacheUserInfo,
  call: call,
- vibrate: vibrate
+ vibrate: vibrate,
+ fingerPrint: fingerPrint,
+ chooseImage: chooseImage
  };
  w.znt = znt;
  }(window));

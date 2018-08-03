@@ -427,54 +427,53 @@ public class FileUtils {
             if (!FileUtils.isSDCardAvailable()) {
                 return;
             }
-            File mExternalStorage = Environment.getExternalStorageDirectory();
-            File file = new File(mExternalStorage + Constants.DIR_PROJECT);
+            File file = new File(Constants.DIR_PROJECT);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_DOWNLOAD);
+            file = new File(Constants.DIR_DOWNLOAD);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_MEDIA);
+            file = new File(Constants.DIR_MEDIA);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_VOICE);
+            file = new File(Constants.DIR_VOICE);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_IMAGE);
+            file = new File(Constants.DIR_IMAGE);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_VIDEO);
+            file = new File(Constants.DIR_VIDEO);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_FILE);
+            file = new File(Constants.DIR_FILE);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_LOG);
+            file = new File(Constants.DIR_LOG);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            file = new File(mExternalStorage + Constants.DIR_IMAGE_TEMP);
+            file = new File(Constants.DIR_IMAGE_TEMP);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
             // 临时图片禁止系统读取
-            file = new File(mExternalStorage + Constants.DIR_IMAGE_TEMP_NOMEDIA);
+            file = new File(Constants.DIR_IMAGE_TEMP_NOMEDIA);
             if (!file.exists()) {
                 file.createNewFile();
             }

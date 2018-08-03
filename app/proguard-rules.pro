@@ -20,6 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keepclassmembers class * extends android.webkit.WebChromeClient{
-    public void openFileChooser(...);
-}
+#-keepclassmembers class * extends android.webkit.WebChromeClient{
+#    public void openFileChooser(...);
+#}

@@ -57,14 +57,32 @@
                       }
                       });
         }
+        function fingerPrint(){
+            znt.fingerPrint({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
+        function chooseImage(){
+            znt.chooseImage({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
     </script>
             
 </head>
 <body>
-    <input type="button" onclick="cacheUserInfo();" value="缓存个人数据测试">
+    <input type="button" onclick="cacheUserInfo();" value="cacheData">
     <br/>
     <br/>
-    <input type="button" onclick="getCacheUserInfo();" value="获取个人数据测试">
+    <input type="button" onclick="getCacheUserInfo();" value="getCacheData">
     <br/>
     <br/>
     <input type="file" name="" value="wenjian">
@@ -74,5 +92,11 @@
     <br/>
     <br/>
     <input type="button" onclick="vibrate();" value="vibrate">
+    <br/>
+    <br/>
+    <input type="button" onclick="fingerPrint();" value="fingerPrint">
+    <br/>
+    <br/>
+    <input type="button" onclick="chooseImage();" value="chooseImage">
 </body></html>
 

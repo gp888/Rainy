@@ -1,9 +1,14 @@
 package com.gp.rainy;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import com.google.gson.JsonObject;
@@ -60,8 +65,28 @@ public class WebViewManager {
                 DeviceUtil.phoneCall(mContext, phoneNumber);
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.PhoneVibration)) {
-                DeviceUtil.vibrateShort(mContext);
+                DeviceUtil.vibrateShort(mContext, 800L);
                 removeFunction(cmd);
+            } else if (cmd.equals(Constants.FingerPrint)) {
+                ((WebViewActivity)mContext).initFingerPrint();
+                removeFunction(cmd);
+            } else if (cmd.equals(Constants.ChooseImage)) {
+                final String copycmd = cmd;
+                if (requestPermission(Constants.camraString, Constants.CAMERA_PERMISSION_REQ_CODE)) {
+                    ListPopMenuDialogUtils menuDailogDAL = new ListPopMenuDialogUtils(mContext);
+                    menuDailogDAL.showWebviewSelectPhotoDialog(new ListPopMenuDialogUtils.PhotoItemClick() {
+
+                        @Override
+                        public void itemclick(int position) {
+                            if (position == 2) {
+                                sendHandler(0, "-1", "没有选择图片", copycmd, Constants.chooseImage);
+                            }
+                        }
+                    });
+                    removeFunction(cmd);
+                } else {
+                    removeFunction(cmd);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -224,5 +249,15 @@ public class WebViewManager {
 
     public void setCallFunJSListener(JsInterface js_interface) {
         this.js_interface = js_interface;
+    }
+
+    private boolean requestPermission(String[] permissions, int requestCode) {
+        boolean isPermissionAllow = false;
+        if (ContextCompat.checkSelfPermission(mContext, permissions[0])!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions((AppCompatActivity)mContext, permissions, requestCode);
+        } else {
+            isPermissionAllow = true;
+        }
+        return isPermissionAllow;
     }
 }
