@@ -18,7 +18,7 @@ import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
-import android.text.TextUtils;;
+import android.text.TextUtils;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;

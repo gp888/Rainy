@@ -53,4 +53,16 @@
         android:layout_height="wrap_content"
         android:text="finger" />
 
+    <Button
+        android:id="@+id/media"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="media" />
+
+    <Button
+        android:id="@+id/netmedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="netmedia" />
+
 </LinearLayout>
