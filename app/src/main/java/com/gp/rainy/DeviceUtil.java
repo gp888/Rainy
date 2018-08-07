@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
@@ -379,5 +380,54 @@ public class DeviceUtil {
      */
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    public static boolean getUrlIsHttp(String url) {
+        boolean flag = false;
+        if (url.toLowerCase().indexOf("http") == 0 || url.toLowerCase().indexOf("https") == 0) {
+            flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * 空格
+     */
+    private static final Pattern STRING_SPACE_PATTERN = Pattern.compile("\\s*|\\t|\\r|\\n");
+
+    public static String replaceBlank(String str) {
+        String dest = "";
+        try {
+            if (str != null) {
+                Matcher m = STRING_SPACE_PATTERN.matcher(str);
+                dest = m.replaceAll("");
+            }
+        } catch (Exception ext) {
+            ext.printStackTrace();
+            dest = str;
+        }
+        return dest;
+    }
+
+    //获取屏幕宽度
+    public static int getScreenWidth() {
+        return PreferenceUtils.getPreferenceInt(App.globalContext, Constants.SHARE_SCREEN_WIDTH, 720);
+    }
+
+    //获取屏幕高度
+    public static int getScreenHeight() {
+        return PreferenceUtils.getPreferenceInt(App.globalContext, Constants.SHARE_SCREEN_HEIGHT, 1280);
+    }
+
+    public static boolean isApkDebugable() {
+        try {
+            ApplicationInfo info = App.globalContext.getApplicationInfo();
+            if (info != null) {
+                return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -1,10 +1,15 @@
 package com.gp.rainy;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -16,9 +21,11 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
@@ -38,6 +45,10 @@ import com.google.gson.JsonObject;
 import com.gp.rainy.fingerprint.AppUtils;
 import com.gp.rainy.fingerprint.FingerPrintException;
 import com.gp.rainy.fingerprint.FingerprintManagerUtil;
+import com.gp.rainy.share.ShareInterface;
+import com.gp.rainy.share.ShareManager;
+import com.gp.rainy.share.ShareMenuDialog;
+import com.gp.rainy.share.SharePublicAccountModel;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -45,9 +56,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity implements SensorEventListener {
 
-    private static String TAG = MainActivity.class.getSimpleName();
+    private static String TAG = WebViewActivity.class.getSimpleName();
     private static final int FILECHOOSER_RESULTCODE = 1;
     public final static int FILECHOOSER_RESULTCODE_FOR_ANDROID_5 = 2;
     public ValueCallback<Uri[]> mUploadMessageForAndroid5;
@@ -75,6 +86,9 @@ public class WebViewActivity extends AppCompatActivity {
     private Map<String, String> exceptionTipsMappingMap;
     private Map<String, String> mi5TipsMappingMap;
     private AlertDialog fingerDialog;
+    private ShareMenuDialog jsShareDialog;
+    private ShareManager shareManager;
+
 
     private static class MyHandler extends Handler {
 
@@ -96,6 +110,21 @@ public class WebViewActivity extends AppCompatActivity {
                         break;
                     case Constants.FINGERFAIL:
                         activity.stopAnim(true);
+                        break;
+                    case Constants.JSShARENET:
+                        SharePublicAccountModel accountModel = (SharePublicAccountModel) msg.obj;
+                        accountModel.setShareType(3);//link
+                        // 追加APPID
+                        if (!TextUtils.isEmpty(accountModel.geturl())) {
+                            String url = accountModel.geturl();
+                            if (!url.contains("?")) {
+                                url = url + "?app=" + BuildConfig.APPID;
+                            } else {
+                                url = url + "&app=" + BuildConfig.APPID;
+                            }
+                            accountModel.seturl(url);
+                        }
+                        activity.showJsShareDialog(accountModel);
                         break;
                     default:
                         break;
@@ -356,10 +385,32 @@ public class WebViewActivity extends AppCompatActivity {
                 finish();
             }
 
+            @Override
+            public void callShareModelHandler(SharePublicAccountModel model) {
+                mHandler.obtainMessage(Constants.JSShARENET, model).sendToTarget();
+            }
+
         });
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        PreferenceUtils.setPreferenceInt(this,Constants.SHARE_SCREEN_WIDTH, dm.widthPixels);
+        PreferenceUtils.setPreferenceInt(this, Constants.SHARE_SCREEN_HEIGHT, dm.heightPixels);
+
+        shareManager = new ShareManager(mContext);
 
         url_load = "file:///android_asset/jssdk/demo.html";
         webview.loadUrl(url_load);
+
+        if(Build.VERSION.SDK_INT>=23){
+            String[] mPermissionList = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.CALL_PHONE,
+                    Manifest.permission.READ_LOGS,Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.SET_DEBUG_APP,
+                    Manifest.permission.SYSTEM_ALERT_WINDOW,Manifest.permission.GET_ACCOUNTS,
+                    Manifest.permission.WRITE_APN_SETTINGS};
+            ActivityCompat.requestPermissions(this,mPermissionList,123);
+        }
     }
 
     public void initFingerPrint() {
@@ -787,6 +838,99 @@ public class WebViewActivity extends AppCompatActivity {
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+//        float deltaX = x - lastX;
+//        float deltaY = y - lastY;
+//        float deltaZ = z - lastZ;
+//        lastX = x;
+//        lastY = y;
+//        lastZ = z;
+        MyLogUtil.d(TAG + "Sensor,speed:" + ":" + x + "," + y + "," + z);
+        int sensorType = event.sensor.getType();
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    //share
+    private void showJsShareDialog(final SharePublicAccountModel shareModel) {
+        if (isFinishing()) {
+            return;
+        }
+
+        jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "", false, true,
+                new ShareMenuDialog.OnButtonClickListener() {
+
+                    @Override
+                    public void onButtonClick(int type, int id) {
+                        if (jsShareDialog != null && jsShareDialog.isShowing()) {
+                            jsShareDialog.setOnDismissListener(null);
+                            jsShareDialog.dismiss();
+                        }
+                        if (type == 1) {
+                            shareManager.performShare(shareModel, id, true);
+                        }
+                    }
+                });
+        jsShareDialog.show();
+
+        jsShareDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                //传给网页取消分享的状态
+                ShareInterface share_interface = shareManager.getShare_interface();
+                if (share_interface != null) {
+                    share_interface.sendShareHandler(0, "-1", "取消分享", Constants.Share, Constants.share);
+                }
+            }
+        });
+    }
+
+    /**
+     * 支付
+     */
+    public void onEventMainThread(WebviewEvent event) {
+        if (event.type == WebviewEvent.TYPE_WX_PAY_RESULT) {
+            WebViewManager.WXPayCallBackBean bean = webViewManager.getmWXPayCallBackBean();
+            if (bean != null) {
+                switch (event.result) {
+                    case 0: {
+                        JsonObject ParentJson = webViewManager.getParentJson(1, "", "");
+                        JsonObject DataJson = new JsonObject();
+                        DataJson.addProperty("appid", bean.appid);
+                        DataJson.addProperty("partnerid", bean.partnerid);
+                        DataJson.addProperty("prepayid", bean.prepayid);
+                        ParentJson.add("data", DataJson);
+                        webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
+                    }
+                    break;
+                    case -2: {
+                        JsonObject ParentJson = webViewManager.getParentJson(0, "用户取消", "-2");
+                        webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
+                    }
+                    break;
+                    default: {
+                        //其他错误统一提示
+                        JsonObject ParentJson = webViewManager.getParentJson(0, event.errStr, "-1");
+                        webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
+                    }
+                    break;
+                }
+                webViewManager.setmWXPayCallBackBean(null);
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.gp.rainy.fingerprint.FingerPrintActivity;
 import com.gp.rainy.location.ILocation;
+import com.gp.rainy.location.LocationManager;
 import com.gp.rainy.location.LocationPresenter;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.toWebview).setOnClickListener(listener);
         findViewById(R.id.location).setOnClickListener(listener);
         findViewById(R.id.writeToSDCard).setOnClickListener(listener);
         findViewById(R.id.readSDCardFile).setOnClickListener(listener);
@@ -39,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.writeToInnerFile).setOnClickListener(listener);
         findViewById(R.id.readInnerFile).setOnClickListener(listener);
 
-        findViewById(R.id.toWebview).setOnClickListener(listener);
         findViewById(R.id.download).setOnClickListener(listener);
         findViewById(R.id.finger).setOnClickListener(listener);
         findViewById(R.id.media).setOnClickListener(listener);
@@ -48,12 +49,16 @@ public class MainActivity extends AppCompatActivity {
         if (requestStoagePermission()) {
             FileUtils.createProjectSdcardFile();
         }
+        LocationManager.checkLocationPermission(this);
     }
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.toWebview:
+                    startActivity(new Intent(MainActivity.this, WebViewActivity.class));
+                    break;
                 case R.id.location:
                     LocationPresenter lp = new LocationPresenter(MainActivity.this, new ILocation() {
                         @Override
@@ -89,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     if (!TextUtils.isEmpty(content1)) {
                         Toast.makeText(MainActivity.this, content1, Toast.LENGTH_SHORT).show();
                     }
-                    break;
-                case R.id.toWebview:
-                    startActivity(new Intent(MainActivity.this, WebViewActivity.class));
                     break;
                 case R.id.download:
                     String ss = "http://img2.cache.netease.com/photo/0001/2017-04-28/CJ45TBS419BR0001.jpg";//http://test.bjyishubiyeji.com:9013/jssdk.zip

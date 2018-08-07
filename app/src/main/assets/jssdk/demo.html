@@ -75,6 +75,35 @@
                       }
                       });
         }
+        function locate(){
+            znt.locate({
+                      success:function(res){
+                        var text= res.location;
+                        alert(text);
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
+        function share(){
+            znt.share({
+                      title: 'rainy', // 分享标题
+                      desc: 'heavey rainy', // 分享描述
+                      link: 'http://www.rainy.com/', // 分享链接
+                      imgUrl: 'https://cdn2.jianshu.io/assets/web/nav-logo-4c7bbafe27adc892f3046e6978459bac.png', // 分享图标
+                      success: function (res) {
+                         alert(res.channel);
+                      },
+                      cancel: function (res) {
+                          alert(res);
+                      },
+                      fail:function(res){
+                          alert(res.errorCode);
+                          alert(res.msg);
+                      }
+            });
+        }
     </script>
             
 </head>
@@ -98,5 +127,11 @@
     <br/>
     <br/>
     <input type="button" onclick="chooseImage();" value="chooseImage">
+    <br/>
+    <br/>
+    <input type="button" onclick="locate();" value="locate">
+    <br/>
+    <br/>
+    <input type="button" onclick="share();" value="share">
 </body></html>
 

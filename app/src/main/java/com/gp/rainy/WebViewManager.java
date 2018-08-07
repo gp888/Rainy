@@ -1,6 +1,5 @@
 package com.gp.rainy;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -10,8 +9,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import com.google.gson.JsonObject;
+import com.gp.rainy.location.ILocation;
+import com.gp.rainy.location.LocationPresenter;
+import com.gp.rainy.share.SharePublicAccountModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,10 +23,11 @@ import java.util.HashMap;
 
 public class WebViewManager {
 
-    private static String TAG = MainActivity.class.getSimpleName();
+    private static String TAG = WebViewManager.class.getSimpleName();
     private Context mContext;
     public HashMap<String, String> functionHash = new HashMap<>();
     private JsInterface js_interface;
+    private WXPayCallBackBean mWXPayCallBackBean;
 
     public WebViewManager(Context context) {
         this.mContext = context;
@@ -65,7 +70,7 @@ public class WebViewManager {
                 DeviceUtil.phoneCall(mContext, phoneNumber);
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.PhoneVibration)) {
-                DeviceUtil.vibrateShort(mContext, 800L);
+                DeviceUtil.vibrateShort(mContext, 300L);
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.FingerPrint)) {
                 ((WebViewActivity)mContext).initFingerPrint();
@@ -86,6 +91,51 @@ public class WebViewManager {
                     removeFunction(cmd);
                 } else {
                     removeFunction(cmd);
+                }
+            } else if (Constants.Locate.equals(cmd)) {
+                final String copyCmd = cmd;
+                LocationPresenter lp = new LocationPresenter(mContext, new ILocation() {
+                    @Override
+                    public void locationSuccess(String lat, String lon, String location) {
+                        Log.d(TAG, "location-lat:" + lat + "-lon:" + lon + "-address:" + location);
+                        String locate = "lat:" + lat + "-lon:" + lon + "-address:" + location;
+                        sendHandler(1, "", "", copyCmd, Constants.locate, locate);
+                    }
+
+                    @Override
+                    public void locationFailed() {
+                        Log.d(TAG, "location failed");
+                        sendHandler(0, "-1", "失败", copyCmd, Constants.locate);
+                    }
+                });
+                lp.doLocation();
+            } else if (Constants.Share.equals(cmd)) {
+                String title = jsonObjParent.getString("title");   //分享标题
+                String desc = jsonObjParent.getString("desc");     //分享描述
+                String imgUrl = jsonObjParent.getString("imgUrl"); //分享图标
+                String link = jsonObjParent.getString("link");     //分享链接
+
+                if (TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title)) {
+                    removeFunction(cmd);
+                    ToastUtil.showToastShort("分享参数错误，所有参数为必填项");
+                    return;
+                } else {
+                    if (!DeviceUtil.getUrlIsHttp(imgUrl)) {
+                        removeFunction(cmd);
+                        ToastUtil.showToastShort("分享参数错误，imgUrl参数必填以http开头");
+                        return;
+                    }
+                }
+                if (TextUtils.isEmpty(desc)) {
+                    desc = title;
+                }
+                SharePublicAccountModel shareModel = new SharePublicAccountModel();
+                shareModel.setcontent(desc);
+                shareModel.settitle(title);
+                shareModel.setimgurl(imgUrl);
+                shareModel.seturl(link);
+                if (js_interface != null) {
+                    js_interface.callShareModelHandler(shareModel);
                 }
             }
         } catch (JSONException e) {
@@ -166,6 +216,16 @@ public class WebViewManager {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.get("data") != null) {
                         DataJson.addProperty("nickname", bundleData.get("data").toString());
+                    }
+                    ParentJson.add("data", DataJson);
+                    ParentJson.addProperty("nonstop", 0);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
+                case Constants.locate:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.get("data") != null) {
+                        DataJson.addProperty("location", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
                     ParentJson.addProperty("nonstop", 0);
@@ -259,5 +319,20 @@ public class WebViewManager {
             isPermissionAllow = true;
         }
         return isPermissionAllow;
+    }
+
+    public class WXPayCallBackBean {
+        public String fun;
+        public String appid;
+        public String partnerid; //商户号
+        public String prepayid;  //预支付交易会话ID
+    }
+
+    public WXPayCallBackBean getmWXPayCallBackBean() {
+        return mWXPayCallBackBean;
+    }
+
+    public void setmWXPayCallBackBean(WXPayCallBackBean mWXPayCallBackBean) {
+        this.mWXPayCallBackBean = mWXPayCallBackBean;
     }
 }

@@ -5,4 +5,10 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="hint_color">#42000000</color>
+    <color name="cl_item_press">#e5e6e7</color>
+    <color name="cl_gray1">#666666</color>
+    <color name="transparent">#00000000</color>
+    <color name="share_dialog_top_line">#B0B0B0</color>
+    <color name="linecolor">#eeeeee</color>
+    <color name="cl_gray0">#333333</color>
 </resources>

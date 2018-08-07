@@ -10,6 +10,9 @@ public class Constants {
     public static final int LOCATION_PERMISSION_REQ_CODE = 100;
     public static final int STORAGE_PERMISSION_REQ_CODE = 101;
     public static final int CAMERA_PERMISSION_REQ_CODE = 102;
+    public final static int JSShARENET = 103;
+    //从JS调分享面板
+    public static final int TO_WEBVIEW_FROM_JS = 104;
 
     public static File mExternalStorage = Environment.getExternalStorageDirectory();
     public static final String DIR_PROJECT = "/rainy/";
@@ -23,6 +26,8 @@ public class Constants {
     public static final String DIR_IMAGE_TEMP = mExternalStorage + DIR_PROJECT + "temp/"; //临时目录
     public static final String DIR_IMAGE_TEMP_NOMEDIA = mExternalStorage + DIR_PROJECT + "temp/.nomedia";
     public static final String SHARE_DEVICE_ID = "a8";
+    public static final String SHARE_SCREEN_WIDTH = "a1"; // 屏幕宽度
+    public static final String SHARE_SCREEN_HEIGHT = "a2"; // 屏幕高度
 
 
     public static final String CacheUserInfo = "CacheUserInfo";
@@ -39,6 +44,11 @@ public class Constants {
     public static final int OPENGJSALERT = 204;
     public static final int FINGERSUCCESS = 205;
     public static final int FINGERFAIL = 206;
+
+    public static final String Locate = "Locate";
+    public static final int locate = 207;
+    public static final String Share = "Share";
+    public static final int share = 209;
 
     public static String PHOTOFILEPATH = "";
 

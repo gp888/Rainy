@@ -97,11 +97,17 @@
    exec("PhoneVibration", cfg);
  };
  var fingerPrint = function(cfg) {
-    exec("FingerPrint", cfg);
+   exec("FingerPrint", cfg);
  };
  var chooseImage = function(cfg) {
-    exec("ChooseImage", cfg);
+   exec("ChooseImage", cfg);
  };
+ var locate = function(cfg) {
+    exec("Locate", cfg);
+ };
+ var share = function(cfg) {
+     exec("Share", cfg);
+  };
  var znt = {
  config: config,
  fn: _fns,
@@ -110,7 +116,9 @@
  call: call,
  vibrate: vibrate,
  fingerPrint: fingerPrint,
- chooseImage: chooseImage
+ chooseImage: chooseImage,
+ locate: locate,
+ share: share
  };
  w.znt = znt;
  }(window));

@@ -3,6 +3,7 @@ package com.gp.rainy;
 import android.content.Intent;
 
 import com.google.gson.JsonObject;
+import com.gp.rainy.share.SharePublicAccountModel;
 
 public interface JsInterface {
     void callbackJsFun(String fun);
@@ -26,5 +27,7 @@ public interface JsInterface {
     void callStartActivityForResult(Intent intent);
 
     void callFinish();
+
+    void callShareModelHandler(SharePublicAccountModel model);
 
 }

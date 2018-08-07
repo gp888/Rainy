@@ -20,7 +20,6 @@ public class AudioManager {
     public static AudioManager instance = null;
     private Context mContext;
     private mediaPlayerListener mediaPlayer_Listener;
-    private mediaDownloadListener mediaDownload_Listener;
 
     public synchronized static AudioManager getInstance(Context mContext) {
         if (instance == null) {
@@ -205,21 +204,9 @@ public class AudioManager {
         this.mediaPlayer_Listener = mediaPlayer_Listener;
     }
 
-    /***
-     * 设置下载事件
-     */
-    public void setMediaDownloadListener(mediaDownloadListener mediaDownload_Listener) {
-        this.mediaDownload_Listener = mediaDownload_Listener;
-    }
-
     public interface mediaPlayerListener{
         void mediaPlayerStart();
         void mediaPlayerSucc();
         void mediaPlayerFailed();
-    }
-
-    public interface mediaDownloadListener{
-        void mediaDownloadSucc();
-        void mediaDownloadFailed();
     }
 }
