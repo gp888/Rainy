@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.dbn.OAConnect.wxapi.alipay.PayResult;
 import com.google.gson.JsonObject;
 import com.gp.rainy.fingerprint.AppUtils;
 import com.gp.rainy.fingerprint.FingerPrintException;
@@ -89,7 +90,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     private ShareMenuDialog jsShareDialog;
     private ShareManager shareManager;
 
-
     private static class MyHandler extends Handler {
 
         private WeakReference reference;
@@ -125,6 +125,21 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                             accountModel.seturl(url);
                         }
                         activity.showJsShareDialog(accountModel);
+                        break;
+                    case Constants.alipay:
+                        PayResult payResult = new PayResult((Map<String, String>) msg.obj);
+
+                        String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                        String resultStatus = payResult.getResultStatus();
+                        // 判断resultStatus 为9000则代表支付成功
+                        if (TextUtils.equals(resultStatus, "9000")) {
+                            // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
+                            Toast.makeText(activity, "支付成功", Toast.LENGTH_SHORT).show();
+                           activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, "success");
+                        } else {
+                            Toast.makeText(activity, "支付失败", Toast.LENGTH_SHORT).show();
+                            activity.webViewManager.sendHandler(0, "-1", "支付失败", Constants.Alipay, Constants.alipay);
+                        }
                         break;
                     default:
                         break;
@@ -368,11 +383,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             }
 
             @Override
-            public void callHttpPost(JsonObject attrsObj) {
-//            MyLogUtil.i(initTag() + "-----callHttpPost---");
-//            if (isLogin()) {
-//                httpPost(REQUEST_CODE_1, null, IDataManager.getIRequest(ConstantNetwork.REQUEST_CODE_SHARE_ARTICLE, 2, attrsObj, null));
-//            }
+            public void callAlipayHandler(Map<String, String> result) {
+                mHandler.obtainMessage(Constants.alipay, result).sendToTarget();
             }
 
             @Override
@@ -398,9 +410,23 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         PreferenceUtils.setPreferenceInt(this, Constants.SHARE_SCREEN_HEIGHT, dm.heightPixels);
 
         shareManager = new ShareManager(mContext);
+        shareManager.setShareListener(new ShareInterface() {
 
-        url_load = "file:///android_asset/jssdk/demo.html";
-        webview.loadUrl(url_load);
+            @Override
+            public void sendShareHandler(int r, String errorCode, String error, String funName, int what) {
+                webViewManager.sendHandler(r, errorCode, error, funName, what);
+            }
+
+            @Override
+            public void sendShareHandler(int r, String errorCode, String error, String funName, int what, String data) {
+                webViewManager.sendHandler(r, errorCode, error, funName, what, data);
+            }
+
+            @Override
+            public void callShareHttpPost(JsonObject attrsObj) {
+            }
+
+        });
 
         if(Build.VERSION.SDK_INT>=23){
             String[] mPermissionList = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -411,6 +437,9 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Manifest.permission.WRITE_APN_SETTINGS};
             ActivityCompat.requestPermissions(this,mPermissionList,123);
         }
+
+        url_load = "file:///android_asset/jssdk/demo.html";
+        webview.loadUrl(url_load);
     }
 
     public void initFingerPrint() {
@@ -870,8 +899,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             return;
         }
 
-        jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "", false, true,
-                new ShareMenuDialog.OnButtonClickListener() {
+        jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "", false, true, new ShareMenuDialog.OnButtonClickListener() {
 
                     @Override
                     public void onButtonClick(int type, int id) {

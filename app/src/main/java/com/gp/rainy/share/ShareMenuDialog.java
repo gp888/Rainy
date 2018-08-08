@@ -18,10 +18,8 @@ import android.widget.TextView;
 import com.gp.rainy.Constants;
 import com.gp.rainy.DeviceUtil;
 import com.gp.rainy.R;
-import com.gp.rainy.WebViewActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ShareMenuDialog extends Dialog {

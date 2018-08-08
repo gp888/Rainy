@@ -1,9 +1,9 @@
 package com.gp.rainy;
 
 import android.content.Intent;
-
-import com.google.gson.JsonObject;
 import com.gp.rainy.share.SharePublicAccountModel;
+
+import java.util.Map;
 
 public interface JsInterface {
     void callbackJsFun(String fun);
@@ -22,7 +22,7 @@ public interface JsInterface {
 
     void callJsDismissDialog();
 
-    void callHttpPost(JsonObject attrsObj);
+    void callAlipayHandler(Map<String, String> result);
 
     void callStartActivityForResult(Intent intent);
 

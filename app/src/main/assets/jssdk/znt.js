@@ -106,8 +106,14 @@
     exec("Locate", cfg);
  };
  var share = function(cfg) {
-     exec("Share", cfg);
-  };
+    exec("Share", cfg);
+ };
+ var wechatPay = function(cfg) {
+   exec("WeChatPay", cfg);
+ };
+ var alipay = function(cfg) {
+    exec("Alipay", cfg);
+ };
  var znt = {
  config: config,
  fn: _fns,
@@ -118,7 +124,9 @@
  fingerPrint: fingerPrint,
  chooseImage: chooseImage,
  locate: locate,
- share: share
+ share: share,
+ wechatPay: wechatPay,
+ alipay: alipay
  };
  w.znt = znt;
  }(window));

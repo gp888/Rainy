@@ -49,6 +49,10 @@ public class Constants {
     public static final int locate = 207;
     public static final String Share = "Share";
     public static final int share = 209;
+    public static final String WeChatPay = "WeChatPay";
+    public static final int weChatPay = 210;
+    public static final String Alipay = "Alipay";
+    public static final int alipay = 211;
 
     public static String PHOTOFILEPATH = "";
 

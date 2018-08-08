@@ -39,9 +39,9 @@ public class App extends MultiDexApplication {
 
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
 
-//        if (!DeviceUtil.isApkDebugable()) {
+        if (!DeviceUtil.isApkDebugable()) {
             UMConfigure.setLogEnabled(true);
-//        }
+        }
         MobclickAgent.openActivityDurationTrack(false);
         PlatformConfig.setWeixin(BuildConfig.THIRDPART_WEIXIN_APPID, BuildConfig.THIRDPART_WEIXIN_APPSECRET);
         PlatformConfig.setQQZone(BuildConfig.THIRDPART_QQ_APPID, BuildConfig.THIRDPART_QQ_APPKEY);

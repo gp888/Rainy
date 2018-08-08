@@ -15,7 +15,7 @@ import okhttp3.Call;
 
 public class AudioManager {
 
-    private static String TAG = MainActivity.class.getSimpleName();
+    private static String TAG = AudioManager.class.getSimpleName();
     protected MediaPlayer mediaPlayer;
     public static AudioManager instance = null;
     private Context mContext;

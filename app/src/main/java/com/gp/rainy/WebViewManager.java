@@ -11,15 +11,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+
+import com.alipay.sdk.app.PayTask;
 import com.google.gson.JsonObject;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
 import com.gp.rainy.share.SharePublicAccountModel;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class WebViewManager {
 
@@ -137,6 +143,84 @@ public class WebViewManager {
                 if (js_interface != null) {
                     js_interface.callShareModelHandler(shareModel);
                 }
+            } else if(Constants.WeChatPay.equals(cmd)) {
+                IWXAPI api = WXAPIFactory.createWXAPI(mContext, BuildConfig.THIRDPART_WEIXIN_APPID); // 自己的微信公众号wxappid
+                if (api.isWXAppInstalled()) {
+                    String partnerid = "";
+                    if (jsonObjParent.has("partnerid")) {
+                        partnerid = jsonObjParent.get("partnerid").toString();
+                        if (TextUtils.isEmpty(partnerid)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "partnerid"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+                    String prepayid = "";
+                    if (jsonObjParent.has("prepayid")) {
+                        prepayid = jsonObjParent.get("prepayid").toString();
+                        if (TextUtils.isEmpty(prepayid)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "prepayid"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+                    String mPackage = "";
+                    if (jsonObjParent.has("mPackage")) {
+                        mPackage = jsonObjParent.get("mPackage").toString();
+                        if (TextUtils.isEmpty(mPackage)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "mPackage"), cmd, Constants.weChatPay);
+                        }
+                    }
+                    String noncestr = "";
+                    if (jsonObjParent.has("noncestr")) {
+                        noncestr = jsonObjParent.get("noncestr").toString();
+                        if (TextUtils.isEmpty(noncestr)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "noncestr"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+                    String timestamp = "";
+                    if (jsonObjParent.has("timestamp")) {
+                        timestamp = jsonObjParent.get("timestamp").toString();
+                        if (TextUtils.isEmpty(timestamp)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "timestamp"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+                    String sign = "";
+                    if (jsonObjParent.has("sign")) {
+                        sign = jsonObjParent.get("sign").toString();
+                        if (TextUtils.isEmpty(sign)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "sign"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+                    Bundle data = new Bundle();
+                    data.putString("partnerid", partnerid);
+                    data.putString("prepayid", prepayid);
+                    data.putString("mPackage", mPackage);
+                    data.putString("noncestr", noncestr);
+                    data.putString("timestamp", timestamp);
+                    data.putString("sign", sign);
+                    sendHandler(1, "", "", Constants.WeChatPay, Constants.weChatPay, data);
+                } else {
+                    sendHandler(0, "-4", mContext.getString(R.string.js_wx_pay_sendreq_fail), cmd, Constants.weChatPay);
+                }
+            } else if (Constants.Alipay.equals(cmd)) {
+                String orderInfo = jsonObjParent.getString("orderStr");
+                Runnable payRunnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        PayTask alipay = new PayTask((AppCompatActivity)mContext);
+                        Map<String, String> result = alipay.payV2(orderInfo, true);
+                        Log.i("Alipay_msp", result.toString());
+
+                        if (js_interface != null) {
+                            js_interface.callAlipayHandler(result);
+                        }
+                    }
+                };
+                Thread payThread = new Thread(payRunnable);
+                payThread.start();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -232,6 +316,39 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
+                case Constants.share: {
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.get("data") != null) {
+                        DataJson.addProperty("channel", bundleData.get("data").toString());
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
+                case Constants.weChatPay:
+                    IWXAPI api = WXAPIFactory.createWXAPI(mContext, BuildConfig.THIRDPART_WEIXIN_APPID);
+
+                    Bundle data = msg.getData();
+                    PayReq request = new PayReq();
+
+                    request.partnerId = data.getString("partnerid");
+                    request.prepayId = data.getString("prepayid");
+                    request.packageValue = data.getString("mPackage");
+                    request.nonceStr = data.getString("noncestr");
+                    request.timeStamp = data.getString("timestamp");
+                    request.sign = data.getString("sign");
+                    if (api.sendReq(request)) {
+                        WXPayCallBackBean bean = new WXPayCallBackBean();
+                        bean.fun = fun;
+                        bean.partnerid = data.getString("partnerid");
+                        bean.prepayid = data.getString("prepayid");
+                        setmWXPayCallBackBean(bean);
+                    } else {
+                        callbackJsFun(fun, getParentJson(0, mContext.getString(R.string.js_wx_pay_sendreq_fail), "-4").toString());
+                    }
+                    break;
+                case Constants.alipay:
+                    break;
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();

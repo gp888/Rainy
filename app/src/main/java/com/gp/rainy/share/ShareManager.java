@@ -3,7 +3,6 @@ package com.gp.rainy.share;
 import android.app.Activity;
 import android.content.Context;
 
-import com.google.gson.JsonObject;
 import com.gp.rainy.Constants;
 import com.gp.rainy.MyLogUtil;
 import com.umeng.socialize.ShareAction;
@@ -16,21 +15,21 @@ import com.umeng.socialize.media.UMWeb;
 public class ShareManager {
 
     private Context mContext;
-
     private ShareInterface share_interface;
-
     private boolean isNetShare = false; //是否网页分享
     private int success = 0; //判断是哪个平台分享的 1:微信 2:微信朋友圈 3:QQ 4:短信 5:QQ空间
+    private static String TAG = ShareManager.class.getSimpleName();
+
     private UMShareListener umShareListener = new UMShareListener() {
 
         @Override
         public void onStart(SHARE_MEDIA share_media) {
-            MyLogUtil.i("ShareManager----onStart--");
+            MyLogUtil.i(TAG + "----onStart--");
         }
 
         @Override
         public void onResult(SHARE_MEDIA platform) {
-            MyLogUtil.i("ShareManager-----onResult---isNetShare:" + isNetShare + "--platform:" + platform + "--share_interface:" + share_interface);
+            MyLogUtil.i(TAG + "-----onResult---isNetShare:" + isNetShare + "--platform:" + platform + "--share_interface:" + share_interface);
             if (isNetShare) {
                 //传递给网页分享成功的状态
                 if (platform.name().equals("WEIXIN")) {
@@ -48,17 +47,17 @@ public class ShareManager {
                     share_interface.sendShareHandler(1, "", "", Constants.Share, Constants.share, success + "");
                 }
             } else {
-                JsonObject attrsObj = new JsonObject();
-                attrsObj.addProperty("infoType", "1");
-                if (share_interface != null) {
-                    share_interface.callShareHttpPost(attrsObj);
-                }
+//                JsonObject attrsObj = new JsonObject();
+//                attrsObj.addProperty("infoType", "1");
+//                if (share_interface != null) {
+//                    share_interface.callShareHttpPost(attrsObj);
+//                }
             }
         }
 
         @Override
         public void onError(SHARE_MEDIA platform, Throwable t) {
-            MyLogUtil.i("ShareManager----onError--" + t);
+            MyLogUtil.i(TAG + "----onError--" + t);
         }
 
         @Override
@@ -111,7 +110,7 @@ public class ShareManager {
     }
 
     private void setShareParams(ShareAction shareAction, int shareId, SharePublicAccountModel shareModel) {
-        MyLogUtil.i("ShareManager---title:" + shareModel.gettitle() + ";content:" + shareModel.getcontent());
+        MyLogUtil.i( TAG + "---title:" + shareModel.gettitle() + ";content:" + shareModel.getcontent());
         withMedia(shareAction, shareModel)
                 .withText(shareModel.getcontent())
                 .setCallback(umShareListener)
