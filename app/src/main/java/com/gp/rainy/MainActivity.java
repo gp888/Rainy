@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.finger).setOnClickListener(listener);
         findViewById(R.id.media).setOnClickListener(listener);
         findViewById(R.id.netmedia).setOnClickListener(listener);
+        findViewById(R.id.getpackage).setOnClickListener(listener);
 
         if (requestStoagePermission()) {
             FileUtils.createProjectSdcardFile();
@@ -109,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.netmedia:
                     AudioManager.getInstance(MainActivity.this).playeNetMedia("http://img2.cache.netease.com/photo/0001/2017-04-28/CJ45TBS419BR0001.jpg");
+                    break;
+                case R.id.getpackage:
+                    DeviceUtil.loadApps(MainActivity.this);
                     break;
                 default:
                     break;

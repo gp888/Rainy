@@ -20,6 +20,9 @@ import com.gp.rainy.share.SharePublicAccountModel;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.socialize.UMAuthListener;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,9 +37,11 @@ public class WebViewManager {
     public HashMap<String, String> functionHash = new HashMap<>();
     private JsInterface js_interface;
     private WXPayCallBackBean mWXPayCallBackBean;
+    private UMShareAPI mShareAPI;
 
-    public WebViewManager(Context context) {
+    public WebViewManager(Context context,UMShareAPI mShareAPI) {
         this.mContext = context;
+        this.mShareAPI = mShareAPI;
     }
 
     @JavascriptInterface
@@ -221,6 +226,27 @@ public class WebViewManager {
                 };
                 Thread payThread = new Thread(payRunnable);
                 payThread.start();
+            } else if (Constants.ThirdLogin.equals(cmd)) {
+                String third = jsonObjParent.getString("third");
+                if (third.equals("qq")) {
+                    if (mShareAPI.isInstall((AppCompatActivity)mContext, SHARE_MEDIA.QQ)) {
+                        loginThird(SHARE_MEDIA.QQ, cmd);
+                    } else {
+                        sendHandler(0, "-1", mContext.getString(R.string.login_no_qq_client_warning), cmd, Constants.thirdLogin);
+                    }
+                } else if (third.equals("wx")) {
+                    if (mShareAPI.isInstall((AppCompatActivity)mContext, SHARE_MEDIA.WEIXIN)) {
+                        loginThird(SHARE_MEDIA.WEIXIN, cmd);
+                    } else {
+                        sendHandler(0, "-1", mContext.getString(R.string.login_no_wx_client_warning), cmd, Constants.thirdLogin);
+                    }
+                }
+            } else if (Constants.Gyro.equals(cmd)) {
+                double time = (double) jsonObjParent.get("gyroUpdateInterval");
+                if (time <= 0) {
+                    time = 0.1;
+                }
+                ((WebViewActivity)mContext).setGyro(true, time);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -349,6 +375,24 @@ public class WebViewManager {
                     break;
                 case Constants.alipay:
                     break;
+                case Constants.thirdLogin:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("nickname") != null) {
+                        DataJson.addProperty("nickname", bundleData.getString("nickname"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                    }
+                    break;
+                case Constants.gyro: {
+                    JsonObject DataJson = new JsonObject();
+                    DataJson.addProperty("x", bundleData.getDouble("x"));
+                    DataJson.addProperty("y", bundleData.getDouble("y"));
+                    DataJson.addProperty("z", bundleData.getDouble("z"));
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                    return;
+                }
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();
@@ -451,5 +495,83 @@ public class WebViewManager {
 
     public void setmWXPayCallBackBean(WXPayCallBackBean mWXPayCallBackBean) {
         this.mWXPayCallBackBean = mWXPayCallBackBean;
+    }
+
+    private void loginThird(final SHARE_MEDIA platform, String cmd) {
+        mShareAPI.doOauthVerify((AppCompatActivity)mContext, platform, new UMAuthListener() {
+
+            @Override
+            public void onStart(SHARE_MEDIA share_media) {
+            }
+
+            @Override
+            public void onComplete(SHARE_MEDIA platform, int action, Map<String, String> data) {
+                if (data != null && data.size() > 0) {
+                    MyLogUtil.i("authorize info:" + data.toString());
+                    getUserInfo(platform, cmd);
+                } else {
+                    sendHandler(0, "-1", mContext.getString(R.string.login_fail_warning), cmd, Constants.thirdLogin);
+                }
+            }
+
+            @Override
+            public void onError(SHARE_MEDIA platform, int action, Throwable throwable) {
+                if (!((AppCompatActivity)mContext).isFinishing()) {
+                    if (throwable != null) {
+                        MyLogUtil.e(TAG + throwable.getMessage());
+                    }
+                    sendHandler(0, "-1", mContext.getString(R.string.login_fail_warning), cmd, Constants.thirdLogin);
+                }
+            }
+
+            @Override
+            public void onCancel(SHARE_MEDIA platform, int action) {
+                sendHandler(0, "-1", mContext.getString(R.string.login_cancel), cmd, Constants.thirdLogin);
+            }
+        });
+    }
+
+    private void getUserInfo(final SHARE_MEDIA platform, String cmd) {
+        mShareAPI.getPlatformInfo((AppCompatActivity)mContext, platform, new UMAuthListener() {
+
+            @Override
+            public void onStart(SHARE_MEDIA share_media) {
+            }
+
+            @Override
+            public void onComplete(SHARE_MEDIA platform, int action, Map<String, String> info) {
+                if (info != null && info.size() > 0) {
+                    MyLogUtil.i("user info:" + info.toString());
+                    Bundle data = new Bundle();
+                    data.putString("openid", info.get("openid"));
+                    data.putString("nickname", info.get("name"));
+                    if (platform == SHARE_MEDIA.WEIXIN) {
+                        data.putString("unionid", info.get("unionid"));
+                        data.putString("sex", info.get("gender"));
+                        data.putString("headimgurl", info.get("iconurl"));
+                    } else if (platform == SHARE_MEDIA.QQ) {
+                        data.putString("gender", info.get("gender"));
+                        data.putString("figureurl_qq_1", info.get("iconurl"));
+                        data.putString("figureurl_qq_2", info.get("iconurl"));
+                    }
+                    sendHandler(1, "", "", Constants.ThirdLogin, Constants.thirdLogin, data);
+                }
+            }
+
+            @Override
+            public void onError(SHARE_MEDIA platform, int action, Throwable throwable) {
+                if (!((AppCompatActivity)mContext).isFinishing()) {
+                    if (throwable != null) {
+                        MyLogUtil.e(TAG + throwable.getMessage());
+                    }
+                    sendHandler(0, "-1", mContext.getString(R.string.login_fail_warning), cmd, Constants.thirdLogin);
+                }
+            }
+
+            @Override
+            public void onCancel(SHARE_MEDIA platform, int action) {
+                sendHandler(0, "-1", mContext.getString(R.string.login_cancel), cmd, Constants.thirdLogin);
+            }
+        });
     }
 }

@@ -22,7 +22,7 @@ android {
                                     KEY_UMENG      : "53950edd56240ba50c081746",
                                     SCHEME_QQ_APPID: "101058233"
             ]
-            applicationId "com.dbn.OAConnect"
+            applicationId "com.dbn.OAConnect"//com.xingfabu.direct,com.techhg,com.dbn.OAConnect,com.gp.rainy
             buildConfigField "String", "APPID", '"com.nxin.znt"'
             buildConfigField "String", "INDUSTRY_ID", '"0"'
             buildConfigField "String", "INDUSTRY_ID_TEST", '"0"'
@@ -30,6 +30,8 @@ android {
             buildConfigField "String", "THIRDPART_WEIXIN_APPSECRET", '"950ad91e1023464650b316d6b9824bbe"'
             buildConfigField "String", "THIRDPART_QQ_APPID", '"101058233"'
             buildConfigField "String", "THIRDPART_QQ_APPKEY", '"ef1148e1f348f7443ea2c8e3dda9d91b"'
+            buildConfigField "String", "THIRDPART_SINA_APPID", '"3053461860"'
+            buildConfigField "String", "THIRDPART_SINA_APPSECRET", '"947dc960da10d5e8d2ef15ff6ec7189c"'
         }
     }
 

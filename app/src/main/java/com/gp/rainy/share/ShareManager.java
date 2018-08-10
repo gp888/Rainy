@@ -15,7 +15,7 @@ import com.umeng.socialize.media.UMWeb;
 public class ShareManager {
 
     private Context mContext;
-    private ShareInterface share_interface;
+    private ShareInterface shareInterface;
     private boolean isNetShare = false; //是否网页分享
     private int success = 0; //判断是哪个平台分享的 1:微信 2:微信朋友圈 3:QQ 4:短信 5:QQ空间
     private static String TAG = ShareManager.class.getSimpleName();
@@ -29,7 +29,7 @@ public class ShareManager {
 
         @Override
         public void onResult(SHARE_MEDIA platform) {
-            MyLogUtil.i(TAG + "-----onResult---isNetShare:" + isNetShare + "--platform:" + platform + "--share_interface:" + share_interface);
+            MyLogUtil.i(TAG + "-----onResult---isNetShare:" + isNetShare + "--platform:" + platform + "--shareInterface:" + shareInterface);
             if (isNetShare) {
                 //传递给网页分享成功的状态
                 if (platform.name().equals("WEIXIN")) {
@@ -38,19 +38,19 @@ public class ShareManager {
                     success = ChannelTypeEnum.WX_CIRCLE.get_id();
                 } else if (platform.name().equals("QQ")) {
                     success = ChannelTypeEnum.QQ.get_id();
-                } else if (platform.name().equals("SMS")) {
-                    success = ChannelTypeEnum.SMS.get_id();
                 } else if (platform.name().equals("QZONE")) {
                     success = ChannelTypeEnum.QZONE.get_id();
+                } else if (platform.name().equals("微博")) {
+                    success = ChannelTypeEnum.Weibo.get_id();
                 }
-                if (share_interface != null) {
-                    share_interface.sendShareHandler(1, "", "", Constants.Share, Constants.share, success + "");
+                if (shareInterface != null) {
+                    shareInterface.sendShareHandler(1, "", "", Constants.Share, Constants.share, success + "");
                 }
             } else {
 //                JsonObject attrsObj = new JsonObject();
 //                attrsObj.addProperty("infoType", "1");
-//                if (share_interface != null) {
-//                    share_interface.callShareHttpPost(attrsObj);
+//                if (shareInterface != null) {
+//                    shareInterface.callShareHttpPost(attrsObj);
 //                }
             }
         }
@@ -62,8 +62,8 @@ public class ShareManager {
 
         @Override
         public void onCancel(SHARE_MEDIA platform) {
-            if (share_interface != null) {
-                share_interface.sendShareHandler(0, "-1", "取消分享", Constants.Share, Constants.share);
+            if (shareInterface != null) {
+                shareInterface.sendShareHandler(0, "-1", "取消分享", Constants.Share, Constants.share);
             }
         }
     };
@@ -73,11 +73,11 @@ public class ShareManager {
     }
 
     public void setShareListener(ShareInterface share_interface) {
-        this.share_interface = share_interface;
+        this.shareInterface = share_interface;
     }
 
-    public ShareInterface getShare_interface() {
-        return share_interface;
+    public ShareInterface getShareInterface() {
+        return shareInterface;
     }
 
     public void performShare(SharePublicAccountModel shareModel, int shareId, boolean isNetShare) {
@@ -101,7 +101,7 @@ public class ShareManager {
                 shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.QZONE);
                 break;
             case 4:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.SMS);
+                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.SINA);
                 break;
             default:
                 break;

@@ -123,14 +123,38 @@
         }
         function alipay(){
             znt.alipay({
-               orderStr: 'alipay_sdk=alipay-sdk-java-dynamicVersionNo&app_id=2017062707576492&biz_content=%7B%22body%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22out_trade_no%22%3A%22HG20180604000001%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%221200%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2Fapp.techhg.com%2Falipay%2Fcallback&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D&sign_type=RSA2&timestamp=2018-08-07+11%3A19%3A42&version=1.0&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D'
-                success: function (res) {
+               orderStr: 'alipay_sdk=alipay-sdk-java-dynamicVersionNo&app_id=2017062707576492&biz_content=%7B%22body%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22out_trade_no%22%3A%22HG20180604000001%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%221200%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2Fapp.techhg.com%2Falipay%2Fcallback&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D&sign_type=RSA2&timestamp=2018-08-07+11%3A19%3A42&version=1.0&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D',
+               success: function (res) {
                     alert(res.msg);
                 },
                 fail:function(res) {
                     alert(res.msg);
                 }
             });
+        }
+
+        function thirdLogin(){
+            znt.thirdLogin({
+                      third: 'qq',//qq,wx
+                      success:function(res){
+                        alert(res.nickname);
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
+        }
+        function gyro(){
+            znt.gyro({
+                      nonstop: '1',
+                      gyroUpdateInterval: 0.1,
+                      success:function(res){
+                        <!--alert(res.x);-->
+                      },
+                      fail:function(res){
+                         alert(res.msg)
+                      }
+                      });
         }
     </script>
             
@@ -167,5 +191,11 @@
     <br/>
     <br/>
     <input type="button" onclick="alipay();" value="alipay"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="thirdLogin();" value="thirdLogin"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="gyro();" value="gyro"/>
 </body></html>
 

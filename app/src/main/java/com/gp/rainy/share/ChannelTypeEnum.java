@@ -7,8 +7,8 @@ public enum ChannelTypeEnum {
     WX("微信", 1),
     WX_CIRCLE("微信朋友圈", 2),
     QQ("QQ", 3),
-    SMS("短信", 4),
-    QZONE("QQ空间", 5);
+    QZONE("QQ空间", 5),
+    Weibo("微博", 6);
 
     private String _name;
     private int _id = 0;

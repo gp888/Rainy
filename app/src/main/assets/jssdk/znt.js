@@ -112,7 +112,13 @@
    exec("WeChatPay", cfg);
  };
  var alipay = function(cfg) {
-    exec("Alipay", cfg);
+   exec("Alipay", cfg);
+ };
+ var thirdLogin = function(cfg) {
+   exec("ThirdLogin", cfg);
+ };
+ var gyro = function(cfg) {
+   exec("Gyro", cfg);
  };
  var znt = {
  config: config,
@@ -126,7 +132,9 @@
  locate: locate,
  share: share,
  wechatPay: wechatPay,
- alipay: alipay
+ alipay: alipay,
+ thirdLogin: thirdLogin,
+ gyro: gyro
  };
  w.znt = znt;
  }(window));

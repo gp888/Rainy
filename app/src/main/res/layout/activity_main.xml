@@ -1,69 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/toWebview"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToWebview" />
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/toWebview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ToWebview" />
 
-    <Button
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="location"/>
+        <Button
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="location"/>
 
-    <Button
-        android:id="@+id/writeToSDCard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="writeToSDCard"/>
+        <Button
+            android:id="@+id/writeToSDCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="writeToSDCard"/>
 
-    <Button
-        android:id="@+id/readSDCardFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="readSDCardFile"/>
+        <Button
+            android:id="@+id/readSDCardFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="readSDCardFile"/>
 
-    <Button
-        android:id="@+id/writeToInnerFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="writeToInnerFile"/>
+        <Button
+            android:id="@+id/writeToInnerFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="writeToInnerFile"/>
 
-    <Button
-        android:id="@+id/readInnerFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="readInnerFile"/>
+        <Button
+            android:id="@+id/readInnerFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="readInnerFile"/>
 
-    <Button
-        android:id="@+id/download"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download" />
+        <Button
+            android:id="@+id/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download" />
 
-    <Button
-        android:id="@+id/finger"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="finger" />
+        <Button
+            android:id="@+id/finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="finger" />
 
-    <Button
-        android:id="@+id/media"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="media" />
+        <Button
+            android:id="@+id/media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="media" />
 
-    <Button
-        android:id="@+id/netmedia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="netmedia" />
+        <Button
+            android:id="@+id/netmedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="netmedia" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/getpackage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="package" />
+    </LinearLayout>
+
+</ScrollView>

@@ -44,7 +44,7 @@ public class WXPayEntryActivity extends AppCompatActivity implements IWXAPIEvent
     @Override
     public void onResp(BaseResp resp) {
         if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
-            MyLogUtil.d("invoke-payWX4JRCashier-onPayFinish,errCode================" + resp.errCode);
+            MyLogUtil.d("invoke-wechatpay-onPayFinish,errCode================" + resp.errCode);
             EventBus.getDefault().post(new WebviewEvent(WebviewEvent.TYPE_WX_PAY_RESULT, resp.errCode, resp.errStr));
         }
         finish();

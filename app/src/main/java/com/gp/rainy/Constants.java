@@ -53,7 +53,10 @@ public class Constants {
     public static final int weChatPay = 210;
     public static final String Alipay = "Alipay";
     public static final int alipay = 211;
-
+    public static final String ThirdLogin = "ThirdLogin";
+    public static final int thirdLogin = 212;
+    public static final String Gyro = "Gyro";
+    public static final int gyro = 213;
     public static String PHOTOFILEPATH = "";
 
     public static final int CHOICE_CMARE = 20101;

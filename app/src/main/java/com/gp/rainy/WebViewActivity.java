@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -50,6 +51,7 @@ import com.gp.rainy.share.ShareInterface;
 import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.ShareMenuDialog;
 import com.gp.rainy.share.SharePublicAccountModel;
+import com.umeng.socialize.UMShareAPI;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -89,6 +91,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     private AlertDialog fingerDialog;
     private ShareMenuDialog jsShareDialog;
     private ShareManager shareManager;
+    private UMShareAPI mShareAPI;
+    private boolean isGyro;
+    private double time = 0.1;
+    private SensorManager sensorManager;
 
     private static class MyHandler extends Handler {
 
@@ -155,6 +161,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         mContext = this;
         webview = findViewById(R.id.webview);
         mHandler = new MyHandler(mContext);
+        mShareAPI = UMShareAPI.get(this);
 
         webview = setWebViewConfig(webview, mContext);
         webview.setWebChromeClient(new WebChromeClient() {
@@ -427,6 +434,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             }
 
         });
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         if(Build.VERSION.SDK_INT>=23){
             String[] mPermissionList = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -467,6 +475,12 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         isShow = true;
@@ -477,6 +491,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         if (isInAuth) {
             initSetting();
         }
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
@@ -539,7 +554,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         webview.getSettings().setUseWideViewPort(true);
         webview.getSettings().setLoadWithOverviewMode(true);
         MyLogUtil.i("userAgent------" + webview.getSettings().getUserAgentString());
-        webViewManager = new WebViewManager(mContext);
+        webViewManager = new WebViewManager(mContext, mShareAPI);
         webview.addJavascriptInterface(webViewManager, "oatongJSBridge");
         return webview;
     }
@@ -547,6 +562,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, intent);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             if (requestCode != FILECHOOSER_RESULTCODE || mUploadMessage == null) {
                 super.onActivityResult(requestCode, resultCode, intent);
@@ -875,17 +891,27 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
-//        float deltaX = x - lastX;
-//        float deltaY = y - lastY;
-//        float deltaZ = z - lastZ;
-//        lastX = x;
-//        lastY = y;
-//        lastZ = z;
-        MyLogUtil.d(TAG + "Sensor,speed:" + ":" + x + "," + y + "," + z);
         int sensorType = event.sensor.getType();
-        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-
+        if (sensorType == Sensor.TYPE_ACCELEROMETER && isGyro) {//
+            MyLogUtil.d(TAG + "Sensor,speed:" + ":" + x + "," + y + "," + z);
+            Bundle data = new Bundle();
+            data.putDouble("x", x);
+            data.putDouble("y", y);
+            data.putDouble("z", z);
+            long delayMillis = (long) (time * 1000);
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ToastUtil.showToastShort(x + "");
+                    webViewManager.sendHandler(1, "", "", Constants.Gyro, Constants.gyro, data);
+                }
+            }, delayMillis);
         }
+    }
+
+    public void setGyro (boolean isGyro, Double time) {
+        this.isGyro = isGyro;
+        this.time = time;
     }
 
     @Override
@@ -919,9 +945,9 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             @Override
             public void onDismiss(DialogInterface dialog) {
                 //传给网页取消分享的状态
-                ShareInterface share_interface = shareManager.getShare_interface();
-                if (share_interface != null) {
-                    share_interface.sendShareHandler(0, "-1", "取消分享", Constants.Share, Constants.share);
+                ShareInterface shareInterface = shareManager.getShareInterface();
+                if (shareInterface != null) {
+                    shareInterface.sendShareHandler(0, "-1", "取消分享", Constants.Share, Constants.share);
                 }
             }
         });
@@ -938,7 +964,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     case 0: {
                         JsonObject ParentJson = webViewManager.getParentJson(1, "", "");
                         JsonObject DataJson = new JsonObject();
-                        DataJson.addProperty("appid", bean.appid);
                         DataJson.addProperty("partnerid", bean.partnerid);
                         DataJson.addProperty("prepayid", bean.prepayid);
                         ParentJson.add("data", DataJson);

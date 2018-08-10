@@ -98,11 +98,18 @@ public class ShareMenuDialog extends Dialog {
         map3.put("title", R.string.umeng_socialize_text_qq_zone_key);
         map3.put("icon", R.drawable.ic_share_qq_circle);
 
+        ArrayMap<String, Integer> map4 = new ArrayMap<>();
+        map4.put("type", 1);
+        map4.put("id", 4);
+        map4.put("title", R.string.umeng_socialize_sharetosina);
+        map4.put("icon", R.drawable.icon_share_sina);
+
         if (from == Constants.TO_WEBVIEW_FROM_JS) {
             listA.add(map);
             listA.add(map1);
             listA.add(map2);
             listA.add(map3);
+            listA.add(map4);
 
             setMenuData(context, shareMenuA, listA, isNet, mOnButtonClickListener);
         }

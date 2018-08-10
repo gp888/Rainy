@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +22,8 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -429,5 +432,38 @@ public class DeviceUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void loadApps(Context mContext) {
+        Intent intent = new Intent(Intent.ACTION_MAIN, null);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> apps = mContext.getPackageManager().queryIntentActivities(intent, 0);
+        //排序
+        Collections.sort(apps, new Comparator<ResolveInfo>() {
+            @Override
+            public int compare(ResolveInfo a, ResolveInfo b) {
+                return String.CASE_INSENSITIVE_ORDER.compare(
+                        a.loadLabel(mContext.getPackageManager()).toString(),
+                        b.loadLabel(mContext.getPackageManager()).toString()
+                );
+            }
+        });
+        //for循环遍历ResolveInfo对象获取包名和类名
+        for (int i = 0; i < apps.size(); i++) {
+            ResolveInfo info = apps.get(i);
+            String packageName = info.activityInfo.packageName;
+            CharSequence cls = info.activityInfo.name;
+            CharSequence name = info.activityInfo.loadLabel(mContext.getPackageManager());
+            MyLogUtil.d("--packageName--" + cls);
+        }
+    }
+
+    public static void getRunningApp(Context mContext) {
+        ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+        ActivityManager.RunningAppProcessInfo processInfo = processes.get(0);
+        String appPackageName = processInfo.processName.toString();
+        MyLogUtil.d("--packageName--" + appPackageName);
     }
 }
