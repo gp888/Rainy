@@ -23,7 +23,7 @@
                              // res.msg 错误信息
                              alert(res.msg)
                              }
-                             });
+            });
         }
         function getCacheUserInfo(){
             znt.getCacheUserInfo({
@@ -35,7 +35,7 @@
                                  fail:function(res){
                                     alert(res.msg)
                                  }
-                                 });
+            });
         }
         function call(){
             znt.call({
@@ -45,7 +45,7 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function vibrate(){
             znt.vibrate({
@@ -55,7 +55,7 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function fingerPrint(){
             znt.fingerPrint({
@@ -64,16 +64,17 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function chooseImage(){
             znt.chooseImage({
                       success:function(res){
+                        alert(res.uploadUrl)
                       },
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function locate(){
             znt.locate({
@@ -84,7 +85,7 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function share(){
             znt.share({
@@ -142,7 +143,7 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
         }
         function gyro(){
             znt.gyro({
@@ -154,7 +155,15 @@
                       fail:function(res){
                          alert(res.msg)
                       }
-                      });
+            });
+        }
+        function closeGyro(){
+            znt.closeGyro({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
         }
     </script>
             
@@ -197,5 +206,8 @@
     <br/>
     <br/>
     <input type="button" onclick="gyro();" value="gyro"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="closeGyro();" value="closeGyro"/>
 </body></html>
 

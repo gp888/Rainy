@@ -120,6 +120,9 @@
  var gyro = function(cfg) {
    exec("Gyro", cfg);
  };
+ var closeGyro = function(cfg) {
+    exec("CloseGyro", cfg);
+ };
  var znt = {
  config: config,
  fn: _fns,
@@ -134,7 +137,8 @@
  wechatPay: wechatPay,
  alipay: alipay,
  thirdLogin: thirdLogin,
- gyro: gyro
+ gyro: gyro,
+ closeGyro: closeGyro
  };
  w.znt = znt;
  }(window));

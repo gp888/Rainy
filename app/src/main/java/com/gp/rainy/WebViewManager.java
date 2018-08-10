@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.alipay.sdk.app.PayTask;
 import com.google.gson.JsonObject;
 import com.gp.rainy.location.ILocation;
@@ -23,12 +24,18 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Request;
 
 public class WebViewManager {
 
@@ -38,6 +45,7 @@ public class WebViewManager {
     private JsInterface js_interface;
     private WXPayCallBackBean mWXPayCallBackBean;
     private UMShareAPI mShareAPI;
+    private MaterialDialog mProgressDialog;
 
     public WebViewManager(Context context,UMShareAPI mShareAPI) {
         this.mContext = context;
@@ -247,6 +255,9 @@ public class WebViewManager {
                     time = 0.1;
                 }
                 ((WebViewActivity)mContext).setGyro(true, time);
+            } else if (Constants.CloseGyro.equals(cmd)) {
+                removeFunction(Constants.Gyro);
+                ((WebViewActivity)mContext).setGyro(false, 0.1d);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -393,6 +404,13 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                     return;
                 }
+                case Constants.chooseImage: {
+                    JsonObject DataJson = new JsonObject();
+                    DataJson.addProperty("uploadUrl", bundleData.get("data").toString());
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(Constants.ChooseImage, ParentJson.toString());
+                }
+                    break;
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();
@@ -573,5 +591,48 @@ public class WebViewManager {
                 sendHandler(0, "-1", mContext.getString(R.string.login_cancel), cmd, Constants.thirdLogin);
             }
         });
+    }
+
+    public void uploadPic(File file, String picService) {
+        OkHttpUtils
+                .postFile()
+                .url(picService)
+                .file(file)
+                .build()
+                .execute(new MyStringCallback());
+    }
+
+    public class MyStringCallback extends StringCallback {
+        @Override
+        public void onBefore(Request request, int id) {
+            mProgressDialog = MaterialDialogUtil.showProgress(mContext, "上传中...");
+        }
+
+        @Override
+        public void onAfter(int id) {
+//            setTitle("Sample-okHttp");
+        }
+
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            e.printStackTrace();
+//            mTv.setText("onError:" + e.getMessage());
+            sendHandler(0, "-1", "上传图片失败", Constants.ChooseImage, Constants.chooseImage);
+        }
+
+        @Override
+        public void onResponse(String response, int id) {
+            Log.e(TAG, "onResponse：complete");
+//            mTv.setText("onResponse:" + response);
+            //id 100 http, 101 https
+            mProgressDialog.dismiss();
+            sendHandler(1, "", "", Constants.ChooseImage, Constants.chooseImage, response);
+        }
+
+        @Override
+        public void inProgress(float progress, long total, int id) {
+            Log.e(TAG, "inProgress:" + progress);
+//            mProgressBar.setProgress((int) (100 * progress));
+        }
     }
 }

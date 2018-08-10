@@ -609,7 +609,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 if (intent != null) {
                     Uri originalUri = intent.getData();
                     if (originalUri != null) {
-//                        webViewManager.UploadNetImage(originalUri);
+                        String srcPath = DeviceUtil.getImageAbsolutePath(mContext, originalUri);
+                        webViewManager.uploadPic(new File(srcPath), "");
                     } else {
                         webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
                     }
@@ -626,7 +627,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     File temp = new File(filepath);
                     Uri tempUri = Uri.fromFile(temp);
                     if (tempUri != null) {
-//                        webViewManager.UploadNetImage(tempUri);
+                        String srcPath = DeviceUtil.getImageAbsolutePath(mContext, tempUri);
+                        webViewManager.uploadPic(new File(srcPath), "");
                     } else {
                         webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
                     }
