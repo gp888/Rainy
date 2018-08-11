@@ -93,7 +93,6 @@ public class WebViewManager {
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.FingerPrint)) {
                 ((WebViewActivity)mContext).initFingerPrint();
-                removeFunction(cmd);
             } else if (cmd.equals(Constants.ChooseImage)) {
                 final String copycmd = cmd;
                 if (requestPermission(Constants.camraString, Constants.CAMERA_PERMISSION_REQ_CODE)) {
@@ -406,9 +405,20 @@ public class WebViewManager {
                 }
                 case Constants.chooseImage: {
                     JsonObject DataJson = new JsonObject();
-                    DataJson.addProperty("uploadUrl", bundleData.get("data").toString());
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("uploadUrl", bundleData.get("data").toString());
+                    }
                     ParentJson.add("data", DataJson);
-                    callbackJsFun(Constants.ChooseImage, ParentJson.toString());
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                    break;
+                case Constants.fingerPrint: {
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
                 }
                     break;
                 default: {

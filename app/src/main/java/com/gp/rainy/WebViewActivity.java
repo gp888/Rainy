@@ -113,9 +113,11 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         break;
                     case Constants.FINGERSUCCESS:
                         activity.stopAnim(true);
+                        activity.webViewManager.sendHandler(1, "", "", Constants.FingerPrint, Constants.fingerPrint, "验证通过");
                         break;
                     case Constants.FINGERFAIL:
                         activity.stopAnim(true);
+                        activity.webViewManager.sendHandler(0, "-1", "指纹验证失败", Constants.FingerPrint, Constants.fingerPrint);
                         break;
                     case Constants.JSShARENET:
                         SharePublicAccountModel accountModel = (SharePublicAccountModel) msg.obj;
@@ -656,7 +658,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             logoutAndClearFingerPrint();
             return;
         }
-
         beginAuthenticate();
     }
 
@@ -675,6 +676,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         View view = View.inflate(WebViewActivity.this, R.layout.dialog_fingerprint, null);
         builder.setView(view);
         fingerDialog = builder.create();
+        fingerDialog.setCancelable(false);
         fingerDialog.setCanceledOnTouchOutside(false);
         fingerDialog.show();
     }
@@ -687,7 +689,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         @Override
         public void onAuthenticationSucceeded(boolean isAuthSuccess) {
             methodOrderArrayList.add(AppUtils.getMethodName());
-            mHandler.obtainMessage(Constants.FINGERSUCCESS).sendToTarget();
             if (isAuthSuccess) {
                 mFingerPrintTypeController.onAuthenticationSucceeded();
             } else {
@@ -698,7 +699,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         @Override
         public void onAuthenticationError(int errMsgId, String errString) {
             //验证过程中遇到不可恢复的错误
-            mHandler.obtainMessage(Constants.FINGERSUCCESS).sendToTarget();
             switch (errMsgId) {
                 case FingerprintManagerUtil.MyAuthCallback.ERROR_BEYOND:
                     mFingerPrintTypeController.onAuthenticationError(null);
@@ -754,11 +754,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private void onAuthFail(String text) {
-        ToastUtil.showToastShort(text);
+//        ToastUtil.showToastShort(text);
+        mHandler.obtainMessage(Constants.FINGERFAIL).sendToTarget();
     }
 
     private void onAuthSuccess(String text) {
-        ToastUtil.showToastShort(text);
+//        ToastUtil.showToastShort(text);
+        mHandler.obtainMessage(Constants.FINGERSUCCESS).sendToTarget();
     }
 
     private void stopAnim(boolean isSuccess){
@@ -829,7 +831,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         @Override
         public void onAuthenticationSucceeded() {
             onAuthSuccess(getString(R.string.fingerprint_set_success));
-            finish();
         }
 
         @Override
@@ -956,7 +957,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     /**
-     * 支付
+     * wechatpay
      */
     public void onEventMainThread(WebviewEvent event) {
         if (event.type == WebviewEvent.TYPE_WX_PAY_RESULT) {

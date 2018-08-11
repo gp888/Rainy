@@ -12,6 +12,7 @@ import javax.crypto.IllegalBlockSizeException;
 
 
 public class FingerprintManagerUtil {
+    private static final String TAG = "FingerprintManagerUtil";
     private FingerprintManagerCompat mFingerprintManagerCompat;
     private Context mContext;
     private CancellationSignal cancellationSignal;
@@ -20,7 +21,6 @@ public class FingerprintManagerUtil {
     private AuthenticationCallbackListener mCustomCallback;
     private MyAuthCallback mMyAuthCallback;
     private boolean isInAuth = false;
-    private static final String TAG = "FingerprintManagerUtil";
     private int happenCount = 0;
 
     public FingerprintManagerUtil(Context context, OnCryptoObjectCreateCompleteListener listener, @Nonnull AuthenticationCallbackListener customCallback) {

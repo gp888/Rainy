@@ -38,6 +38,7 @@ public class Constants {
     public static final String Call = "Call";
     public static final String PhoneVibration = "PhoneVibration";
     public static final String FingerPrint = "FingerPrint";
+    public static final int fingerPrint = 214;
     public static final String ChooseImage = "ChooseImage";
     public static final int chooseImage = 203;
 
@@ -58,6 +59,8 @@ public class Constants {
     public static final String Gyro = "Gyro";
     public static final int gyro = 213;
     public static final String CloseGyro = "CloseGyro";
+
+    //215
     public static String PHOTOFILEPATH = "";
 
     public static final int CHOICE_CMARE = 20101;
