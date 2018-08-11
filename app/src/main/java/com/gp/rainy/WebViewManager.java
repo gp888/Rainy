@@ -116,8 +116,11 @@ public class WebViewManager {
                     @Override
                     public void locationSuccess(String lat, String lon, String location) {
                         Log.d(TAG, "location-lat:" + lat + "-lon:" + lon + "-address:" + location);
-                        String locate = "lat:" + lat + "-lon:" + lon + "-address:" + location;
-                        sendHandler(1, "", "", copyCmd, Constants.locate, locate);
+                        Bundle data = new Bundle();
+                        data.putString("latitude", lat);
+                        data.putString("longitude", lon);
+                        data.putString("city", location);
+                        sendHandler(1, "", "", copyCmd, Constants.locate, data);
                     }
 
                     @Override
@@ -344,8 +347,10 @@ public class WebViewManager {
                 break;
                 case Constants.locate:{
                     JsonObject DataJson = new JsonObject();
-                    if (bundleData.get("data") != null) {
-                        DataJson.addProperty("location", bundleData.get("data").toString());
+                    if (bundleData.getString("city") != null) {
+                        DataJson.addProperty("city", bundleData.getString("city"));
+                        DataJson.addProperty("latitude", bundleData.getString("latitude"));
+                        DataJson.addProperty("longitude", bundleData.getString("longitude"));
                     }
                     ParentJson.add("data", DataJson);
                     ParentJson.addProperty("nonstop", 0);
