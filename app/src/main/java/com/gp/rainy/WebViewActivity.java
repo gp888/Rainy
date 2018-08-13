@@ -969,6 +969,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         JsonObject DataJson = new JsonObject();
                         DataJson.addProperty("partnerid", bean.partnerid);
                         DataJson.addProperty("prepayid", bean.prepayid);
+                        DataJson.addProperty("msg", "支付成功");
                         ParentJson.add("data", DataJson);
                         webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
                     }

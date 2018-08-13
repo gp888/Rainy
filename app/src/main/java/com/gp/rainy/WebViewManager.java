@@ -360,9 +360,10 @@ public class WebViewManager {
                 case Constants.share: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.get("data") != null) {
-                        DataJson.addProperty("channel", bundleData.get("data").toString());
+                        DataJson.addProperty("msg", "分享成功");
                     }
                     ParentJson.add("data", DataJson);
+                    ParentJson.addProperty("nonstop", 0);
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
@@ -388,7 +389,14 @@ public class WebViewManager {
                         callbackJsFun(fun, getParentJson(0, mContext.getString(R.string.js_wx_pay_sendreq_fail), "-4").toString());
                     }
                     break;
-                case Constants.alipay:
+                case Constants.alipay:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
                     break;
                 case Constants.thirdLogin:{
                     JsonObject DataJson = new JsonObject();
@@ -397,7 +405,7 @@ public class WebViewManager {
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
-                    }
+                }
                     break;
                 case Constants.gyro: {
                     JsonObject DataJson = new JsonObject();
