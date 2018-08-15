@@ -42,8 +42,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.dbn.OAConnect.wxapi.alipay.PayResult;
 import com.google.gson.JsonObject;
+import com.gp.rainy.alipay.PayResult;
 import com.gp.rainy.fingerprint.AppUtils;
 import com.gp.rainy.fingerprint.FingerPrintException;
 import com.gp.rainy.fingerprint.FingerprintManagerUtil;
@@ -988,6 +988,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 }
                 webViewManager.setmWXPayCallBackBean(null);
             }
+        }
+    }
+
+
+    public class MyThread extends Thread {
+        public MyThread(){
+           super.setName("ThreadName");
         }
     }
 }

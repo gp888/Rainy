@@ -46,12 +46,6 @@ public class ShareManager {
                 if (shareInterface != null) {
                     shareInterface.sendShareHandler(1, "", "", Constants.Share, Constants.share, success + "");
                 }
-            } else {
-//                JsonObject attrsObj = new JsonObject();
-//                attrsObj.addProperty("infoType", "1");
-//                if (shareInterface != null) {
-//                    shareInterface.callShareHttpPost(attrsObj);
-//                }
             }
         }
 

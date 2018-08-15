@@ -395,7 +395,7 @@ public class FileUtils {
         return downloadManager.enqueue(request);
     }
 
-
+    //当使用外部存储时，必须检查外部存储的可用性
     public static boolean isSDCardAvailable() {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
