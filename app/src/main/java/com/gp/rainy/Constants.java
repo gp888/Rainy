@@ -39,8 +39,8 @@ public class Constants {
     public static final String PhoneVibration = "PhoneVibration";
     public static final String FingerPrint = "FingerPrint";
     public static final int fingerPrint = 214;
-    public static final String ChooseImage = "ChooseImage";
-    public static final int chooseImage = 203;
+    public static final String SelectImage = "SelectImage";
+    public static final int selectImage = 203;
 
     public static final int OPENGJSALERT = 204;
     public static final int FINGERSUCCESS = 205;
@@ -77,4 +77,5 @@ public class Constants {
     public static final String UPLOADPIC = "http://59.110.169.175:8080/admin/dynamic/upload.do";
     public static final String UPLOADPIC1 = "http://test.bjyishubiyeji.com:8080/admin/dynamic/upload.do";
     public static final String UPLOADPIC2 = "http://test.bjyishubiyeji.com:8080/uploadImgs";
+    public static final String UPLOADURL = "uploadUrl";
 }

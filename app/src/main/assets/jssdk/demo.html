@@ -67,10 +67,11 @@
                       }
             });
         }
-        function chooseImage(){
-            znt.chooseImage({
+        function selectImage(){
+            znt.selectImage({
+                      uploadUrl: 'http://59.110.169.175:8080/admin/dynamic/upload.do',
                       success:function(res){
-                        alert(res.uploadUrl)
+                        alert(res.imgUrl)
                       },
                       fail:function(res){
                          alert(res.msg)
@@ -188,7 +189,7 @@
     <input type="button" onclick="fingerPrint();" value="fingerPrint">
     <br/>
     <br/>
-    <input type="button" onclick="chooseImage();" value="chooseImage">
+    <input type="button" onclick="selectImage();" value="selectImage">
     <br/>
     <br/>
     <input type="button" onclick="locate();" value="locate">

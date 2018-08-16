@@ -99,8 +99,8 @@
  var fingerPrint = function(cfg) {
    exec("FingerPrint", cfg);
  };
- var chooseImage = function(cfg) {
-   exec("ChooseImage", cfg);
+ var selectImage = function(cfg) {
+   exec("SelectImage", cfg);
  };
  var locate = function(cfg) {
     exec("Locate", cfg);
@@ -131,7 +131,7 @@
  call: call,
  vibrate: vibrate,
  fingerPrint: fingerPrint,
- chooseImage: chooseImage,
+ selectImage: selectImage,
  locate: locate,
  share: share,
  wechatPay: wechatPay,

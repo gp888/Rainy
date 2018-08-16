@@ -92,7 +92,9 @@ public class WebViewManager {
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.FingerPrint)) {
                 ((WebViewActivity)mContext).initFingerPrint();
-            } else if (cmd.equals(Constants.ChooseImage)) {
+            } else if (cmd.equals(Constants.SelectImage)) {
+                String uploadUrl = jsonObjParent.getString("uploadUrl");
+                PreferenceUtils.setPreferenceString(mContext, Constants.UPLOADURL, uploadUrl);
                 final String copycmd = cmd;
                 if (requestPermission(Constants.camraString, Constants.CAMERA_PERMISSION_REQ_CODE)) {
                     ListPopMenuDialogUtils menuDailogDAL = new ListPopMenuDialogUtils(mContext);
@@ -101,7 +103,7 @@ public class WebViewManager {
                         @Override
                         public void itemclick(int position) {
                             if (position == 2) {
-                                sendHandler(0, "-1", "没有选择图片", copycmd, Constants.chooseImage);
+                                sendHandler(0, "-1", "没有选择图片", copycmd, Constants.selectImage);
                             }
                         }
                     });
@@ -414,10 +416,10 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                     return;
                 }
-                case Constants.chooseImage: {
+                case Constants.selectImage: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("uploadUrl", bundleData.get("data").toString());
+                        DataJson.addProperty("imgUrl", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
@@ -615,9 +617,10 @@ public class WebViewManager {
     }
 
     public void uploadPic(File file) {
+        String url = PreferenceUtils.getPreferenceString(mContext, Constants.UPLOADURL, Constants.UPLOADPIC);
         OkHttpUtils
                 .post()
-                .url(Constants.UPLOADPIC)
+                .url(url)
                 .addFile("file", file.getName(), file)
                 .build()
                 .execute(new MyStringCallback());
@@ -639,7 +642,7 @@ public class WebViewManager {
             mProgressDialog.dismiss();
             MyLogUtil.d(TAG + "-Exception：" + e.toString());
             e.printStackTrace();
-            sendHandler(0, "-1", "上传图片失败", Constants.ChooseImage, Constants.chooseImage);
+            sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
         }
 
         @Override
@@ -654,9 +657,9 @@ public class WebViewManager {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                sendHandler(1, "", "", Constants.ChooseImage, Constants.chooseImage, Constants.UPLOADPIC2 + body);
+                sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, Constants.UPLOADPIC2 + body);
             } else {
-                sendHandler(0, "-1", "上传图片失败", Constants.ChooseImage, Constants.chooseImage);
+                sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
             }
         }
 

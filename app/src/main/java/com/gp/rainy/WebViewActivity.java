@@ -616,13 +616,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         MyLogUtil.d(TAG + "图片：" + srcPath);
                         webViewManager.uploadPic(new File(srcPath));
                     } else {
-                        webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                        webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
                     }
                 } else {
-                    webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                    webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
                 }
             } else {
-                webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
             }
         }else if (requestCode == Constants.CHOICE_CMARE) { //相机
             if (resultCode == Activity.RESULT_OK) {
@@ -635,14 +635,14 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         MyLogUtil.d(TAG + "图片：" + srcPath);
                         webViewManager.uploadPic(new File(srcPath));
                     } else {
-                        webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                        webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
                     }
                 } catch (Exception e) {
-                    webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                    webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
                     e.printStackTrace();
                 }
             } else {
-                webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
+                webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
             }
         }
     }
