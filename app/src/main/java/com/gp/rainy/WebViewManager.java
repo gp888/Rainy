@@ -25,7 +25,6 @@ import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,7 +105,6 @@ public class WebViewManager {
                             }
                         }
                     });
-                    removeFunction(cmd);
                 } else {
                     removeFunction(cmd);
                 }
@@ -616,16 +614,16 @@ public class WebViewManager {
         });
     }
 
-    public void uploadPic(File file, String picService) {
+    public void uploadPic(File file) {
         OkHttpUtils
-                .postFile()
-                .url(picService)
-                .file(file)
+                .post()
+                .url(Constants.UPLOADPIC)
+                .addFile("file", file.getName(), file)
                 .build()
                 .execute(new MyStringCallback());
     }
 
-    public class MyStringCallback extends StringCallback {
+    public class MyStringCallback extends AbstractJsonCallback {
         @Override
         public void onBefore(Request request, int id) {
             mProgressDialog = MaterialDialogUtil.showProgress(mContext, "上传中...");
@@ -638,24 +636,37 @@ public class WebViewManager {
 
         @Override
         public void onError(Call call, Exception e, int id) {
+            mProgressDialog.dismiss();
+            MyLogUtil.d(TAG + "-Exception：" + e.toString());
             e.printStackTrace();
-//            mTv.setText("onError:" + e.getMessage());
             sendHandler(0, "-1", "上传图片失败", Constants.ChooseImage, Constants.chooseImage);
         }
 
         @Override
-        public void onResponse(String response, int id) {
-            Log.e(TAG, "onResponse：complete");
-//            mTv.setText("onResponse:" + response);
-            //id 100 http, 101 https
+        public void onResponse(JSONObject response, int id) {//id 100 http, 101 https
+            //{"msg":"图片上传成功","path":"/upload/project/dynamic/20180816/1534386533740528478.jpg","success":true}
             mProgressDialog.dismiss();
-            sendHandler(1, "", "", Constants.ChooseImage, Constants.chooseImage, response);
+            if (response != null) {
+                Log.e(TAG, "onResponse：" + response);
+                String body = null;
+                try {
+                    body = response.getString("path");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                sendHandler(1, "", "", Constants.ChooseImage, Constants.chooseImage, Constants.UPLOADPIC2 + body);
+            } else {
+                sendHandler(0, "-1", "上传图片失败", Constants.ChooseImage, Constants.chooseImage);
+            }
         }
 
         @Override
         public void inProgress(float progress, long total, int id) {
-            Log.e(TAG, "inProgress:" + progress);
+//            Log.e(TAG, "inProgress:" + progress);
 //            mProgressBar.setProgress((int) (100 * progress));
         }
     }
+
+//    RequestCall call = OkHttpUtils.get().url(url).build();
+// call.cancel();
 }

@@ -52,6 +52,7 @@ import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.ShareMenuDialog;
 import com.gp.rainy.share.SharePublicAccountModel;
 import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -612,7 +613,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Uri originalUri = intent.getData();
                     if (originalUri != null) {
                         String srcPath = DeviceUtil.getImageAbsolutePath(mContext, originalUri);
-                        webViewManager.uploadPic(new File(srcPath), "");
+                        MyLogUtil.d(TAG + "图片：" + srcPath);
+                        webViewManager.uploadPic(new File(srcPath));
                     } else {
                         webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
                     }
@@ -630,7 +632,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Uri tempUri = Uri.fromFile(temp);
                     if (tempUri != null) {
                         String srcPath = DeviceUtil.getImageAbsolutePath(mContext, tempUri);
-                        webViewManager.uploadPic(new File(srcPath), "");
+                        MyLogUtil.d(TAG + "图片：" + srcPath);
+                        webViewManager.uploadPic(new File(srcPath));
                     } else {
                         webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.ChooseImage, Constants.chooseImage);
                     }
@@ -928,7 +931,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             return;
         }
 
-        jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "", false, true, new ShareMenuDialog.OnButtonClickListener() {
+        jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "",
+                mShareAPI.isInstall(this, SHARE_MEDIA.SINA), true, new ShareMenuDialog.OnButtonClickListener() {
 
                     @Override
                     public void onButtonClick(int type, int id) {

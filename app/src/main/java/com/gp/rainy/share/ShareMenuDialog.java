@@ -50,7 +50,7 @@ public class ShareMenuDialog extends Dialog {
         setCanceledOnTouchOutside(true);
     }
 
-    public ShareMenuDialog(Context context, int from, String rightMenu, boolean isCollect, final boolean isNet, final OnButtonClickListener mOnButtonClickListener) {
+    public ShareMenuDialog(Context context, int from, String rightMenu, boolean isSina, final boolean isNet, final OnButtonClickListener mOnButtonClickListener) {
         super(context, R.style.dialog_bottom);
 
         inflater = LayoutInflater.from(context);
@@ -69,10 +69,10 @@ public class ShareMenuDialog extends Dialog {
             }
         });
 
-        initData(context, from, rightMenu, isCollect, isNet, mOnButtonClickListener);
+        initData(context, from, rightMenu, isSina, isNet, mOnButtonClickListener);
     }
 
-    private void initData(Context context, int from, String rightMenu, boolean isCollect, boolean isNet, OnButtonClickListener mOnButtonClickListener) {
+    private void initData(Context context, int from, String rightMenu, boolean isSina, boolean isNet, OnButtonClickListener mOnButtonClickListener) {
         List<ArrayMap<String, Integer>> listA = new ArrayList<>();
         ArrayMap<String, Integer> map = new ArrayMap<>();
         map.put("type", 1);
@@ -99,17 +99,21 @@ public class ShareMenuDialog extends Dialog {
         map3.put("icon", R.drawable.ic_share_qq_circle);
 
         ArrayMap<String, Integer> map4 = new ArrayMap<>();
-        map4.put("type", 1);
-        map4.put("id", 4);
-        map4.put("title", R.string.umeng_socialize_sharetosina);
-        map4.put("icon", R.drawable.icon_share_sina);
+        if (isSina) {
+            map4.put("type", 1);
+            map4.put("id", 4);
+            map4.put("title", R.string.umeng_socialize_sharetosina);
+            map4.put("icon", R.drawable.icon_share_sina);
+        }
 
         if (from == Constants.TO_WEBVIEW_FROM_JS) {
             listA.add(map);
             listA.add(map1);
             listA.add(map2);
             listA.add(map3);
-            listA.add(map4);
+            if (isSina) {
+                listA.add(map4);
+            }
 
             setMenuData(context, shareMenuA, listA, isNet, mOnButtonClickListener);
         }

@@ -7,6 +7,11 @@ import com.facebook.stetho.Stetho;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
+import com.zhy.http.okhttp.OkHttpUtils;
+
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 public class App extends MultiDexApplication {
 
@@ -22,6 +27,15 @@ public class App extends MultiDexApplication {
             Stetho.initializeWithDefaults(this);
             mediaPlayer = new MediaPlayer();
             initUMAPI();
+
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+//                .addInterceptor(new LoggerInterceptor("TAG"))
+                    .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                    .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                    //其他配置
+                    .build();
+
+            OkHttpUtils.initClient(okHttpClient);
         }
 
     }

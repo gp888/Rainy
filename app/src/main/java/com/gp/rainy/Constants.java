@@ -74,4 +74,7 @@ public class Constants {
     public static final String[] contactsString = {Manifest.permission.READ_CONTACTS};
 
     public static final String[] storgePermissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static final String UPLOADPIC = "http://59.110.169.175:8080/admin/dynamic/upload.do";
+    public static final String UPLOADPIC1 = "http://test.bjyishubiyeji.com:8080/admin/dynamic/upload.do";
+    public static final String UPLOADPIC2 = "http://test.bjyishubiyeji.com:8080/uploadImgs";
 }
