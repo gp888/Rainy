@@ -12,6 +12,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,6 +22,7 @@ import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import java.io.File;
 import java.util.Collections;
@@ -31,6 +34,7 @@ import java.util.regex.Pattern;
 
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.os.VibrationEffect.DEFAULT_AMPLITUDE;
+import static com.gp.rainy.App.globalContext;
 
 /**
  * 设备信息工具类
@@ -45,7 +49,7 @@ public class DeviceUtil {
     //获取版本号
     public static String getVersionName() {
         try {
-            PackageInfo pi = App.globalContext.getPackageManager().getPackageInfo(App.globalContext.getPackageName(), 0);
+            PackageInfo pi = globalContext.getPackageManager().getPackageInfo(globalContext.getPackageName(), 0);
             return pi.versionName;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -109,10 +113,10 @@ public class DeviceUtil {
 
     //设备号
     public static synchronized String getDeviceUUID() {
-        String uniqueId = PreferenceUtils.getPreferenceString(App.globalContext, Constants.SHARE_DEVICE_ID, "");
+        String uniqueId = PreferenceUtils.getPreferenceString(globalContext, Constants.SHARE_DEVICE_ID, "");
         if ("".equals(uniqueId)) {
             uniqueId = UUID.randomUUID().toString();
-            PreferenceUtils.setPreferenceString(App.globalContext, Constants.SHARE_DEVICE_ID, uniqueId);
+            PreferenceUtils.setPreferenceString(globalContext, Constants.SHARE_DEVICE_ID, uniqueId);
         }
         return uniqueId;
     }
@@ -414,17 +418,17 @@ public class DeviceUtil {
 
     //获取屏幕宽度
     public static int getScreenWidth() {
-        return PreferenceUtils.getPreferenceInt(App.globalContext, Constants.SHARE_SCREEN_WIDTH, 720);
+        return PreferenceUtils.getPreferenceInt(globalContext, Constants.SHARE_SCREEN_WIDTH, 720);
     }
 
     //获取屏幕高度
     public static int getScreenHeight() {
-        return PreferenceUtils.getPreferenceInt(App.globalContext, Constants.SHARE_SCREEN_HEIGHT, 1280);
+        return PreferenceUtils.getPreferenceInt(globalContext, Constants.SHARE_SCREEN_HEIGHT, 1280);
     }
 
     public static boolean isApkDebugable() {
         try {
-            ApplicationInfo info = App.globalContext.getApplicationInfo();
+            ApplicationInfo info = globalContext.getApplicationInfo();
             if (info != null) {
                 return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
             }
@@ -465,5 +469,73 @@ public class DeviceUtil {
         ActivityManager.RunningAppProcessInfo processInfo = processes.get(0);
         String appPackageName = processInfo.processName.toString();
         MyLogUtil.d("--packageName--" + appPackageName);
+    }
+
+    /**
+     * 获取当前网络类型
+     * 0—无网络 1—wifi 2—3g/4g网络
+     */
+    public static int getNetworkType(Context context) {
+        String netType = "NETWORK_NONE";
+        int status = 0;
+        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getActiveNetworkInfo();
+        if (info != null && info.isAvailable()) {
+            if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+                netType = "NETWORK_WIFI";
+                status = 1;
+            } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+                switch (info.getSubtype()) {
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                    case TelephonyManager.NETWORK_TYPE_CDMA:
+                    case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    case TelephonyManager.NETWORK_TYPE_IDEN:
+                        /** 2G网络 */
+//                        return "NETWORK_2G";
+                        return 2;
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                    case TelephonyManager.NETWORK_TYPE_EHRPD:
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:
+                        /** 3G网络 */
+//                        return "NETWORK_3G";
+                        return 2;
+                    case TelephonyManager.NETWORK_TYPE_LTE:
+                        /** 4G网络 */
+//                        return "NETWORK_4G";
+                        return 2;
+                    default:
+                        break;
+                }
+                netType = "NETWORK_MOBILE";
+                status = 2;
+            }
+        }
+//        return netType;
+        return status;
+    }
+
+    public static String getImei() {
+        String imei = "";
+        TelephonyManager telephonyManager = (TelephonyManager) App.globalContext.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            if (telephonyManager != null) {
+                imei = telephonyManager.getDeviceId();
+                if (imei == null || imei.equals("")) {
+//                    imei = getMac();
+                }
+            }
+
+        } catch (Exception ext) {
+            ext.printStackTrace();
+        }
+
+        return imei;
     }
 }

@@ -123,6 +123,9 @@
  var closeGyro = function(cfg) {
     exec("CloseGyro", cfg);
  };
+ var networkStatus = function(cfg) {
+     exec("NetworkStatus", cfg);
+ };
  var znt = {
  config: config,
  fn: _fns,
@@ -138,7 +141,8 @@
  alipay: alipay,
  thirdLogin: thirdLogin,
  gyro: gyro,
- closeGyro: closeGyro
+ closeGyro: closeGyro,
+ networkStatus: networkStatus
  };
  w.znt = znt;
  }(window));

@@ -260,6 +260,9 @@ public class WebViewManager {
             } else if (Constants.CloseGyro.equals(cmd)) {
                 removeFunction(Constants.Gyro);
                 ((WebViewActivity)mContext).setGyro(false, 0.1d);
+            } else if (Constants.NetworkStatus.equals(cmd)) {
+                int status = DeviceUtil.getNetworkType(mContext);
+                sendHandler(1, "", "", cmd, Constants.networkStatus, status + "");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -429,6 +432,15 @@ public class WebViewManager {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
                         DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                    break;
+                case Constants.networkStatus:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("networkStatus", bundleData.getString("data"));
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

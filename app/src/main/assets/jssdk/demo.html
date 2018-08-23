@@ -152,7 +152,7 @@
                       nonstop: '1',
                       gyroUpdateInterval: 0.1,
                       success:function(res){
-                        <!--alert(res.x);-->
+                        <!--alert(res.x)-->
                       },
                       fail:function(res){
                          alert(res.msg)
@@ -162,6 +162,16 @@
         function closeGyro(){
             znt.closeGyro({
                       success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function networkStatus(){
+            znt.networkStatus({
+                      nonstop: '1',
+                      success:function(res){
+                        alert(res.networkStatus)
                       },
                       fail:function(res){
                       }
@@ -211,5 +221,8 @@
     <br/>
     <br/>
     <input type="button" onclick="closeGyro();" value="closeGyro"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="networkStatus();" value="networkStatus"/>
 </body></html>
 

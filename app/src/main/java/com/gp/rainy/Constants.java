@@ -7,6 +7,8 @@ import java.io.File;
 
 public class Constants {
 
+    public static final String mainUrl = "http://test.bjyishubiyeji.com:8080/admin/dianji.html";
+    public static final String testUrl = "file:///android_asset/jssdk/demo.html";
     public static final int LOCATION_PERMISSION_REQ_CODE = 100;
     public static final int STORAGE_PERMISSION_REQ_CODE = 101;
     public static final int CAMERA_PERMISSION_REQ_CODE = 102;
@@ -59,8 +61,9 @@ public class Constants {
     public static final String Gyro = "Gyro";
     public static final int gyro = 213;
     public static final String CloseGyro = "CloseGyro";
+    public static final String NetworkStatus = "NetworkStatus";
+    public static final int networkStatus = 215;
 
-    //215
     public static String PHOTOFILEPATH = "";
 
     public static final int CHOICE_CMARE = 20101;

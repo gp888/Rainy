@@ -32,15 +32,21 @@
             android:name="UMENG_APPKEY"
             android:value="${KEY_UMENG}" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".WebViewActivity"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WebViewActivity"
-            android:screenOrientation="portrait"/>
+
+
         <activity android:name=".fingerprint.FingerPrintActivity"
             android:screenOrientation="portrait"/>
 

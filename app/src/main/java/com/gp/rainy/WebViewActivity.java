@@ -449,7 +449,11 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             ActivityCompat.requestPermissions(this,mPermissionList,123);
         }
 
-        url_load = "file:///android_asset/jssdk/demo.html";
+//        if (BuildConfig.BUILD_TYPE.equals("release")) {
+            url_load = Constants.mainUrl;
+//        } else {
+//            url_load = Constants.testUrl;
+//        }
         webview.loadUrl(url_load);
     }
 
