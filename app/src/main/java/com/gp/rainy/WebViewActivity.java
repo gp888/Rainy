@@ -1,6 +1,7 @@
 package com.gp.rainy;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -279,9 +280,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
             }
 
+            @SuppressLint("NewApi")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 super.shouldOverrideUrlLoading(view, request);
+                String url = request.getUrl().toString();
+                url_load = url;
+                view.loadUrl(url_load);
                 return true;
             }
 
@@ -289,7 +294,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-
+                url_load = url;
             }
 
             @Override
@@ -1003,6 +1008,15 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     public class MyThread extends Thread {
         public MyThread(){
            super.setName("ThreadName");
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webview.canGoBack()) {
+            webview.goBack();
+        } else {
+            finish();
         }
     }
 }
