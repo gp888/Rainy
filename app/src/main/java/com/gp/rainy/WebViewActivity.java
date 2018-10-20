@@ -285,9 +285,12 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 super.shouldOverrideUrlLoading(view, request);
                 String url = request.getUrl().toString();
-                url_load = url;
-                view.loadUrl(url_load);
-                return true;
+                if (url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https")) {
+                    url_load = url;
+                    view.loadUrl(url_load);
+                    return true;
+                }
+                return false;
             }
 
 
@@ -454,11 +457,11 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             ActivityCompat.requestPermissions(this,mPermissionList,123);
         }
 
-//        if (BuildConfig.BUILD_TYPE.equals("release")) {
-            url_load = Constants.mainUrl;
-//        } else {
-//            url_load = Constants.testUrl;
-//        }
+        if (BuildConfig.BUILD_TYPE.equals("release")) {
+            url_load = Constants.mainUrl1;
+        } else {
+            url_load = Constants.testUrl;
+        }
         webview.loadUrl(url_load);
     }
 
@@ -1018,5 +1021,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         } else {
             finish();
         }
+    }
+
+    public void patchSource (String fileUrl, String path) {
+//        FileUtils.downloadFile(mContext, fileUrl);
+        webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, "下载成功");
     }
 }

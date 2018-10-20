@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -263,6 +264,32 @@ public class WebViewManager {
             } else if (Constants.NetworkStatus.equals(cmd)) {
                 int status = DeviceUtil.getNetworkType(mContext);
                 sendHandler(1, "", "", cmd, Constants.networkStatus, status + "");
+            } else if (Constants.Identify.equals(cmd)) {
+                String SerialNumber = android.os.Build.SERIAL;
+                String ANDROID_ID = Settings.System.getString(mContext.getContentResolver(), Settings.System.ANDROID_ID);
+                Bundle data = new Bundle();
+                data.putString("equipment", "Android");
+                data.putString("uniquelyIdentifies", SerialNumber);
+                sendHandler(1, "", "", Constants.Identify, Constants.identify, data);
+            } else if (Constants.Logout.equals(cmd)) {
+                PreferenceUtils.setPreferenceString(mContext, "userId", "");
+                sendHandler(1, "", "", Constants.Logout, Constants.logout, "退出成功");
+            } else if (Constants.CacheFile.equals(cmd)) {
+                String fileUrl = jsonObjParent.getString("fileUrl");
+                String targetFilepath = jsonObjParent.getString("targetFilepath");
+                ((WebViewActivity)mContext).patchSource(fileUrl, targetFilepath);
+            } else if (Constants.CacheUserAccount.equals(cmd)) {
+                String account = jsonObjParent.getString("account");
+                String password = jsonObjParent.getString("password");
+                PreferenceUtils.setPreferenceString(mContext, "account", account);
+                PreferenceUtils.setPreferenceString(mContext, "password", password);
+                sendHandler(1, "", "", Constants.CacheUserAccount, Constants.cacheUserAccount, "存储成功");
+            } else if (Constants.DeleteUserAccount.equals(cmd)) {
+                String account = jsonObjParent.getString("account");
+                String password = jsonObjParent.getString("password");
+                PreferenceUtils.setPreferenceString(mContext, "account", "");
+                PreferenceUtils.setPreferenceString(mContext, "password", "");
+                sendHandler(1, "", "", Constants.DeleteUserAccount, Constants.deleteUserAccount, "删除成功");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -327,6 +354,7 @@ public class WebViewManager {
 
             //移除客户端回调方法状态
             JsonObject ParentJson = getParentJson(bundleData);
+            ParentJson.addProperty("nonstop", 0);
             switch (msg.what) {
                 case Constants.cacheUserInfo: {
                     JsonObject DataJson = new JsonObject();
@@ -334,7 +362,6 @@ public class WebViewManager {
                         DataJson.addProperty("msg", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
-                    ParentJson.addProperty("nonstop", 0);
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
@@ -344,7 +371,6 @@ public class WebViewManager {
                         DataJson.addProperty("nickname", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
-                    ParentJson.addProperty("nonstop", 0);
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
@@ -356,7 +382,6 @@ public class WebViewManager {
                         DataJson.addProperty("longitude", bundleData.getString("longitude"));
                     }
                     ParentJson.add("data", DataJson);
-                    ParentJson.addProperty("nonstop", 0);
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
@@ -366,7 +391,6 @@ public class WebViewManager {
                         DataJson.addProperty("msg", "分享成功");
                     }
                     ParentJson.add("data", DataJson);
-                    ParentJson.addProperty("nonstop", 0);
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
@@ -415,6 +439,7 @@ public class WebViewManager {
                     DataJson.addProperty("x", bundleData.getDouble("x"));
                     DataJson.addProperty("y", bundleData.getDouble("y"));
                     DataJson.addProperty("z", bundleData.getDouble("z"));
+                    ParentJson.addProperty("nonstop", 1);
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                     return;
@@ -446,6 +471,47 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                 }
                     break;
+                case Constants.identify:{
+                    JsonObject DataJson = new JsonObject();
+                    DataJson.addProperty("equipment", bundleData.getString("equipment"));
+                    DataJson.addProperty("uniquelyIdentifies", bundleData.getString("uniquelyIdentifies"));
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                    break;
+                case Constants.logout:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                case Constants.cacheFile:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                case Constants.cacheUserAccount:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                case Constants.deleteUserAccount:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();

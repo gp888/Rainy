@@ -169,9 +169,74 @@
         }
         function networkStatus(){
             znt.networkStatus({
-                      nonstop: '1',
+                      nonstop: '0',
                       success:function(res){
                         alert(res.networkStatus)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function identify(){
+            znt.identify({
+                      nonstop: '0',
+                      success:function(res){
+                        res.equipment
+                        res.uniquelyIdentifies
+                        alert(res.equipment + "--" + res.uniquelyIdentifies)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function logout(){
+            znt.logout({
+                      nonstop: '0',
+                      success:function(res){
+                        res.msg
+                        alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function cacheFile(){
+            znt.cacheFile({
+                      nonstop: '0',
+                      fileUrl: "",
+                      targetFilepath: "",
+                      success:function(res){
+                        res.msg
+                        alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function cacheUserAccount(){
+            znt.cacheUserAccount({
+                      nonstop: '0',
+                      account: "444",
+                      password: "555",
+                      success:function(res){
+                        res.msg
+                        alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function deleteUserAccount(){
+            znt.deleteUserAccount({
+                      nonstop: '0',
+                      account: "444",
+                      success:function(res){
+                        res.msg
+                        alert(res.msg)
                       },
                       fail:function(res){
                       }
@@ -224,5 +289,20 @@
     <br/>
     <br/>
     <input type="button" onclick="networkStatus();" value="networkStatus"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="identify();" value="identify"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="logout();" value="logout"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="cacheFile();" value="cacheFile"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="cacheUserAccount();" value="cacheUserAccount"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="deleteUserAccount();" value="deleteUserAccount"/>
 </body></html>
 

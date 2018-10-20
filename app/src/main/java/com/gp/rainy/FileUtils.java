@@ -428,9 +428,9 @@ public class FileUtils {
                 return;
             }
             File file = new File(Constants.DIR_PROJECT);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
+//            if (!file.exists()) {
+//                file.mkdirs();
+//            }
 
             file = new File(Constants.DIR_DOWNLOAD);
             if (!file.exists()) {

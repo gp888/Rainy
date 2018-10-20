@@ -126,6 +126,22 @@
  var networkStatus = function(cfg) {
      exec("NetworkStatus", cfg);
  };
+ var identify = function(cfg) {
+     exec("UniquelyIdentifies", cfg);
+ };
+ var logout = function(cfg) {
+     exec("Logout", cfg);
+ };
+ var cacheFile = function(cfg) {
+     exec("CacheFile", cfg);
+ };
+ var cacheUserAccount = function(cfg) {
+     exec("CacheUserAccount", cfg);
+ };
+ var deleteUserAccount = function(cfg) {
+     exec("DeleteUserAccount", cfg);
+ };
+
  var znt = {
  config: config,
  fn: _fns,
@@ -142,7 +158,12 @@
  thirdLogin: thirdLogin,
  gyro: gyro,
  closeGyro: closeGyro,
- networkStatus: networkStatus
+ networkStatus: networkStatus,
+ identify: identify,
+ logout: logout,
+ cacheFile: cacheFile,
+ cacheUserAccount: cacheUserAccount,
+ deleteUserAccount: deleteUserAccount
  };
  w.znt = znt;
  }(window));

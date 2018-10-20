@@ -8,6 +8,7 @@ import java.io.File;
 public class Constants {
 
     public static final String mainUrl = "http://test.bjyishubiyeji.com:8080/admin/dianji.html";
+    public static final String mainUrl1 = "http://59.110.169.175:8081/dianshang/index.html#/home_page";
     public static final String testUrl = "file:///android_asset/jssdk/demo.html";
     public static final int LOCATION_PERMISSION_REQ_CODE = 100;
     public static final int STORAGE_PERMISSION_REQ_CODE = 101;
@@ -63,6 +64,16 @@ public class Constants {
     public static final String CloseGyro = "CloseGyro";
     public static final String NetworkStatus = "NetworkStatus";
     public static final int networkStatus = 215;
+    public static final String Identify = "UniquelyIdentifies";
+    public static final int identify = 216;
+    public static final String Logout = "Logout";
+    public static final int logout = 217;
+    public static final String CacheFile = "CacheFile";
+    public static final int cacheFile = 218;
+    public static final String CacheUserAccount = "CacheUserAccount";
+    public static final int cacheUserAccount = 219;
+    public static final String DeleteUserAccount = "DeleteUserAccount";
+    public static final int deleteUserAccount = 230;
 
     public static String PHOTOFILEPATH = "";
 
