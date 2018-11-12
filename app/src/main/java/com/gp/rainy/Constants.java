@@ -92,4 +92,8 @@ public class Constants {
     public static final String UPLOADPIC1 = "http://test.bjyishubiyeji.com:8080/admin/dynamic/upload.do";
     public static final String UPLOADPIC2 = "http://test.bjyishubiyeji.com:8080/uploadImgs";
     public static final String UPLOADURL = "uploadUrl";
+    public static final String accountArray = "accountArray";
+    public static final String DOWNLOAD_ID = "rainy.download_id";
+
+
 }

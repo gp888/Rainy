@@ -15,7 +15,9 @@ import android.webkit.JavascriptInterface;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.alipay.sdk.app.PayTask;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
 import com.gp.rainy.share.SharePublicAccountModel;
@@ -281,15 +283,16 @@ public class WebViewManager {
             } else if (Constants.CacheUserAccount.equals(cmd)) {
                 String account = jsonObjParent.getString("account");
                 String password = jsonObjParent.getString("password");
-                PreferenceUtils.setPreferenceString(mContext, "account", account);
-                PreferenceUtils.setPreferenceString(mContext, "password", password);
+                PreferenceUtils.setPreferenceString(mContext, account, account + "-" + password);
+                AccountHelper.getIns().cache(account, password);
                 sendHandler(1, "", "", Constants.CacheUserAccount, Constants.cacheUserAccount, "存储成功");
             } else if (Constants.DeleteUserAccount.equals(cmd)) {
                 String account = jsonObjParent.getString("account");
-                String password = jsonObjParent.getString("password");
-                PreferenceUtils.setPreferenceString(mContext, "account", "");
-                PreferenceUtils.setPreferenceString(mContext, "password", "");
-                sendHandler(1, "", "", Constants.DeleteUserAccount, Constants.deleteUserAccount, "删除成功");
+                PreferenceUtils.setPreferenceString(mContext, account, "");
+                String jsonStr = AccountHelper.getIns().delete(account);
+                Bundle data = new Bundle();
+                data.putString("jsonStr", jsonStr);
+                sendHandler(1, "", "", Constants.DeleteUserAccount, Constants.deleteUserAccount, data);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -505,8 +508,11 @@ public class WebViewManager {
                 }
                 case Constants.deleteUserAccount:{
                     JsonObject DataJson = new JsonObject();
-                    if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    DataJson.addProperty("msg", "删除成功");
+                    if (bundleData.getString("jsonStr") != null) {
+                        String str = bundleData.getString("jsonStr");
+                        JsonArray array = new JsonParser().parse(str).getAsJsonArray();
+                        DataJson.add("userList", array);
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

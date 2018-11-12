@@ -3,8 +3,10 @@ package com.gp.rainy;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 
@@ -27,10 +29,12 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+import static com.gp.rainy.App.globalContext;
 
 
 public class FileUtils {
+
+    private static DownloadManager downloadManager;
 
     public static void closeIO(Closeable... closeables) {
         if (null == closeables || closeables.length <= 0) {
@@ -381,18 +385,41 @@ public class FileUtils {
     }
 
     //下载文件
-    public static Long downloadFile(Context context, String fileurl) {
+    private static Long startDown(String fileurl) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileurl));
+        //移动网络情况下是否允许漫游
+        request.setAllowedOverRoaming(true);
+        //        设置在通知栏是否显示下载通知(下载进度), 有 3 个值可选:
+        //        VISIBILITY_VISIBLE:                   下载过程中可见, 下载完后自动消失 (默认)
+        //        VISIBILITY_VISIBLE_NOTIFY_COMPLETED:  下载过程中和下载完成后均可见
+        //        VISIBILITY_HIDDEN:                    始终不显示通知
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         String fileName = fileurl.substring(fileurl.lastIndexOf("/") + 1);
-        request.setDestinationInExternalPublicDir("/rainy/download/", fileName);
         //设置Notification的标题和描述
 //        request.setTitle("正在下载文件...");
 //        request.setDescription("描述");
-        //设置Notification的显示，和隐藏。
-        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        //每下载的一个文件对应一个id，通过此id可以查询数据
-        return downloadManager.enqueue(request);
+        request.setVisibleInDownloadsUi(true);
+        request.setDestinationInExternalPublicDir("/rainy/download/", fileName);
+//将下载请求加入下载队列，加入下载队列后会给该任务返回一个long型的id，通过该id可以取消任务，重启任务、获取下载的文件等等
+        long downloadId = getDownloadManager().enqueue(request);
+        PreferenceUtils.setPreferenceLong(globalContext, Constants.DOWNLOAD_ID, downloadId);
+        return downloadId;
+    }
+
+    public static void download(String url){
+        long downloadId = PreferenceUtils.getPreferenceLong(globalContext, Constants.DOWNLOAD_ID, -1L);
+        if(downloadId != -1L){
+            int status = getDownloadStatus(downloadId);
+            if(status == DownloadManager.STATUS_SUCCESSFUL){
+                Uri uri = getDownloadUri(downloadId);
+                removeDownloadId(downloadId);
+                startDown(url);
+            }else if(status == DownloadManager.STATUS_FAILED){
+                startDown(url);
+            }
+        }else{
+            startDown(url);
+        }
     }
 
     //当使用外部存储时，必须检查外部存储的可用性
@@ -494,5 +521,79 @@ public class FileUtils {
             }
         }
         return filename;
+    }
+
+    private static int getDownloadStatus(long downloadid){
+        DownloadManager.Query query = new DownloadManager.Query();
+        //通过下载的id查找
+        query.setFilterById(downloadid);
+
+        Cursor c = getDownloadManager().query(query);
+        try {
+            if (c.moveToFirst()) {
+                return c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            }
+        }finally {
+            c.close();
+        }
+
+        return -1;
+    }
+
+    public static DownloadManager getDownloadManager() {
+        if (downloadManager == null) {
+            downloadManager = (DownloadManager) globalContext.getSystemService(Context.DOWNLOAD_SERVICE);
+        }
+        return downloadManager;
+    }
+
+    /**
+     * 根据downloadID 获取获取本地文件存储的uri
+     *
+     * @param downloadId
+     * @return
+     */
+    public static Uri getDownloadUri(long downloadId) {
+        Uri downloadFileUri = getDownloadManager().getUriForDownloadedFile(downloadId);
+        //适配不同的手机，有的手机不能识别，所以再转一遍
+        Uri uri = Uri.fromFile(new File(getRealPathFromURI(downloadFileUri, globalContext)));
+        return uri;
+    }
+
+    public static String getRealPathFromURI(Uri contentUri,Context context) {
+        String res = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+        if(cursor!=null) {
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+            res = cursor.getString(columnIndex);
+            cursor.close();
+        }
+        else {
+            res = contentUri.getPath();
+        }
+        return res;
+    }
+
+    /**
+     * 移除本地存储的downloadid 和相关文件
+     *
+     * @param downloadId
+     */
+    public static void removeDownloadId(long downloadId) {
+        getDownloadManager().remove(downloadId);
+        PreferenceUtils.remove(Constants.DOWNLOAD_ID);
+    }
+
+    /**
+     * 根据downloadID获取本地存储的文件path
+     *
+     * @param downloadId
+     * @return
+     */
+    public static String getDownloadPath(long downloadId) {
+        String downloadPath = new File(getRealPathFromURI(getDownloadManager().getUriForDownloadedFile(downloadId), globalContext)).toString();
+        return downloadPath;
     }
 }

@@ -180,7 +180,6 @@
 
         function identify(){
             znt.identify({
-                      nonstop: '0',
                       success:function(res){
                         res.equipment
                         res.uniquelyIdentifies
@@ -193,7 +192,6 @@
 
         function logout(){
             znt.logout({
-                      nonstop: '0',
                       success:function(res){
                         res.msg
                         alert(res.msg)
@@ -205,8 +203,7 @@
 
         function cacheFile(){
             znt.cacheFile({
-                      nonstop: '0',
-                      fileUrl: "",
+                      fileUrl: "http://app-global.pgyer.com/e99ea9ac492d6ff0a6308ce12a07a171.apk?attname=aulianwang_1.0.0.1013.apk&sign=790103d17ccf63e9f1f1e3083eebf971&t=5bdab288",
                       targetFilepath: "",
                       success:function(res){
                         res.msg
@@ -218,9 +215,8 @@
         }
         function cacheUserAccount(){
             znt.cacheUserAccount({
-                      nonstop: '0',
-                      account: "444",
-                      password: "555",
+                      account: "555",
+                      password: "666",
                       success:function(res){
                         res.msg
                         alert(res.msg)
@@ -232,7 +228,6 @@
 
         function deleteUserAccount(){
             znt.deleteUserAccount({
-                      nonstop: '0',
                       account: "444",
                       success:function(res){
                         res.msg

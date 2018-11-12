@@ -1024,7 +1024,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     public void patchSource (String fileUrl, String path) {
-//        FileUtils.downloadFile(mContext, fileUrl);
+        FileUtils.download(fileUrl);
         webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, "下载成功");
     }
 }

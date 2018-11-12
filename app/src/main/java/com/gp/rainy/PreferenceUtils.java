@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import static com.gp.rainy.App.globalContext;
+
 /**
  * Created by guoping on 2018/1/6.
  */
@@ -56,5 +58,11 @@ public class PreferenceUtils {
         final SharedPreferences.Editor editor = p.edit();
         editor.clear();
         editor.apply();
+    }
+
+    public static void remove(String key) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(globalContext).edit();
+        editor.remove(key);
+        editor.commit();
     }
 }

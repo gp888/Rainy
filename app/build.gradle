@@ -87,4 +87,7 @@ dependencies {
     implementation 'com.umeng.sdk:analytics:7.5.0'
 //    implementation 'com.umeng.sdk:debug:1.0.0'
     implementation 'de.greenrobot:eventbus:2.4.0'
+
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'io.reactivex:rxandroid:1.0.1'
 }
