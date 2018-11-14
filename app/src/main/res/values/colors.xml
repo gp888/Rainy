@@ -11,4 +11,6 @@
     <color name="share_dialog_top_line">#B0B0B0</color>
     <color name="linecolor">#eeeeee</color>
     <color name="cl_gray0">#333333</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 </resources>

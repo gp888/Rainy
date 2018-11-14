@@ -27,10 +27,9 @@
         }
         function getCacheUserInfo(){
             znt.getCacheUserInfo({
-                                 userId:"111",
                                  success:function(res){
-                                    var text= res.nickname; //
-                                    alert(text);
+                                    var text= res.isLogin;
+                                    alert("isLogin:" + text);
                                  },
                                  fail:function(res){
                                     alert(res.msg)
@@ -237,6 +236,45 @@
                       }
             });
         }
+
+        function closeApp(){
+            znt.closeApp({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function scanCode(){
+            znt.scanCode({
+                      success:function(res){
+                      alert(res.resCode)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+        function openMap(){
+            znt.openMap({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function statusBarStyle(){
+            znt.statusBarStyle({
+                      style:"Default",
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+
     </script>
             
 </head>
@@ -299,5 +337,17 @@
     <br/>
     <br/>
     <input type="button" onclick="deleteUserAccount();" value="deleteUserAccount"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="closeApp();" value="closeApp"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="scanCode();" value="scanCode"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="openMap();" value="openMap"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="statusBarStyle();" value="statusBarStyle"/>
 </body></html>
 

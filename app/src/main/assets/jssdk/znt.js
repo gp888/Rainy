@@ -141,6 +141,18 @@
  var deleteUserAccount = function(cfg) {
      exec("DeleteUserAccount", cfg);
  };
+ var closeApp = function(cfg) {
+     exec("CloseApp", cfg);
+ };
+ var scanCode = function(cfg) {
+     exec("ScanCode", cfg);
+ };
+ var openMap = function(cfg) {
+     exec("OpenMap", cfg);
+ };
+ var statusBarStyle = function(cfg) {
+     exec("StatusBarStyle", cfg);
+ };
 
  var znt = {
  config: config,
@@ -163,7 +175,11 @@
  logout: logout,
  cacheFile: cacheFile,
  cacheUserAccount: cacheUserAccount,
- deleteUserAccount: deleteUserAccount
+ deleteUserAccount: deleteUserAccount,
+ closeApp: closeApp,
+ scanCode: scanCode,
+ openMap: openMap,
+ statusBarStyle: statusBarStyle
  };
  w.znt = znt;
  }(window));

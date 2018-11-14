@@ -75,11 +75,23 @@ public class Constants {
     public static final String DeleteUserAccount = "DeleteUserAccount";
     public static final int deleteUserAccount = 230;
 
+    public static final String CloseApp = "CloseApp";
+    public static final int closeApp = 231;
+    public static final String ScanCode = "ScanCode";
+    public static final int scanCode = 232;
+    public static final String OpenMap = "OpenMap";
+    public static final int openMap = 233;
+
+    public static final String StatusBarStyle = "StatusBarStyle";
+    public static final int statusBarStyle = 234;
+
     public static String PHOTOFILEPATH = "";
 
     public static final int CHOICE_CMARE = 20101;
     public static final int CHOICE_PHOTO = 20102;
     public static final int CHOICE_MEDIA = 20103;
+    public static final int REQUEST_CODE = 20104;
+    public static final int REQUEST_CAMERA = 20105;
 
     public static final String FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
 

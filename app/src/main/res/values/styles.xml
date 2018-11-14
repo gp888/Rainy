@@ -26,4 +26,13 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <style name="white" parent="AppTheme">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+    </style>
+    <style name="black" parent="AppTheme">
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+    </style>
+
 </resources>

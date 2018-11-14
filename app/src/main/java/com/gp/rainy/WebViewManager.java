@@ -1,7 +1,11 @@
 package com.gp.rainy;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +31,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.json.JSONException;
@@ -38,6 +43,8 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Request;
+
+import static com.gp.rainy.App.globalContext;
 
 public class WebViewManager {
 
@@ -72,20 +79,31 @@ public class WebViewManager {
                 String account = jsonObjParent.getString("account");
                 String nickname = jsonObjParent.getString("nickname");
 
-                PreferenceUtils.setPreferenceString(mContext, "userId", userId);
-                if (nickname.equals("呵呵呵") ) {
+                if (!TextUtils.isEmpty(userId)) {
+                    PreferenceUtils.setPreferenceString(mContext, "userId", userId);
+                    PreferenceUtils.setPreferenceString(mContext, "token", token);
+                    PreferenceUtils.setPreferenceString(mContext, "account", account);
+                    PreferenceUtils.setPreferenceString(mContext, "nickname", nickname);
                     sendHandler(1, "", "", cmd, Constants.cacheUserInfo, "hehe");
                 } else {
-                    sendHandler(0, "-1", "失败", cmd, Constants.cacheUserInfo);
+                    sendHandler(0, "-1", "userId不能为空", cmd, Constants.cacheUserInfo);
                 }
             } else if (cmd.equals(Constants.GetCacheUserInfo)) {
-                String userId = jsonObjParent.getString("userId");
                 String result = PreferenceUtils.getPreferenceString(mContext, "userId", "");
-                if (!TextUtils.isEmpty(result)) {
-                    sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, result);
-                } else {
-                    sendHandler(0, "-1", "失败", cmd, Constants.getCacheUserInfo);
-                }
+                Bundle data = new Bundle();
+
+
+                data.putString("jsonStr", PreferenceUtils.getPreferenceString(globalContext, Constants.accountArray, ""));
+
+                data.putString("userId", PreferenceUtils.getPreferenceString(mContext, "userId", ""));
+                data.putString("token", PreferenceUtils.getPreferenceString(mContext, "token", ""));
+                data.putString("account", PreferenceUtils.getPreferenceString(mContext, "account", ""));
+                data.putString("nickname", PreferenceUtils.getPreferenceString(mContext, "nickname", ""));
+
+                sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, data);
+//                else {
+//                    sendHandler(0, "-1", "未登录", cmd, Constants.getCacheUserInfo);
+//                }
             } else if (cmd.equals(Constants.Call)) {
                 String phoneNumber = jsonObjParent.getString("phone");
                 DeviceUtil.phoneCall(mContext, phoneNumber);
@@ -261,7 +279,7 @@ public class WebViewManager {
                 }
                 ((WebViewActivity)mContext).setGyro(true, time);
             } else if (Constants.CloseGyro.equals(cmd)) {
-                removeFunction(Constants.Gyro);
+                removeFunction(cmd);
                 ((WebViewActivity)mContext).setGyro(false, 0.1d);
             } else if (Constants.NetworkStatus.equals(cmd)) {
                 int status = DeviceUtil.getNetworkType(mContext);
@@ -275,6 +293,9 @@ public class WebViewManager {
                 sendHandler(1, "", "", Constants.Identify, Constants.identify, data);
             } else if (Constants.Logout.equals(cmd)) {
                 PreferenceUtils.setPreferenceString(mContext, "userId", "");
+                PreferenceUtils.setPreferenceString(mContext, "token", "");
+                PreferenceUtils.setPreferenceString(mContext, "account", "");
+                PreferenceUtils.setPreferenceString(mContext, "nickname", "");
                 sendHandler(1, "", "", Constants.Logout, Constants.logout, "退出成功");
             } else if (Constants.CacheFile.equals(cmd)) {
                 String fileUrl = jsonObjParent.getString("fileUrl");
@@ -293,6 +314,36 @@ public class WebViewManager {
                 Bundle data = new Bundle();
                 data.putString("jsonStr", jsonStr);
                 sendHandler(1, "", "", Constants.DeleteUserAccount, Constants.deleteUserAccount, data);
+            } else if (Constants.CloseApp.equals(cmd)) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            } else if (Constants.ScanCode.equals(cmd)) {
+                if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)) {
+                    ActivityCompat.requestPermissions((WebViewActivity) mContext, new String[]{Manifest.permission.CAMERA}, Constants.REQUEST_CAMERA);
+                } else {
+                    Intent intent = new Intent(mContext, CaptureActivity.class);
+                    ((WebViewActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE);
+                }
+            } else if (Constants.OpenMap.equals(cmd)) {
+                if (MapNaviUtils.isBaiduMapInstalled()) {
+                    Uri uri = Uri.parse("baidumap://map/direction?destination=latlng:"+"目的地lat"+","+ "目的地lng"+"|name:"+"目的地名称"+"&mode=driving");
+                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                } else if (MapNaviUtils.isGdMapInstalled()){
+                    Uri uri = Uri.parse("amapuri://route/plan/?dlat="+"目的地lat"+"&dlon="+"目的地lng"+"&dname="+"目的地名称"+"&dev=0&t=0");
+                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                }
+                removeFunction(cmd);
+            } else if (Constants.StatusBarStyle.equals(cmd)) {
+                String style = jsonObjParent.getString("style");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if ("Default".equals(style)) {
+//                        StatusBarUtils.setStatusBarColor5((WebViewActivity) mContext, ContextCompat.getColor(mContext, R.color.black));
+//                        mContext.setTheme(R.style.black);
+                    } else if ("Light".equals(style)) {
+//                        StatusBarUtils.setStatusBarColor5((WebViewActivity) mContext, ContextCompat.getColor(mContext, R.color.white));
+//                        mContext.setTheme(R.style.white);
+                    }
+                }
+                removeFunction(cmd);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -370,9 +421,30 @@ public class WebViewManager {
                 break;
                 case Constants.getCacheUserInfo: {
                     JsonObject DataJson = new JsonObject();
-                    if (bundleData.get("data") != null) {
-                        DataJson.addProperty("nickname", bundleData.get("data").toString());
+
+                    if (!TextUtils.isEmpty(bundleData.get("userId").toString())) {
+                        DataJson.addProperty("isLogin", 1);
+                    } else {
+                        DataJson.addProperty("isLogin", 0);
                     }
+
+                    JsonObject object = new JsonObject();
+                    object.addProperty("userId", bundleData.get("userId").toString());
+                    object.addProperty("token", bundleData.get("token").toString());
+                    object.addProperty("account", bundleData.get("account").toString());
+                    object.addProperty("nickname", bundleData.get("nickname").toString());
+                    DataJson.add("userInfo", object);
+
+                    String str = bundleData.getString("jsonStr");
+                    JsonArray array = null;
+                    if (!TextUtils.isEmpty(str)) {
+                        array = new JsonParser().parse(str).getAsJsonArray();
+                    } else {
+                        array = new JsonArray();
+                    }
+                    DataJson.add("userList", array);
+
+
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
@@ -445,8 +517,8 @@ public class WebViewManager {
                     ParentJson.addProperty("nonstop", 1);
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
-                    return;
                 }
+                break;
                 case Constants.selectImage: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
@@ -490,6 +562,7 @@ public class WebViewManager {
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
+                break;
                 case Constants.cacheFile:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
@@ -498,6 +571,7 @@ public class WebViewManager {
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
+                break;
                 case Constants.cacheUserAccount:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
@@ -506,6 +580,7 @@ public class WebViewManager {
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
+                break;
                 case Constants.deleteUserAccount:{
                     JsonObject DataJson = new JsonObject();
                     DataJson.addProperty("msg", "删除成功");
@@ -513,6 +588,15 @@ public class WebViewManager {
                         String str = bundleData.getString("jsonStr");
                         JsonArray array = new JsonParser().parse(str).getAsJsonArray();
                         DataJson.add("userList", array);
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
+                case Constants.scanCode:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("resCode", bundleData.getString("data"));
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

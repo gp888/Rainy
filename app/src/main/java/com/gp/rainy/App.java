@@ -1,5 +1,6 @@
 package com.gp.rainy;
 
+import android.app.Application;
 import android.media.MediaPlayer;
 import android.support.multidex.MultiDexApplication;
 
@@ -7,6 +8,7 @@ import com.facebook.stetho.Stetho;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -37,6 +39,8 @@ public class App extends MultiDexApplication {
 
             OkHttpUtils.initClient(okHttpClient);
         }
+
+        ZXingLibrary.initDisplayOpinion(this);
 
     }
 

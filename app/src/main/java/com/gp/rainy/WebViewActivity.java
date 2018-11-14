@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -29,12 +30,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -54,6 +57,8 @@ import com.gp.rainy.share.ShareMenuDialog;
 import com.gp.rainy.share.SharePublicAccountModel;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.uuzuche.lib_zxing.activity.CaptureActivity;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -97,6 +102,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     private boolean isGyro;
     private double time = 0.1;
     private SensorManager sensorManager;
+    private String firstLoadUrl = "";
 
     private static class MyHandler extends Handler {
 
@@ -161,6 +167,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_webview);
         mContext = this;
         webview = findViewById(R.id.webview);
@@ -168,125 +175,32 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         mShareAPI = UMShareAPI.get(this);
 
         webview = setWebViewConfig(webview, mContext);
-        webview.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
-                if (!isFinishing()) {
-                    mHandler.obtainMessage(Constants.OPENGJSALERT, message).sendToTarget();
-                    result.confirm();
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onJsConfirm(WebView arg0, String arg1, String arg2, final JsResult arg3) {
-                if (!isFinishing()) {
-                    MaterialDialog dialog = MaterialDialogUtil.showAlert(mContext, arg2, R.string.confirm, R.string.cancel,
-                            new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    arg3.confirm();
-                                }
-                            }, new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    arg3.cancel();
-                                }
-                            });
-                    dialog.setCancelable(false);
-                }
-                return true;
-            }
-
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                MyLogUtil.i(TAG + "---onProgressChanged--newProgress:" + newProgress);
-                if (newProgress == 100) {
-
-                } else {
-
-                }
-                super.onProgressChanged(view, newProgress);
-            }
-
-            @Override
-            public View getVideoLoadingProgressView() {
-                FrameLayout frameLayout = new FrameLayout(mContext);
-                frameLayout.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-                return frameLayout;
-            }
-
-            //Android >= 5.0
-            @Override
-            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, WebChromeClient.FileChooserParams fileChooserParams) {
-                openFileChooserImplForAndroid5(filePath);
-                return true;
-            }
-
-            //openFileChooser Android >= 3.0+
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-                mUploadMessage = uploadMsg;
-                //Create AndroidExampleFolder at sdcard
-                File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "AndroidExampleFolder");
-                if (!imageStorageDir.exists()) {
-                    imageStorageDir.mkdirs();
-                }
-                //Create camera captured image file path and name
-                File file = new File(imageStorageDir + File.separator + "_" + String.valueOf(System.currentTimeMillis()) + "." + FileUtils.getExtensionName(imageStorageDir.getName()));
-                mCapturedImageURI = Uri.fromFile(file);
-                //Camera capture image intent
-                final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.setType("*/*");
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                Intent chooserIntent = Intent.createChooser(i, getString(R.string.webview_file_browser_title));
-                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{captureIntent});
-                startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
-            }
-
-            //Android versions < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-                openFileChooser(uploadMsg, "");
-            }
-
-            //Android versions >= 4.1
-            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-                openFileChooser(uploadMsg, acceptType);
-            }
-
-            /**
-             *  >= Android5.0
-             **/
-            private void openFileChooserImplForAndroid5(ValueCallback<Uri[]> uploadMsg) {
-                mUploadMessageForAndroid5 = uploadMsg;
-                Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                contentSelectionIntent.setType("*/*");
-
-                Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
-                chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-                chooserIntent.putExtra(Intent.EXTRA_TITLE, getString(R.string.webview_file_browser_title));
-
-                startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
-            }
-        });
 
         webview.setWebViewClient(new WebViewClient() {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-
+                MyLogUtil.i("---onPageStarted--");
             }
 
             @SuppressLint("NewApi")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                super.shouldOverrideUrlLoading(view, request);
                 String url = request.getUrl().toString();
+                MyLogUtil.i("---shouldOverrideUrlLoading--" + url);
                 if (url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https")) {
+                    //兼容8.0以上 点击a标签两次跳转不一致
+                    if (TextUtils.isEmpty(firstLoadUrl)) {
+                        firstLoadUrl = url;
+                    } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && firstLoadUrl.equals(url)) {
+                            MyLogUtil.e("  do not load again  ");
+                            return false;
+                        }
+                    }
                     url_load = url;
+//                    WebViewUtil.webviewSyncCookie(url_load, webview);
                     view.loadUrl(url_load);
                     return true;
                 }
@@ -297,18 +211,65 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                url_load = url;
+                MyLogUtil.i("---onPageFinished--url:" + url);
+                synchronized (this) {
+                    if (webview != null) {
+                        webview.getSettings().setBlockNetworkImage(false);
+                        String title = view.getTitle();
+                        if (!TextUtils.isEmpty(title)) {
+
+                        }
+                        url_load = url;
+                    }
+                }
+                firstLoadUrl = "";
             }
 
+            @SuppressLint("NewApi")
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-
+                MyLogUtil.d("---onReceivedError--" + error);
+                if (request.isForMainFrame()) {
+                    //无法与服务器正常连接,断网或者网络连接超时
+                    MyLogUtil.d("---error--" + error);
+                }
             }
 
             @Override
             public void onReceivedSslError(WebView arg0, SslErrorHandler arg1, SslError arg2) {
-                arg1.proceed();
+                arg1.proceed();         //忽略证书
+                MyLogUtil.e("--onReceivedSslError:" + arg2);
+            }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+                MyLogUtil.i("--onLoadResource--" + url);
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                MyLogUtil.e("---onReceivedHttpError--" + errorResponse);
+            }
+
+        });
+
+        webview.setWebChromeClient(new ChromClient());
+
+        webview.setDownloadListener(new DownloadListener() {
+
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                try {
+                    Uri uri = Uri.parse(url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.showToastLong("无法打开");
+                }
             }
 
         });
@@ -453,15 +414,15 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Manifest.permission.READ_LOGS,Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.SET_DEBUG_APP,
                     Manifest.permission.SYSTEM_ALERT_WINDOW,Manifest.permission.GET_ACCOUNTS,
-                    Manifest.permission.WRITE_APN_SETTINGS};
+                    Manifest.permission.WRITE_APN_SETTINGS, Manifest.permission.CAMERA};
             ActivityCompat.requestPermissions(this,mPermissionList,123);
         }
 
-        if (BuildConfig.BUILD_TYPE.equals("release")) {
+//        if (BuildConfig.BUILD_TYPE.equals("release")) {
             url_load = Constants.mainUrl1;
-        } else {
-            url_load = Constants.testUrl;
-        }
+//        } else {
+//            url_load = Constants.testUrl;
+//        }
         webview.loadUrl(url_load);
     }
 
@@ -655,6 +616,22 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 }
             } else {
                 webViewManager.sendHandler(0, "-1", "没有选取图片", Constants.SelectImage, Constants.selectImage);
+            }
+        }else if (requestCode == Constants.REQUEST_CODE) {
+            if (null != intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle == null) {
+                    webViewManager.sendHandler(0, "-1", "解析二维码失败", Constants.ScanCode, Constants.scanCode);
+                    return;
+                }
+                if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                    String result = bundle.getString(CodeUtils.RESULT_STRING);
+                    webViewManager.sendHandler(1, "", "", Constants.ScanCode, Constants.scanCode, result);
+                } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                    webViewManager.sendHandler(0, "-1", "解析二维码失败", Constants.ScanCode, Constants.scanCode);
+                }
+            } else {
+                webViewManager.sendHandler(0, "-1", "解析二维码失败", Constants.ScanCode, Constants.scanCode);
             }
         }
     }
@@ -899,6 +876,14 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Toast.makeText(this, "需要开启存储权限", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case Constants.REQUEST_CAMERA:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(mContext, CaptureActivity.class);
+                    ((WebViewActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE);
+                }else {
+                    Toast.makeText(this, "需要开启相机权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }
@@ -1026,5 +1011,111 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     public void patchSource (String fileUrl, String path) {
         FileUtils.download(fileUrl);
         webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, "下载成功");
+    }
+
+    class ChromClient extends WebChromeClient {
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+            if (!isFinishing()) {
+                mHandler.obtainMessage(Constants.OPENGJSALERT, message).sendToTarget();
+                result.confirm();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onJsConfirm(WebView arg0, String arg1, String arg2, final JsResult arg3) {
+            if (!isFinishing()) {
+                MaterialDialog dialog = MaterialDialogUtil.showAlert(mContext, arg2, R.string.confirm, R.string.cancel,
+                        new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                arg3.confirm();
+                            }
+                        }, new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                arg3.cancel();
+                            }
+                        });
+                dialog.setCancelable(false);
+            }
+            return true;
+        }
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            MyLogUtil.i(TAG + "---onProgressChanged--newProgress:" + newProgress);
+            if (newProgress == 100) {
+//                    progress_bar.setVisibility(View.GONE);
+            } else {
+//                    progress_bar.setVisibility(View.VISIBLE);
+//                    progress_bar.setProgress(newProgress);
+            }
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public View getVideoLoadingProgressView() {
+            FrameLayout frameLayout = new FrameLayout(mContext);
+            frameLayout.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+            return frameLayout;
+        }
+
+        //Android >= 5.0
+        @Override
+        public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, WebChromeClient.FileChooserParams fileChooserParams) {
+            openFileChooserImplForAndroid5(filePath);
+            return true;
+        }
+
+        //openFileChooser Android >= 3.0+
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+            mUploadMessage = uploadMsg;
+            //Create AndroidExampleFolder at sdcard
+            File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "AndroidExampleFolder");
+            if (!imageStorageDir.exists()) {
+                imageStorageDir.mkdirs();
+            }
+            //Create camera captured image file path and name
+            File file = new File(imageStorageDir + File.separator + "_" + String.valueOf(System.currentTimeMillis()) + "." + FileUtils.getExtensionName(imageStorageDir.getName()));
+            mCapturedImageURI = Uri.fromFile(file);
+            //Camera capture image intent
+            final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.setType("*/*");
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            Intent chooserIntent = Intent.createChooser(i, getString(R.string.webview_file_browser_title));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{captureIntent});
+            startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+        }
+
+        //Android versions < 3.0
+        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+            openFileChooser(uploadMsg, "");
+        }
+
+        //Android versions >= 4.1
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+            openFileChooser(uploadMsg, acceptType);
+        }
+
+        /**
+         *  >= Android5.0
+         **/
+        private void openFileChooserImplForAndroid5(ValueCallback<Uri[]> uploadMsg) {
+            mUploadMessageForAndroid5 = uploadMsg;
+            Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            contentSelectionIntent.setType("*/*");
+
+            Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+            chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, getString(R.string.webview_file_browser_title));
+
+            startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
+        }
     }
 }
