@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.download:
                     String ss = "http://img2.cache.netease.com/photo/0001/2017-04-28/CJ45TBS419BR0001.jpg";//http://test.bjyishubiyeji.com:9013/jssdk.zip
-                    FileUtils.download(ss);
+                    FileUtils.download(ss, "");
                     break;
                 case R.id.finger:
                     Intent intent = new Intent(MainActivity.this, FingerPrintActivity.class);
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
 //            int i = 0;
 //            publishProgress(i);
-            FileUtils.download(params[0]);
+            FileUtils.download(params[0], "");
             return "ok";
         }
 

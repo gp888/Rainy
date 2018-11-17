@@ -385,7 +385,7 @@ public class FileUtils {
     }
 
     //下载文件
-    private static Long startDown(String fileurl) {
+    private static Long startDown(String fileurl, String path) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileurl));
         //移动网络情况下是否允许漫游
         request.setAllowedOverRoaming(true);
@@ -395,30 +395,47 @@ public class FileUtils {
         //        VISIBILITY_HIDDEN:                    始终不显示通知
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         String fileName = fileurl.substring(fileurl.lastIndexOf("/") + 1);
+
         //设置Notification的标题和描述
 //        request.setTitle("正在下载文件...");
 //        request.setDescription("描述");
         request.setVisibleInDownloadsUi(true);
-        request.setDestinationInExternalPublicDir("/rainy/download/", fileName);
+        if (TextUtils.isEmpty(path)) {
+            path = "/rainy/download/";
+        } else {
+            path = "/rainy/" + path + "/";
+        }
+
+        File filePath = new File(Environment.getExternalStorageDirectory().getPath() + path);
+        if (!filePath.exists()) {
+            filePath.mkdirs();
+        }
+        File myFile = new File(Environment.getExternalStorageDirectory().getPath() + path + fileName);
+        if (myFile.exists()) {
+            if(myFile.delete()) {
+                ToastUtil.showToastShort("删除成功");
+            }
+        }
+        request.setDestinationInExternalPublicDir(path, fileName + ".zip");
 //将下载请求加入下载队列，加入下载队列后会给该任务返回一个long型的id，通过该id可以取消任务，重启任务、获取下载的文件等等
         long downloadId = getDownloadManager().enqueue(request);
         PreferenceUtils.setPreferenceLong(globalContext, Constants.DOWNLOAD_ID, downloadId);
         return downloadId;
     }
 
-    public static void download(String url){
+    public static void download(String url, String path){
         long downloadId = PreferenceUtils.getPreferenceLong(globalContext, Constants.DOWNLOAD_ID, -1L);
         if(downloadId != -1L){
             int status = getDownloadStatus(downloadId);
             if(status == DownloadManager.STATUS_SUCCESSFUL){
                 Uri uri = getDownloadUri(downloadId);
                 removeDownloadId(downloadId);
-                startDown(url);
+                startDown(url, path);
             }else if(status == DownloadManager.STATUS_FAILED){
-                startDown(url);
+                startDown(url, path);
             }
         }else{
-            startDown(url);
+            startDown(url, path);
         }
     }
 
@@ -523,7 +540,7 @@ public class FileUtils {
         return filename;
     }
 
-    private static int getDownloadStatus(long downloadid){
+    public static int getDownloadStatus(long downloadid){
         DownloadManager.Query query = new DownloadManager.Query();
         //通过下载的id查找
         query.setFilterById(downloadid);

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import de.greenrobot.event.EventBus;
+
 import static com.gp.rainy.App.globalContext;
 
 public class CompleteReceiver extends BroadcastReceiver {
@@ -26,6 +28,13 @@ public class CompleteReceiver extends BroadcastReceiver {
 
         String downloadPath = FileUtils.getDownloadPath(downloadID);
 //        AppUpdateUtil.installApp(downloadPath);
+
+        int status = FileUtils.getDownloadStatus(downloadID);
+        if (status != DownloadManager.STATUS_SUCCESSFUL) {
+            EventBus.getDefault().post(new WebviewEvent(WebviewEvent.TYPE_DOWN, 0, "0"));
+        } else {
+            EventBus.getDefault().post(new WebviewEvent(WebviewEvent.TYPE_DOWN, 0, "1"));
+        }
     }
 }
 

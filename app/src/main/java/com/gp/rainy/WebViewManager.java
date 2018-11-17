@@ -19,9 +19,11 @@ import android.webkit.JavascriptInterface;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.alipay.sdk.app.PayTask;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
 import com.gp.rainy.share.SharePublicAccountModel;
@@ -38,7 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -67,6 +72,7 @@ public class WebViewManager {
         String cmd = "";
         try {
             MyLogUtil.i(TAG + "--invoke-request:" + request);
+            ((WebViewActivity)mContext).printLog("请求：" + request);
             JSONObject jsonObjParent = new JSONObject(request);
             m = jsonObjParent.getString("m");
             cmd = jsonObjParent.getString("cmd");
@@ -74,36 +80,42 @@ public class WebViewManager {
             functionHash.put(cmd, m);
 
             if (cmd.equals(Constants.CacheUserInfo)) {
-                String userId = jsonObjParent.getString("userId");
-                String token = jsonObjParent.getString("token");
-                String account = jsonObjParent.getString("account");
-                String nickname = jsonObjParent.getString("nickname");
-
-                if (!TextUtils.isEmpty(userId)) {
-                    PreferenceUtils.setPreferenceString(mContext, "userId", userId);
-                    PreferenceUtils.setPreferenceString(mContext, "token", token);
-                    PreferenceUtils.setPreferenceString(mContext, "account", account);
-                    PreferenceUtils.setPreferenceString(mContext, "nickname", nickname);
-                    sendHandler(1, "", "", cmd, Constants.cacheUserInfo, "hehe");
+                Iterator<String> iterator = jsonObjParent.keys();
+                ArrayList<String> keys = new ArrayList<>();
+                while(iterator.hasNext()){
+                    String key = iterator.next();
+                    if (!"cmd".equals(key) && !"m".equals(key)) {
+                        String value = jsonObjParent.getString(key);
+                        PreferenceUtils.setPreferenceString(mContext, key, value);
+                        keys.add(key);
+                    }
+                }
+                if (keys.size() < 1) {
+                    sendHandler(0, "-1", "缓存用户数据失败", cmd, Constants.cacheUserInfo);
                 } else {
-                    sendHandler(0, "-1", "userId不能为空", cmd, Constants.cacheUserInfo);
+                    PreferenceUtils.setPreferenceString(mContext, Constants.cacheStr, new Gson().toJson(keys));
+                    Log.d("gpdata:", new Gson().toJson(keys));
+                    sendHandler(1, "", "", cmd, Constants.cacheUserInfo, "缓存用户数据成功");
                 }
             } else if (cmd.equals(Constants.GetCacheUserInfo)) {
-                String result = PreferenceUtils.getPreferenceString(mContext, "userId", "");
                 Bundle data = new Bundle();
 
+                String result = PreferenceUtils.getPreferenceString(mContext, Constants.cacheStr, "");
+                if (!TextUtils.isEmpty(result)) {
+                    List<String> items = new Gson().fromJson(result, new TypeToken<List<String>>() {}.getType());
+                    if (items != null && items.size() > 0) {
+                        for(int i = 0; i < items.size(); i++) {
+                            data.putString(items.get(i), PreferenceUtils.getPreferenceString(mContext, items.get(i), ""));
+                        }
+                    }
+                }
 
                 data.putString("jsonStr", PreferenceUtils.getPreferenceString(globalContext, Constants.accountArray, ""));
-
-                data.putString("userId", PreferenceUtils.getPreferenceString(mContext, "userId", ""));
-                data.putString("token", PreferenceUtils.getPreferenceString(mContext, "token", ""));
-                data.putString("account", PreferenceUtils.getPreferenceString(mContext, "account", ""));
-                data.putString("nickname", PreferenceUtils.getPreferenceString(mContext, "nickname", ""));
-
-                sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, data);
-//                else {
-//                    sendHandler(0, "-1", "未登录", cmd, Constants.getCacheUserInfo);
-//                }
+                if (PreferenceUtils.hasKey(mContext,"account") && !TextUtils.isEmpty(PreferenceUtils.getPreferenceString(mContext, "account", ""))) {
+                    sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, data);
+                } else {
+                    sendHandler(1, "-1", "未登录", cmd, Constants.getCacheUserInfo, data);
+                }
             } else if (cmd.equals(Constants.Call)) {
                 String phoneNumber = jsonObjParent.getString("phone");
                 DeviceUtil.phoneCall(mContext, phoneNumber);
@@ -292,10 +304,18 @@ public class WebViewManager {
                 data.putString("uniquelyIdentifies", SerialNumber);
                 sendHandler(1, "", "", Constants.Identify, Constants.identify, data);
             } else if (Constants.Logout.equals(cmd)) {
-                PreferenceUtils.setPreferenceString(mContext, "userId", "");
-                PreferenceUtils.setPreferenceString(mContext, "token", "");
-                PreferenceUtils.setPreferenceString(mContext, "account", "");
-                PreferenceUtils.setPreferenceString(mContext, "nickname", "");
+                String result = PreferenceUtils.getPreferenceString(mContext, Constants.cacheStr, "");
+                if (!TextUtils.isEmpty(result)) {
+                    List<String> items = new Gson().fromJson(result, new TypeToken<List<String>>() {}.getType());
+                    if (items != null && items.size() > 0) {
+                        for(int i = 0; i < items.size(); i++) {
+                            PreferenceUtils.remove(items.get(i));
+                        }
+                    }
+                }
+                PreferenceUtils.remove(Constants.cacheStr);
+
+//                PreferenceUtils.remove("account");
                 sendHandler(1, "", "", Constants.Logout, Constants.logout, "退出成功");
             } else if (Constants.CacheFile.equals(cmd)) {
                 String fileUrl = jsonObjParent.getString("fileUrl");
@@ -422,18 +442,12 @@ public class WebViewManager {
                 case Constants.getCacheUserInfo: {
                     JsonObject DataJson = new JsonObject();
 
-                    if (!TextUtils.isEmpty(bundleData.get("userId").toString())) {
+
+                    if (!TextUtils.isEmpty(PreferenceUtils.getPreferenceString(mContext, Constants.cacheStr, ""))) {
                         DataJson.addProperty("isLogin", 1);
                     } else {
                         DataJson.addProperty("isLogin", 0);
                     }
-
-                    JsonObject object = new JsonObject();
-                    object.addProperty("userId", bundleData.get("userId").toString());
-                    object.addProperty("token", bundleData.get("token").toString());
-                    object.addProperty("account", bundleData.get("account").toString());
-                    object.addProperty("nickname", bundleData.get("nickname").toString());
-                    DataJson.add("userInfo", object);
 
                     String str = bundleData.getString("jsonStr");
                     JsonArray array = null;
@@ -444,6 +458,19 @@ public class WebViewManager {
                     }
                     DataJson.add("userList", array);
 
+                    JsonObject object = new JsonObject();
+                    bundleData.remove("jsonStr");
+                    String result = PreferenceUtils.getPreferenceString(mContext, Constants.cacheStr, "");
+                    if (!TextUtils.isEmpty(result)) {
+                        List<String> items = new Gson().fromJson(result, new TypeToken<List<String>>() {}.getType());
+                        if (items != null && items.size() > 0) {
+                            for(int i = 0; i < items.size(); i++) {
+                                object.addProperty(items.get(i), PreferenceUtils.getPreferenceString(mContext, items.get(i), ""));
+                            }
+                        }
+                    }
+
+                    DataJson.add("userInfo", object);
 
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
@@ -565,8 +592,12 @@ public class WebViewManager {
                 break;
                 case Constants.cacheFile:{
                     JsonObject DataJson = new JsonObject();
-                    if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    String error = bundleData.getString("download");
+                    if ("1".equals(error)) {
+                        DataJson.addProperty("msg", "下载成功");
+                    } else if ("0".equals(error)) {
+                        DataJson.addProperty("msg", "下载失败");
+                        DataJson.addProperty("errorCode", "0");
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

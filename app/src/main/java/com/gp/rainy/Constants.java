@@ -106,6 +106,7 @@ public class Constants {
     public static final String UPLOADURL = "uploadUrl";
     public static final String accountArray = "accountArray";
     public static final String DOWNLOAD_ID = "rainy.download_id";
+    public static final String cacheStr = "cacheStr";
 
 
 }

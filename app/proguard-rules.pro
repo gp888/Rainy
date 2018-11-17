@@ -23,3 +23,34 @@
 #-keepclassmembers class * extends android.webkit.WebChromeClient{
 #    public void openFileChooser(...);
 #}
+-ignorewarnings
+
+# RxJava RxAndroid
+-dontwarn sun.misc.**
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+
+-keep class com.umeng.** {*;}
+
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep public class com.gp.rainy.R$*{
+public static final int *;
+}
+
+-keep class com.gp.rainy.**{*;}

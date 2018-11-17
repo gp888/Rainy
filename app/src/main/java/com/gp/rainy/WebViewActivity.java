@@ -24,12 +24,15 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
@@ -41,7 +44,10 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -64,7 +70,10 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import de.greenrobot.event.EventBus;
 
 public class WebViewActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -75,6 +84,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     private Uri mCapturedImageURI;
     private ValueCallback mUploadMessage;
     private WebView webview;
+    private TextView lg;
     private String url_load;
     private WebViewManager webViewManager;
     protected Context mContext;
@@ -103,6 +113,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     private double time = 0.1;
     private SensorManager sensorManager;
     private String firstLoadUrl = "";
+    BottomSheetDialog bsd;
+    ListView recyclerView;
+    List<String> logArray;
+    ArrayAdapter<String> adapter;
 
     private static class MyHandler extends Handler {
 
@@ -171,6 +185,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         setContentView(R.layout.activity_webview);
         mContext = this;
         webview = findViewById(R.id.webview);
+        lg = findViewById(R.id.lg);
         mHandler = new MyHandler(mContext);
         mShareAPI = UMShareAPI.get(this);
 
@@ -280,6 +295,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             public void callbackJsFun(String fun) {
                 try {
                     MyLogUtil.i(TAG + "---callbackJsFun:" + fun);
+                    logArray.add("返回：" + fun);
+                    adapter.notifyDataSetChanged();
                     if (webview != null &&!TextUtils.isEmpty(fun)) {
                         final String sweburl = fun;
                         webview.post(new Runnable() {
@@ -418,12 +435,31 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             ActivityCompat.requestPermissions(this,mPermissionList,123);
         }
 
-//        if (BuildConfig.BUILD_TYPE.equals("release")) {
+        if (BuildConfig.BUILD_TYPE.equals("release")) {
             url_load = Constants.mainUrl1;
-//        } else {
-//            url_load = Constants.testUrl;
-//        }
+        } else {
+            url_load = Constants.testUrl;
+        }
         webview.loadUrl(url_load);
+        lg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = logArray.size();
+                recyclerView.setSelection(logArray.size());
+                bsd.show();
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        View view = View.inflate(this, R.layout.layout_log, null);
+        recyclerView = view.findViewById(R.id.rvLog);
+        logArray = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1, logArray);
+        recyclerView.setAdapter(adapter);
+        bsd = new BottomSheetDialog(this);
+        bsd.setCancelable(true);
+        bsd.setCanceledOnTouchOutside(true);
+        bsd.setContentView(view);
     }
 
     public void initFingerPrint() {
@@ -471,6 +507,14 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         stopFingerprintListen();
@@ -478,6 +522,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         if (methodOrderArrayList != null) {
             methodOrderArrayList.add(AppUtils.getMethodName());
         }
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -989,13 +1034,15 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 }
                 webViewManager.setmWXPayCallBackBean(null);
             }
-        }
-    }
-
-
-    public class MyThread extends Thread {
-        public MyThread(){
-           super.setName("ThreadName");
+        } else if (event.type == WebviewEvent.TYPE_DOWN) {
+            Bundle data = new Bundle();
+            if ("1".equals(event.errStr)) {
+                data.putString("download", "1");
+                webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, data);
+            } else {
+                data.putString("download", "0");
+                webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, data);
+            }
         }
     }
 
@@ -1009,8 +1056,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     }
 
     public void patchSource (String fileUrl, String path) {
-        FileUtils.download(fileUrl);
-        webViewManager.sendHandler(1, "", "", Constants.CacheFile, Constants.cacheFile, "下载成功");
+        FileUtils.download(fileUrl, path);
     }
 
     class ChromClient extends WebChromeClient {
@@ -1055,6 +1101,29 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             }
             super.onProgressChanged(view, newProgress);
         }
+
+        /*android 低版本 Desperate*/
+//        @Override
+//        public void onConsoleMessage(String message, int lineNumber, String sourceID) {
+//            Log.i("WebViewLog", String.format("sourceID: %s lineNumber: %n message: %s", sourceID,
+//                    lineNumber, message));
+//            super.onConsoleMessage(message, lineNumber, sourceID);
+//        }
+
+        @Override
+        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+            String message = consoleMessage.message();
+            int lineNumber = consoleMessage.lineNumber();
+            String sourceID = consoleMessage.sourceId();
+            String messageLevel = consoleMessage.messageLevel().toString();
+
+            Log.i("WebViewLog", String.format("[%s] sourceID: %s lineNumber: %n message: %s",
+                    messageLevel, sourceID, lineNumber, message));
+            logArray.add(String.format("[%s] sourceID: %s lineNumber: %n message: %s", messageLevel, sourceID, lineNumber, message));
+            adapter.notifyDataSetChanged();
+            return super.onConsoleMessage(consoleMessage);
+        }
+
 
         @Override
         public View getVideoLoadingProgressView() {
@@ -1117,5 +1186,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
             startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
         }
+    }
+
+    public void printLog(String log) {
+        logArray.add(log);
+        adapter.notifyDataSetChanged();
     }
 }

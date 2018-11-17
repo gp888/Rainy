@@ -3,6 +3,7 @@ package com.gp.rainy;
 public class WebviewEvent {
 
     public final static int TYPE_WX_PAY_RESULT = 0;
+    public final static int TYPE_DOWN = 1;
 
     public int type; // 业务类型
     public int result; // 返回结果
