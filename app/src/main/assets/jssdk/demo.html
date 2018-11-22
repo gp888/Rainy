@@ -94,6 +94,7 @@
                       desc: 'heavey rainy', // 分享描述
                       link: 'http://www.rainy.com/', // 分享链接
                       imgUrl: 'https://cdn2.jianshu.io/assets/web/nav-logo-4c7bbafe27adc892f3046e6978459bac.png', // 分享图标
+                      platForm: 'wx',//wx,wx_circle,qq,sina
                       success: function (res) {
                          alert(res.msg);
                       },
@@ -273,7 +274,35 @@
                       }
             });
         }
-
+        function playSound(){
+            znt.playSound({
+                      nonstop:'1',
+                      soundType:'local',//local,internet
+                      pathUrl:'media/sample.mp3',//mp3/hehehe.mp3,http://www.abstractpath.com/files/audiosamples/sample.mp3
+                      success:function(res){
+                      alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function contactList(){
+            znt.contactList({
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function deleteCacheFile(){
+            znt.deleteCacheFile({
+                      path: 'temp',
+                      success:function(res){
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
 
     </script>
             
@@ -349,5 +378,15 @@
     <br/>
     <br/>
     <input type="button" onclick="statusBarStyle();" value="statusBarStyle"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="playSound();" value="playSound"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="contactList();" value="contactList"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="deleteCacheFile();" value="deleteCacheFile"/>
+
 </body></html>
 

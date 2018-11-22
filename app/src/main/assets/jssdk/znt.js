@@ -153,6 +153,15 @@
  var statusBarStyle = function(cfg) {
      exec("StatusBarStyle", cfg);
  };
+ var playSound = function(cfg) {
+      exec("PlaySound", cfg);
+ };
+ var contactList = function(cfg) {
+      exec("ContactList", cfg);
+ };
+var deleteCacheFile = function(cfg) {
+      exec("DeleteCacheFile", cfg);
+ };
 
  var znt = {
  config: config,
@@ -179,7 +188,10 @@
  closeApp: closeApp,
  scanCode: scanCode,
  openMap: openMap,
- statusBarStyle: statusBarStyle
+ statusBarStyle: statusBarStyle,
+ playSound: playSound,
+ contactList: contactList,
+ deleteCacheFile: deleteCacheFile
  };
  w.znt = znt;
  }(window));

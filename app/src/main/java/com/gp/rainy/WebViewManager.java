@@ -4,11 +4,14 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +29,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
+import com.gp.rainy.share.ShareInterface;
+import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.SharePublicAccountModel;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -48,6 +53,11 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Request;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.gp.rainy.App.globalContext;
 
@@ -168,29 +178,78 @@ public class WebViewManager {
                 String desc = jsonObjParent.getString("desc");     //分享描述
                 String imgUrl = jsonObjParent.getString("imgUrl"); //分享图标
                 String link = jsonObjParent.getString("link");     //分享链接
+                String platForm = jsonObjParent.getString("platForm");     //分享链接
 
-                if (TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title)) {
-                    removeFunction(cmd);
-                    ToastUtil.showToastShort("分享参数错误，所有参数为必填项");
-                    return;
-                } else {
-                    if (!DeviceUtil.getUrlIsHttp(imgUrl)) {
-                        removeFunction(cmd);
-                        ToastUtil.showToastShort("分享参数错误，imgUrl参数必填以http开头");
-                        return;
-                    }
-                }
-                if (TextUtils.isEmpty(desc)) {
-                    desc = title;
-                }
+//                if (TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title) && TextUtils.isEmpty(title)) {
+//                    removeFunction(cmd);
+//                    ToastUtil.showToastShort("分享参数错误，所有参数为必填项");
+//                    return;
+//                } else {
+//                    if (!DeviceUtil.getUrlIsHttp(imgUrl)) {
+//                        removeFunction(cmd);
+//                        ToastUtil.showToastShort("分享参数错误，imgUrl参数必填以http开头");
+//                        return;
+//                    }
+//                }
+//                if (TextUtils.isEmpty(desc)) {
+//                    desc = title;
+//                }
                 SharePublicAccountModel shareModel = new SharePublicAccountModel();
                 shareModel.setcontent(desc);
                 shareModel.settitle(title);
                 shareModel.setimgurl(imgUrl);
                 shareModel.seturl(link);
-                if (js_interface != null) {
-                    js_interface.callShareModelHandler(shareModel);
+//                if (js_interface != null) {
+//                    js_interface.callShareModelHandler(shareModel);
+//                }
+
+
+                ShareManager shareManager = new ShareManager(mContext);
+                shareManager.setShareListener(new ShareInterface() {
+
+                    @Override
+                    public void sendShareHandler(int r, String errorCode, String error, String funName, int what) {
+                        sendHandler(r, errorCode, error, funName, what);
+                    }
+
+                    @Override
+                    public void sendShareHandler(int r, String errorCode, String error, String funName, int what, String data) {
+                        sendHandler(r, errorCode, error, funName, what, data);
+                    }
+
+                    @Override
+                    public void callShareHttpPost(JsonObject attrsObj) {
+                    }
+
+                });
+                int platformId = 0;
+                if ("wx".equals(platForm)) {
+                    platformId = 0;
+                } else if ("wx_circle".equals(platForm)){
+                    platformId = 1;
+                } else if ("qq".equals(platForm)) {
+                    platformId = 2;
+                } else if ("sina".equals(platForm)) {
+                    platformId = 4;
+                    boolean isIns = mShareAPI.isInstall((WebViewActivity)mContext, SHARE_MEDIA.SINA);
+                    if (!isIns) {
+                        sendHandler(0, "-1", "没安装微博", Constants.Share, Constants.share);
+                    }
                 }
+                shareModel.setShareType(3);//link
+                // 追加APPID
+                if (!TextUtils.isEmpty(shareModel.geturl())) {
+                    String url = shareModel.geturl();
+                    if (!url.contains("?")) {
+                        url = url + "?app=" + BuildConfig.APPID;
+                    } else {
+                        url = url + "&app=" + BuildConfig.APPID;
+                    }
+                    shareModel.seturl(url);
+                }
+                //0:wx,1:wx_circle,2:qq,4:sina
+                shareManager.performShare(shareModel, platformId, true);
+
             } else if(Constants.WeChatPay.equals(cmd)) {
                 IWXAPI api = WXAPIFactory.createWXAPI(mContext, BuildConfig.THIRDPART_WEIXIN_APPID); // 自己的微信公众号wxappid
                 if (api.isWXAppInstalled()) {
@@ -345,11 +404,22 @@ public class WebViewManager {
                 }
             } else if (Constants.OpenMap.equals(cmd)) {
                 if (MapNaviUtils.isBaiduMapInstalled()) {
-                    Uri uri = Uri.parse("baidumap://map/direction?destination=latlng:"+"目的地lat"+","+ "目的地lng"+"|name:"+"目的地名称"+"&mode=driving");
-                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+
+                    Intent intent = new Intent();
+                    intent.setData(Uri.parse("baidumap://map?src=andr.baidu.openAPIdemo"));
+                    mContext.startActivity(intent);
+
+//                    Uri uri = Uri.parse("baidumap://map/direction?destination=latlng:"+"目的地lat"+","+ "目的地lng"+"|name:"+"目的地名称"+"&mode=driving");
+//                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
                 } else if (MapNaviUtils.isGdMapInstalled()){
-                    Uri uri = Uri.parse("amapuri://route/plan/?dlat="+"目的地lat"+"&dlon="+"目的地lng"+"&dname="+"目的地名称"+"&dev=0&t=0");
-                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+
+                    Intent intent = new Intent("android.intent.action.VIEW",
+                            android.net.Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
+                    intent.setPackage("com.autonavi.minimap");
+                    mContext.startActivity(intent);
+
+//                    Uri uri = Uri.parse("amapuri://route/plan/?dlat="+"目的地lat"+"&dlon="+"目的地lng"+"&dname="+"目的地名称"+"&dev=0&t=0");
+//                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
                 }
                 removeFunction(cmd);
             } else if (Constants.StatusBarStyle.equals(cmd)) {
@@ -364,6 +434,34 @@ public class WebViewManager {
                     }
                 }
                 removeFunction(cmd);
+            } else if (Constants.PlaySound.equals(cmd)) {
+                String soundType = jsonObjParent.getString("soundType");
+                String pathUrl = jsonObjParent.getString("pathUrl");
+                if ("internet".equals(soundType)) {
+                    AudioManager.getInstance(mContext).playMedia("", pathUrl, 0, this);
+                } else if ("local".equals(soundType)){
+                    String path = Environment.getExternalStorageDirectory() + "/rainy/";
+                    AudioManager.getInstance(mContext).playMedia(path + pathUrl, "", 1,this);
+                }
+            } else if (Constants.ContactList.equals(cmd)) {
+                if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS)) {
+                    ActivityCompat.requestPermissions((WebViewActivity) mContext, new String[]{Manifest.permission.READ_CONTACTS}, Constants.REQUEST_CONTACT);
+                } else {
+
+//                    List<Contact> array = new ArrayList<>();
+//                    Contact contact = new Contact();
+//                    contact.phone = "123";
+//                    contact.name = "456";
+//                    array.add(contact);
+//                    String str = new Gson().toJson(array);
+//                   sendHandler(1, "", "", Constants.ContactList, Constants.contactList, str);
+                    queryContactPhoneNumber();
+                }
+            } else if (Constants.DeleteCacheFile.equals(cmd)) {
+                String path = jsonObjParent.getString("path");
+                String filePath = Environment.getExternalStorageDirectory() + "/rainy/" + path + "/";
+                FileUtils.deleteFileByDirectory(new File(filePath));
+                sendHandler(1, "", "", Constants.DeleteCacheFile, Constants.deleteCacheFile, "删除成功");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -633,6 +731,36 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
+                case Constants.playSound:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getInt("success")  == 1) {
+                        DataJson.addProperty("msg", "播放成功");
+                    } else {
+                        DataJson.addProperty("msg", "播放失败");
+                        DataJson.addProperty("errorCode", "0");
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                case Constants.contactList:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data")  != null) {
+                        JsonArray array = new JsonParser().parse(bundleData.getString("data")).getAsJsonArray();
+                        DataJson.add("list", array);
+                        ParentJson.add("data", DataJson);
+                        callbackJsFun(fun, ParentJson.toString());
+                    }
+                }
+                break;
+                case Constants.deleteCacheFile:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", "删除成功");
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                    break;
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();
@@ -871,4 +999,78 @@ public class WebViewManager {
 
 //    RequestCall call = OkHttpUtils.get().url(url).build();
 // call.cancel();
+
+    public void queryContactPhoneNumber() {
+
+        Observable<List<Contact>> observable = Observable.create(new Observable.OnSubscribe<List<Contact>>(){
+
+            @Override
+            public void call(Subscriber<? super List<Contact>> subscriber) {
+                List<Contact> contacts = new ArrayList<>();
+                String[] cols = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+                Cursor cursor = mContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        cols, null, null, null);
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    cursor.moveToPosition(i);
+                    // 取得联系人名字
+                    int nameFieldColumnIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                    int numberFieldColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                    String name = cursor.getString(nameFieldColumnIndex);
+                    String number = cursor.getString(numberFieldColumnIndex);
+                    Contact contact = new Contact();
+                    contact.name = name;
+                    contact.phone = number;
+                    contacts.add(contact);
+                }
+
+                subscriber.onNext(contacts);
+                subscriber.onCompleted();
+            }
+        });
+
+        Observer<List<Contact>> observer = new Observer<List<Contact>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(List<Contact> s) {
+                String array = new Gson().toJson(s);
+                sendHandler(1, "", "", Constants.ContactList, Constants.contactList, array);
+            }
+        };
+
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                List<Contact> contacts = new ArrayList<>();
+//                String[] cols = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+//                Cursor cursor = mContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                        cols, null, null, null);
+//                for (int i = 0; i < cursor.getCount(); i++) {
+//                    cursor.moveToPosition(i);
+//                    // 取得联系人名字
+//                    int nameFieldColumnIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+//                    int numberFieldColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+//                    String name = cursor.getString(nameFieldColumnIndex);
+//                    String number = cursor.getString(numberFieldColumnIndex);
+//                    Contact contact = new Contact();
+//                    contact.name = name;
+//                    contact.phone = number;
+//                    contacts.add(contact);
+//                }
+//            }
+//        }).start();
+
+    }
 }

@@ -929,6 +929,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     Toast.makeText(this, "需要开启相机权限", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case Constants.REQUEST_CONTACT:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    webViewManager.queryContactPhoneNumber();
+                }else {
+                    Toast.makeText(this, "需要开启电话联系人权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }

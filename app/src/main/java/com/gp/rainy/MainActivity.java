@@ -105,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.media:
-                    AudioManager.getInstance(MainActivity.this).playeLocalMedia("zjsvoice112.mp3");
+                    AudioManager.getInstance(MainActivity.this).playeLocalMedia("media/sample.mp3");
                     break;
                 case R.id.netmedia:
-                    AudioManager.getInstance(MainActivity.this).playeNetMedia("http://img2.cache.netease.com/photo/0001/2017-04-28/CJ45TBS419BR0001.jpg");
+                    AudioManager.getInstance(MainActivity.this).playeNetMedia("http://www.abstractpath.com/files/audiosamples/sample.mp3");
                     break;
                 case R.id.getpackage:
                     DeviceUtil.loadApps(MainActivity.this);

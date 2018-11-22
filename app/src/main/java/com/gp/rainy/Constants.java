@@ -84,6 +84,14 @@ public class Constants {
 
     public static final String StatusBarStyle = "StatusBarStyle";
     public static final int statusBarStyle = 234;
+    public static final String PlaySound = "PlaySound";
+    public static final int playSound = 235;
+
+
+    public static final String ContactList = "ContactList";
+    public static final int contactList = 236;
+    public static final String DeleteCacheFile = "DeleteCacheFile";
+    public static final int deleteCacheFile = 237;
 
     public static String PHOTOFILEPATH = "";
 
@@ -92,6 +100,7 @@ public class Constants {
     public static final int CHOICE_MEDIA = 20103;
     public static final int REQUEST_CODE = 20104;
     public static final int REQUEST_CAMERA = 20105;
+    public static final int REQUEST_CONTACT = 20106;
 
     public static final String FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
 

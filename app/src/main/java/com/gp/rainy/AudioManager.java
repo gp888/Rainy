@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Bundle;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
@@ -94,7 +96,7 @@ public class AudioManager {
             return;
         }
         try {
-//            setAudioMaxVolumn();
+            setAudioMaxVolumn();
             audioFileName = "sound/" + audioFileName;
             AssetManager assetManager = mContext.getAssets();
             AssetFileDescriptor fileDescriptor = assetManager.openFd(audioFileName);
@@ -111,10 +113,15 @@ public class AudioManager {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
             }
+
             mediaPlaye(fileDescriptor);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void playMedia(String file, String url, int type, WebViewManager webViewManager) {
+        mediaPlaye(file, url, type, webViewManager);
     }
 
     /***
@@ -142,11 +149,17 @@ public class AudioManager {
     /***
      * 媒体播放
      *
-     * @param outFile
+     * @param file
      **/
-    private void mediaPlaye(File outFile) {
+    private void mediaPlaye(String file, String url, int type, WebViewManager webViewManager) {
+        Bundle bundle = new Bundle();
         try {
-            mediaPlayer.setDataSource(outFile.getPath());
+            if (0 == type) {
+                Uri uri = Uri.parse(url);
+                mediaPlayer.setDataSource(mContext, uri);
+            } else if (1 ==type){
+                mediaPlayer.setDataSource(file);
+            }
             mediaPlayer.prepare();
             mediaPlayer.start();
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -157,10 +170,15 @@ public class AudioManager {
                     }
                 }
             });
+            bundle.putInt("success", 1);
+            webViewManager.sendHandler(1, "", "", Constants.PlaySound, Constants.playSound, bundle);
         } catch (Exception e) {
             e.printStackTrace();
             ToastUtil.showToastShort("播放失败");
+            bundle.putInt("success", 0);
+            webViewManager.sendHandler(1, "", "", Constants.PlaySound, Constants.playSound, bundle);
         }
+        webViewManager = null;
     }
 
     /***

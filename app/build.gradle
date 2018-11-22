@@ -36,6 +36,9 @@ android {
             buildConfigField "String", "THIRDPART_QQ_APPKEY", '"4hkdeEMSitq8iED2"'//
             buildConfigField "String", "THIRDPART_SINA_APPID", '"1390417804"'//
             buildConfigField "String", "THIRDPART_SINA_APPSECRET", '"f0d4fb65e44f494aaf137034001eef89"'//
+//            appKey = "706360e6f3f843c516ff672b";
+//            APPSECRET="bd8d5a5ba14fd0c93bf1026b112406b0";
+//            APPID="wx95c507259674fd99";
         }
     }
 

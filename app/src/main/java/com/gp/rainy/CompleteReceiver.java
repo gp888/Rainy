@@ -26,7 +26,7 @@ public class CompleteReceiver extends BroadcastReceiver {
             return;
         }
 
-        String downloadPath = FileUtils.getDownloadPath(downloadID);
+//        String downloadPath = FileUtils.getDownloadPath(downloadID);
 //        AppUpdateUtil.installApp(downloadPath);
 
         int status = FileUtils.getDownloadStatus(downloadID);

@@ -428,7 +428,7 @@ public class FileUtils {
         if(downloadId != -1L){
             int status = getDownloadStatus(downloadId);
             if(status == DownloadManager.STATUS_SUCCESSFUL){
-                Uri uri = getDownloadUri(downloadId);
+//                Uri uri = getDownloadUri(downloadId);
                 removeDownloadId(downloadId);
                 startDown(url, path);
             }else if(status == DownloadManager.STATUS_FAILED){
