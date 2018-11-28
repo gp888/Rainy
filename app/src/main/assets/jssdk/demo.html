@@ -68,7 +68,7 @@
         }
         function selectImage(){
             znt.selectImage({
-                      uploadUrl: 'http://59.110.169.175:8080/admin/dynamic/upload.do',
+                      uploadUrl: 'http://59.110.169.175:8080/admin/authCopyright/upload.do',//  http://59.110.169.175:8080/admin/dynamic/upload.do
                       success:function(res){
                         alert(res.imgUrl)
                       },
@@ -108,12 +108,13 @@
         }
         function wechatPay(){
             znt.wechatPay({
-                partnerid: '', // 商户号
-                prepayid: '', // 预支付交易会话ID
-                mPackage: '', // 扩展字段
-                noncestr: '', // 随机字符串
-                timestamp: '', // 时间戳
-                sign: '', // 签名
+                appid: ' wx241ddf7c0c5a99eb', // 非必填
+                partnerid: '1505559141', // 商户号
+                prepayid: 'wx28101439525023687eb35be40375776084', // 预支付交易会话ID
+                mPackage: 'Sign=WXPay', // 扩展字段
+                noncestr: '24es0z01vdvdfdbhxj2g', // 随机字符串
+                timestamp: '1543371280', // 时间戳
+                sign: 'FADC746F14ABCC266F733BEE74B9599D', // 签名
                 success: function (res) {
                     res.appid // 应用ID
                     res.partnerid // 商户号
@@ -126,7 +127,7 @@
         }
         function alipay(){
             znt.alipay({
-               orderStr: 'alipay_sdk=alipay-sdk-java-dynamicVersionNo&app_id=2017062707576492&biz_content=%7B%22body%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22out_trade_no%22%3A%22HG20180604000001%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83-%E8%BD%AF%E4%BB%B6%E8%91%97%E4%BD%9C%E6%9D%83+%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%221200%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2Fapp.techhg.com%2Falipay%2Fcallback&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D&sign_type=RSA2&timestamp=2018-08-07+11%3A19%3A42&version=1.0&sign=KQm12dUVMpPqe2iiMhW%2FkazDSRVDpoCy7Ol4xrOt1oSWpr390ixFoVPgisnheP5JxUqtprdEzlvPzEw9PbmN2kNFyGht5PGKml%2B9IeACGDj3IqJMBISEhEuANZUoLbVinznW3pMYDhI9i4EircWswZ83PBZ6TYs4KtC6%2BEal2z9UmVt24yBnJ4wn6qJ3pYRe1isHJ%2BHJHXboMgFwczh7MiWp8sL2YLB1I6W6GUQIKv0ivXot6AB%2F6h8H%2FtDhwnHm0wIxrwM6n89Tg1FbCdVu0AIy3lXOUjbA%2B418iY%2FYv%2B1BhGHuDT4kZilUgv5ZO8YLUnvqDKz1G089pq5DP2NrMw%3D%3D',
+               orderStr: 'alipay_sdk=alipay-sdk-java-3.4.49.ALL&app_id=2018060660290782&biz_content=%7B%22body%22%3A%22test%22%2C%22out_trade_no%22%3A%222009%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%2C%22subject%22%3A%22test%22%2C%22timeout_express%22%3A%2230m%22%2C%22total_amount%22%3A%220.03%22%7D&charset=utf-8&format=json&method=alipay.trade.app.pay&notify_url=http%3A%2F%2F59.110.169.175%3A28180%2Fpayment%2FaliCallback&sign=Fo7a19GbwlbUDp7JGMobid94%2BFY8zKHdw3p%2BobNpyfr0Mz8%2FyNjjIu3ZjBpEXUv4fnu7%2B8rhHkFqOuhyNzg8z2kL6H3Xq4lKvANepEsuI5H2i%2FXTYbHohJ6zACJImjU7V1j0eP3EULsxprEk9yxcHPcKlHVWS%2BTEbTXsDQAXo5ludpOdyfv5bLn5dIyrjacnwpyKodsNzChfUd%2BTVyrRmnESom5TqJ2FF3gspPiUurVEzkEYtFEZiK8lcrMK36WHEkgKj1FPJd7zvkxK0tMLVQTVgqHbVfX5Q5xYPef9A2vRBY4wyoVJeJcWStoryFzLXbQRVSn4Zi7JBBz98J68xw%3D%3D&sign_type=RSA2&timestamp=2018-11-28+11%3A18%3A58&version=1.0',
                success: function (res) {
                     alert(res.msg);
                 },
@@ -267,8 +268,9 @@
         }
         function statusBarStyle(){
             znt.statusBarStyle({
-                      style:"Default",
+                      style:"Light",//Light, Default
                       success:function(res){
+                      alert(res.msg)
                       },
                       fail:function(res){
                       }

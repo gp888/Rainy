@@ -26,11 +26,11 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="white" parent="AppTheme">
+    <style name="white" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@android:color/white</item>
         <item name="colorPrimaryDark">@android:color/white</item>
     </style>
-    <style name="black" parent="AppTheme">
+    <style name="black" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@android:color/black</item>
         <item name="colorPrimaryDark">@android:color/black</item>
     </style>

@@ -1,6 +1,5 @@
 package com.gp.rainy;
 
-import android.app.Application;
 import android.media.MediaPlayer;
 import android.support.multidex.MultiDexApplication;
 

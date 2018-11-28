@@ -3,8 +3,11 @@ package com.gp.rainy;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,12 +16,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.provider.Settings;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.alipay.sdk.app.PayTask;
@@ -124,7 +131,7 @@ public class WebViewManager {
                 if (PreferenceUtils.hasKey(mContext,"account") && !TextUtils.isEmpty(PreferenceUtils.getPreferenceString(mContext, "account", ""))) {
                     sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, data);
                 } else {
-                    sendHandler(1, "-1", "未登录", cmd, Constants.getCacheUserInfo, data);
+                    sendHandler(1, "", "", cmd, Constants.getCacheUserInfo, data);
                 }
             } else if (cmd.equals(Constants.Call)) {
                 String phoneNumber = jsonObjParent.getString("phone");
@@ -253,6 +260,15 @@ public class WebViewManager {
             } else if(Constants.WeChatPay.equals(cmd)) {
                 IWXAPI api = WXAPIFactory.createWXAPI(mContext, BuildConfig.THIRDPART_WEIXIN_APPID); // 自己的微信公众号wxappid
                 if (api.isWXAppInstalled()) {
+                    String appid = "";
+                    if (jsonObjParent.has("appid")) {
+                        appid = jsonObjParent.get("appid").toString();
+                        if (TextUtils.isEmpty(appid)) {
+                            sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "appid"), cmd, Constants.weChatPay);
+                            return;
+                        }
+                    }
+
                     String partnerid = "";
                     if (jsonObjParent.has("partnerid")) {
                         partnerid = jsonObjParent.get("partnerid").toString();
@@ -403,37 +419,18 @@ public class WebViewManager {
                     ((WebViewActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE);
                 }
             } else if (Constants.OpenMap.equals(cmd)) {
-                if (MapNaviUtils.isBaiduMapInstalled()) {
-
-                    Intent intent = new Intent();
-                    intent.setData(Uri.parse("baidumap://map?src=andr.baidu.openAPIdemo"));
-                    mContext.startActivity(intent);
-
-//                    Uri uri = Uri.parse("baidumap://map/direction?destination=latlng:"+"目的地lat"+","+ "目的地lng"+"|name:"+"目的地名称"+"&mode=driving");
-//                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-                } else if (MapNaviUtils.isGdMapInstalled()){
-
-                    Intent intent = new Intent("android.intent.action.VIEW",
-                            android.net.Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
-                    intent.setPackage("com.autonavi.minimap");
-                    mContext.startActivity(intent);
-
-//                    Uri uri = Uri.parse("amapuri://route/plan/?dlat="+"目的地lat"+"&dlon="+"目的地lng"+"&dname="+"目的地名称"+"&dev=0&t=0");
-//                    mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-                }
+                openMap(MapNaviUtils.isGdMapInstalled(), MapNaviUtils.isBaiduMapInstalled());
                 removeFunction(cmd);
             } else if (Constants.StatusBarStyle.equals(cmd)) {
                 String style = jsonObjParent.getString("style");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if ("Default".equals(style)) {
-//                        StatusBarUtils.setStatusBarColor5((WebViewActivity) mContext, ContextCompat.getColor(mContext, R.color.black));
-//                        mContext.setTheme(R.style.black);
+                        ((WebViewActivity) mContext).getWindow().setStatusBarColor(Color.BLACK);
                     } else if ("Light".equals(style)) {
-//                        StatusBarUtils.setStatusBarColor5((WebViewActivity) mContext, ContextCompat.getColor(mContext, R.color.white));
-//                        mContext.setTheme(R.style.white);
+                        ((WebViewActivity) mContext).getWindow().setStatusBarColor(Color.WHITE);
                     }
                 }
-                removeFunction(cmd);
+                sendHandler(1, "", "", Constants.StatusBarStyle, Constants.statusBarStyle, "修改成功");
             } else if (Constants.PlaySound.equals(cmd)) {
                 String soundType = jsonObjParent.getString("soundType");
                 String pathUrl = jsonObjParent.getString("pathUrl");
@@ -600,6 +597,11 @@ public class WebViewManager {
                     Bundle data = msg.getData();
                     PayReq request = new PayReq();
 
+                    if (!TextUtils.isEmpty(data.getString("appid"))) {
+                        request.appId = data.getString("appid");
+                    } else {
+                        request.appId = BuildConfig.THIRDPART_WEIXIN_APPID;
+                    }
                     request.partnerId = data.getString("partnerid");
                     request.prepayId = data.getString("prepayid");
                     request.packageValue = data.getString("mPackage");
@@ -742,6 +744,15 @@ public class WebViewManager {
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
+                case Constants.statusBarStyle:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.getString("data"));
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
                 case Constants.contactList:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data")  != null) {
@@ -975,15 +986,11 @@ public class WebViewManager {
         @Override
         public void onResponse(JSONObject response, int id) {//id 100 http, 101 https
             //{"msg":"图片上传成功","path":"/upload/project/dynamic/20180816/1534386533740528478.jpg","success":true}
+//            {"code":200,"data":{"msg":"图片上传成功","path":"http:\/\/59.110.169.175:8080\/uploadImgs\/upload\/project\/copyright\/20181128\/1543367848097517181.jpg","success":true},"message":"success"}
             mProgressDialog.dismiss();
-            if (response != null) {
+            if (response != null && response.optJSONObject("data").optBoolean("success")) {
                 Log.e(TAG, "onResponse：" + response);
-                String body = null;
-                try {
-                    body = response.getString("path");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                String body = response.optJSONObject("data").optString("path");
                 sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, Constants.UPLOADPIC2 + body);
             } else {
                 sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
@@ -1072,5 +1079,63 @@ public class WebViewManager {
 //            }
 //        }).start();
 
+    }
+
+    private void openMap(boolean b1, boolean b2) {
+        View view = View.inflate(mContext, R.layout.layout_openmap, null);
+        LinearLayout ll = view.findViewById(R.id.llRoot);
+        ImageView iv1 = view.findViewById(R.id.iv1);
+        ImageView iv2 = view.findViewById(R.id.iv2);
+        BottomSheetDialog bsd = new BottomSheetDialog(mContext);
+        bsd.setCancelable(true);
+        bsd.setCanceledOnTouchOutside(true);
+        bsd.setContentView(view);
+
+        if (!b1) {
+            ll.getChildAt(0).setVisibility(View.GONE);
+        } else {
+            iv1.setImageDrawable(getAppIcon(MapNaviUtils.PN_GAODE_MAP));
+        }
+
+        if (!b2) {
+            ll.getChildAt(1).setVisibility(View.GONE);
+        } else {
+            iv2.setImageDrawable(getAppIcon(MapNaviUtils.PN_BAIDU_MAP));
+        }
+
+        ll.getChildAt(0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("android.intent.action.VIEW",
+                        android.net.Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
+                intent.setPackage("com.autonavi.minimap");
+                mContext.startActivity(intent);
+            }
+        });
+
+        ll.getChildAt(1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setData(Uri.parse("baidumap://map?src=andr.baidu.openAPIdemo"));
+                mContext.startActivity(intent);
+            }
+        });
+        bsd.show();
+    }
+
+    private Drawable getAppIcon(String packageName){
+//        PackageManager packageManager = mContext.getPackageManager();
+//        ApplicationInfo application=packageManager.getPackageInfo(packageName, 0).applicationInfo;
+//        return application.loadIcon(packageManager);
+        PackageManager pm = mContext.getPackageManager();
+        try {
+            ApplicationInfo appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            Drawable appIcon = pm.getApplicationIcon(appInfo);
+            return appIcon;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
