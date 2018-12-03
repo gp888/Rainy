@@ -1,6 +1,7 @@
 package com.gp.rainy;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -39,6 +40,7 @@ import com.gp.rainy.location.LocationPresenter;
 import com.gp.rainy.share.ShareInterface;
 import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.SharePublicAccountModel;
+import com.gp.rainy.utils.StatusBarUtil;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -52,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -329,12 +332,20 @@ public class WebViewManager {
                 }
             } else if (Constants.Alipay.equals(cmd)) {
                 String orderInfo = jsonObjParent.getString("orderStr");
+
+                try {
+                    orderInfo = new String(toBytes(orderInfo), "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                String finalOrderInfo = orderInfo;
                 Runnable payRunnable = new Runnable() {
 
                     @Override
                     public void run() {
                         PayTask alipay = new PayTask((AppCompatActivity)mContext);
-                        Map<String, String> result = alipay.payV2(orderInfo, true);
+                        Map<String, String> result = alipay.payV2(finalOrderInfo, true);
                         Log.i("Alipay_msp", result.toString());
 
                         if (js_interface != null) {
@@ -421,13 +432,18 @@ public class WebViewManager {
             } else if (Constants.OpenMap.equals(cmd)) {
                 openMap(MapNaviUtils.isGdMapInstalled(), MapNaviUtils.isBaiduMapInstalled());
                 removeFunction(cmd);
+
+
             } else if (Constants.StatusBarStyle.equals(cmd)) {
                 String style = jsonObjParent.getString("style");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     if ("Default".equals(style)) {
-                        ((WebViewActivity) mContext).getWindow().setStatusBarColor(Color.BLACK);
+                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.BLACK);
                     } else if ("Light".equals(style)) {
-                        ((WebViewActivity) mContext).getWindow().setStatusBarColor(Color.WHITE);
+//                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.WHITE);
+//                        StatusBarUtil.setImmersiveStatusBar((WebViewActivity) mContext,true);
+//                        setAndroidNativeLightStatusBar((WebViewActivity) mContext, false);
+                        StatusBarUtil.setTranslucentStatus((WebViewActivity) mContext);
                     }
                 }
                 sendHandler(1, "", "", Constants.StatusBarStyle, Constants.statusBarStyle, "修改成功");
@@ -611,6 +627,7 @@ public class WebViewManager {
                     if (api.sendReq(request)) {
                         WXPayCallBackBean bean = new WXPayCallBackBean();
                         bean.fun = fun;
+                        bean.appid = request.appId;
                         bean.partnerid = data.getString("partnerid");
                         bean.prepayid = data.getString("prepayid");
                         setmWXPayCallBackBean(bean);
@@ -1137,5 +1154,34 @@ public class WebViewManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static void setAndroidNativeLightStatusBar(Activity activity, boolean dark) {
+        View decor = activity.getWindow().getDecorView();
+        if (dark) {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        } else {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
+
+    /**
+     * 将16进制字符串转换为byte[]
+     *
+     * @param str
+     * @return
+     */
+    public static byte[] toBytes(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        return bytes;
     }
 }
