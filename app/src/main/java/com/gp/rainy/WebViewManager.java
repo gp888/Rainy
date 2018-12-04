@@ -432,18 +432,17 @@ public class WebViewManager {
             } else if (Constants.OpenMap.equals(cmd)) {
                 openMap(MapNaviUtils.isGdMapInstalled(), MapNaviUtils.isBaiduMapInstalled());
                 removeFunction(cmd);
-
-
             } else if (Constants.StatusBarStyle.equals(cmd)) {
                 String style = jsonObjParent.getString("style");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     if ("Default".equals(style)) {
-                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.BLACK);
+                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
                     } else if ("Light".equals(style)) {
-//                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.WHITE);
+                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.WHITE);
 //                        StatusBarUtil.setImmersiveStatusBar((WebViewActivity) mContext,true);
 //                        setAndroidNativeLightStatusBar((WebViewActivity) mContext, false);
-                        StatusBarUtil.setTranslucentStatus((WebViewActivity) mContext);
+//                        StatusBarUtil.setTranslucentStatus((WebViewActivity) mContext);
+                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
                     }
                 }
                 sendHandler(1, "", "", Constants.StatusBarStyle, Constants.statusBarStyle, "修改成功");

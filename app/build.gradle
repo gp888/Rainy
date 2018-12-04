@@ -24,7 +24,10 @@ android {
                                     label          : "@string/app_name",
                                     KEY_AMAP       : "341e5796331e5a58fcc1c6ab0427d314",
                                     KEY_UMENG      : "5b615e4f8f4a9d27900000c2",//
-                                    SCHEME_QQ_APPID: "1107394275"
+                                    SCHEME_QQ_APPID: "1107394275",
+                                    JPUSH_PKGNAME  : "com.gp.rainy",
+                                    JPUSH_APPKEY   : "706360e6f3f843c516ff672b", //JPush 上注册的包名对应的 Appkey.
+                                    JPUSH_CHANNEL  : "developer-default", //暂时填写默认值即可.
             ]
             applicationId "com.gp.rainy"//com.xingfabu.direct,com.techhg,com.dbn.OAConnect,com.gp.rainy
             buildConfigField "String", "APPID", '"com.gp.rainy"'//com.nxin.znt
@@ -101,4 +104,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.0.1'
 
     compile 'cn.yipianfengye.android:zxing-library:2.2'
+
+    compile 'cn.jiguang.sdk:jpush:3.1.6'  // 此处以JPush 3.1.6 版本为例。
+    compile 'cn.jiguang.sdk:jcore:1.2.5'  // 此处以JCore 1.2.5 版本为例。
 }

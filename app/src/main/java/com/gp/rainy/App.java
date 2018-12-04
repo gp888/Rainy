@@ -12,6 +12,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 
 import java.util.concurrent.TimeUnit;
 
+import cn.jpush.android.api.JPushInterface;
 import okhttp3.OkHttpClient;
 
 public class App extends MultiDexApplication {
@@ -40,6 +41,9 @@ public class App extends MultiDexApplication {
         }
 
         ZXingLibrary.initDisplayOpinion(this);
+
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
 
     }
 
