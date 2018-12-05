@@ -109,11 +109,11 @@
         function wechatPay(){
             znt.wechatPay({
                 appid: 'wx241ddf7c0c5a99eb', // 非必填
-                partnerid: '1505559141', // 商户号
-                prepayid: 'wx2817442093264067d3228dad2729664888', // 预支付交易会话ID
-                mPackage: 'Sign=WXPay', // 扩展字段
-                noncestr: 'n3wsyrmuxid3v2reaeis', // 随机字符串
-                timestamp: '1543398261', // 时间戳
+                partnerId: '1505559141', // 商户号
+                prepayId: 'wx2817442093264067d3228dad2729664888', // 预支付交易会话ID
+                package: 'Sign=WXPay', // 扩展字段
+                nonceStr: 'n3wsyrmuxid3v2reaeis', // 随机字符串
+                timeStamp: '1543398261', // 时间戳
                 sign: '0C526795A7C730F595EA2F8D3EF0FD5F', // 签名
                 success: function (res) {
                     res.appid // 应用ID

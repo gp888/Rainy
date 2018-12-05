@@ -273,39 +273,39 @@ public class WebViewManager {
                     }
 
                     String partnerid = "";
-                    if (jsonObjParent.has("partnerid")) {
-                        partnerid = jsonObjParent.get("partnerid").toString();
+                    if (jsonObjParent.has("partnerId")) {
+                        partnerid = jsonObjParent.get("partnerId").toString();
                         if (TextUtils.isEmpty(partnerid)) {
                             sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "partnerid"), cmd, Constants.weChatPay);
                             return;
                         }
                     }
                     String prepayid = "";
-                    if (jsonObjParent.has("prepayid")) {
-                        prepayid = jsonObjParent.get("prepayid").toString();
+                    if (jsonObjParent.has("prepayId")) {
+                        prepayid = jsonObjParent.get("prepayId").toString();
                         if (TextUtils.isEmpty(prepayid)) {
                             sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "prepayid"), cmd, Constants.weChatPay);
                             return;
                         }
                     }
                     String mPackage = "";
-                    if (jsonObjParent.has("mPackage")) {
-                        mPackage = jsonObjParent.get("mPackage").toString();
+                    if (jsonObjParent.has("package")) {
+                        mPackage = jsonObjParent.get("package").toString();
                         if (TextUtils.isEmpty(mPackage)) {
                             sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "mPackage"), cmd, Constants.weChatPay);
                         }
                     }
                     String noncestr = "";
-                    if (jsonObjParent.has("noncestr")) {
-                        noncestr = jsonObjParent.get("noncestr").toString();
+                    if (jsonObjParent.has("nonceStr")) {
+                        noncestr = jsonObjParent.get("nonceStr").toString();
                         if (TextUtils.isEmpty(noncestr)) {
                             sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "noncestr"), cmd, Constants.weChatPay);
                             return;
                         }
                     }
                     String timestamp = "";
-                    if (jsonObjParent.has("timestamp")) {
-                        timestamp = jsonObjParent.get("timestamp").toString();
+                    if (jsonObjParent.has("timeStamp")) {
+                        timestamp = jsonObjParent.get("timeStamp").toString();
                         if (TextUtils.isEmpty(timestamp)) {
                             sendHandler(0, "-3", String.format(mContext.getString(R.string.js_param_error), "timestamp"), cmd, Constants.weChatPay);
                             return;

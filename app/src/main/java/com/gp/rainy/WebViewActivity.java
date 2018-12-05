@@ -1023,19 +1023,25 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 //                        DataJson.addProperty("appid", bean.appid);
 //                        DataJson.addProperty("partnerid", bean.partnerid);
 //                        DataJson.addProperty("prepayid", bean.prepayid);
-                        DataJson.addProperty("msg", "支付成功");
+                        DataJson.addProperty("errCode", "0");
                         ParentJson.add("data", DataJson);
                         webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
                     }
                     break;
                     case -2: {
-                        JsonObject ParentJson = webViewManager.getParentJson(0, "用户取消", "-2");
+                        JsonObject ParentJson = webViewManager.getParentJson(1, "", "");
+                        JsonObject DataJson = new JsonObject();
+                        DataJson.addProperty("errCode", "-2");
+                        ParentJson.add("data", DataJson);
                         webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
                     }
                     break;
                     default: {
                         //其他错误统一提示
-                        JsonObject ParentJson = webViewManager.getParentJson(0, event.errStr, "-1");
+                        JsonObject ParentJson = webViewManager.getParentJson(1, "", "");
+                        JsonObject DataJson = new JsonObject();
+                        DataJson.addProperty("errCode", "-1");
+                        ParentJson.add("data", DataJson);
                         webViewManager.callbackJsFun(bean.fun, ParentJson.toString());
                     }
                     break;
