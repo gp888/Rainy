@@ -637,7 +637,7 @@ public class WebViewManager {
                 case Constants.alipay:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("msg", bundleData.getString("data"));
+                        DataJson.addProperty("resultStatus", bundleData.getString("data"));
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

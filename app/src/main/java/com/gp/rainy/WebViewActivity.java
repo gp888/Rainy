@@ -165,10 +165,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         if (TextUtils.equals(resultStatus, "9000")) {
                             // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
                             Toast.makeText(activity, "支付成功", Toast.LENGTH_SHORT).show();
-                           activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, "success");
+                           activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, resultStatus);
                         } else {
                             Toast.makeText(activity, "支付失败", Toast.LENGTH_SHORT).show();
-                            activity.webViewManager.sendHandler(0, "-1", "支付失败", Constants.Alipay, Constants.alipay);
+                            activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, resultStatus);
                         }
                         break;
                     default:
