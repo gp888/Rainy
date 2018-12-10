@@ -434,17 +434,22 @@ public class WebViewManager {
                 removeFunction(cmd);
             } else if (Constants.StatusBarStyle.equals(cmd)) {
                 String style = jsonObjParent.getString("style");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if ("Default".equals(style)) {
-                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
-                    } else if ("Light".equals(style)) {
-                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  Color.WHITE);
+                ((WebViewActivity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            if ("Default".equals(style)) {
+                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
+                            } else if ("Light".equals(style)) {
+                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black);
 //                        StatusBarUtil.setImmersiveStatusBar((WebViewActivity) mContext,true);
 //                        setAndroidNativeLightStatusBar((WebViewActivity) mContext, false);
 //                        StatusBarUtil.setTranslucentStatus((WebViewActivity) mContext);
-                        StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
+                            }
+                        }
                     }
-                }
+                });
+
                 sendHandler(1, "", "", Constants.StatusBarStyle, Constants.statusBarStyle, "修改成功");
             } else if (Constants.PlaySound.equals(cmd)) {
                 String soundType = jsonObjParent.getString("soundType");
@@ -1007,7 +1012,7 @@ public class WebViewManager {
             if (response != null && response.optJSONObject("data").optBoolean("success")) {
                 Log.e(TAG, "onResponse：" + response);
                 String body = response.optJSONObject("data").optString("path");
-                sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, Constants.UPLOADPIC2 + body);
+                sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, body);
             } else {
                 sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
             }

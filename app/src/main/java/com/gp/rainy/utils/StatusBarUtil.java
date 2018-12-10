@@ -32,7 +32,6 @@ public class StatusBarUtil {
      * @param colorId 颜色
      */
     public static void  setStatusBarColor(Activity activity, int colorId) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
             window.setStatusBarColor(colorId);
@@ -50,7 +49,6 @@ public class StatusBarUtil {
      */
     @TargetApi(19)
     public static void setTranslucentStatus(Activity activity) {
-
         // 5.0以上系统状态栏透明
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
