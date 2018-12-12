@@ -49,8 +49,8 @@ public class Constants {
     public static final int FINGERSUCCESS = 205;
     public static final int FINGERFAIL = 206;
 
-    public static final String Locate = "Locate";
-    public static final int locate = 207;
+    public static final String GetLocation = "GetLocation";
+    public static final int getLocation = 207;
     public static final String Share = "Share";
     public static final int share = 209;
     public static final String WeChatPay = "WeChatPay";

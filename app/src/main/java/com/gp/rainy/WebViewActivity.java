@@ -118,6 +118,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     List<String> logArray;
     ArrayAdapter<String> adapter;
 
+    private ArrayList<String> loadHistoryUrls = new ArrayList<String>();//webview 历史栈
+
     private static class MyHandler extends Handler {
 
         private WeakReference reference;
@@ -235,6 +237,9 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
                         }
                         url_load = url;
+                        if (!url.equals(loadHistoryUrls.get(loadHistoryUrls.size() - 1))) {
+                            loadHistoryUrls.add(url);
+                        }
                     }
                 }
                 firstLoadUrl = "";
@@ -441,6 +446,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             url_load = Constants.testUrl;
         }
         webview.loadUrl(url_load);
+        loadHistoryUrls.add(url_load);
         lg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1062,8 +1068,31 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
     @Override
     public void onBackPressed() {
+//        if (url_load.equals(Constants.mainUrl)) {
+//            finish();
+//        } else {
+//            String call = "javascript:back_event()";
+//            webview.loadUrl(call);
+//        }
+
+//        if (webview.canGoBack()) {
+//            webview.goBack();
+//        } else {
+//            finish();
+//        }
+
+
         if (webview.canGoBack()) {
-            webview.goBack();
+            if(loadHistoryUrls.size()>0&&loadHistoryUrls.get(loadHistoryUrls.size()-1).contains("copyright")) {
+                loadHistoryUrls.remove(loadHistoryUrls.get(loadHistoryUrls.size()-1));
+                String suffix = loadHistoryUrls.get(loadHistoryUrls.size()-1);
+                if (suffix.endsWith("explain") || suffix.endsWith("ban_copy") || suffix.endsWith("reg_list")) {
+                    loadHistoryUrls.remove(loadHistoryUrls.get(loadHistoryUrls.size()-1));
+                }
+                webview.loadUrl(loadHistoryUrls.get(loadHistoryUrls.size()-1));
+            } else {
+                webview.goBack();
+            }
         } else {
             finish();
         }

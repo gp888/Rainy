@@ -77,8 +77,8 @@
                       }
             });
         }
-        function locate(){
-            znt.locate({
+        function getLocation(){
+            znt.getLocation({
                       success:function(res){
                         var text= res.city;
                         alert(text);
@@ -205,8 +205,8 @@
 
         function cacheFile(){
             znt.cacheFile({
-                      fileUrl: "https://www.pgyer.com/8mPS",
-                      targetFilepath: "yg",
+                      fileUrl: 'https://www.pgyer.com/8mPS',
+                      targetFilePath: 'gy',
                       success:function(res){
                         res.msg
                         alert(res.msg)
@@ -332,7 +332,7 @@
     <input type="button" onclick="selectImage();" value="selectImage">
     <br/>
     <br/>
-    <input type="button" onclick="locate();" value="locate">
+    <input type="button" onclick="getLocation();" value="getLocCacheFileation">
     <br/>
     <br/>
     <input type="button" onclick="share();" value="share">

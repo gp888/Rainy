@@ -102,8 +102,8 @@
  var selectImage = function(cfg) {
    exec("SelectImage", cfg);
  };
- var locate = function(cfg) {
-    exec("Locate", cfg);
+ var getLocation = function(cfg) {
+    exec("GetLocation", cfg);
  };
  var share = function(cfg) {
     exec("Share", cfg);
@@ -172,7 +172,7 @@ var deleteCacheFile = function(cfg) {
  vibrate: vibrate,
  fingerPrint: fingerPrint,
  selectImage: selectImage,
- locate: locate,
+ getLocation: getLocation,
  share: share,
  wechatPay: wechatPay,
  alipay: alipay,

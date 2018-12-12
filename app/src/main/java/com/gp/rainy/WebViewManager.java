@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -163,7 +162,7 @@ public class WebViewManager {
                 } else {
                     removeFunction(cmd);
                 }
-            } else if (Constants.Locate.equals(cmd)) {
+            } else if (Constants.GetLocation.equals(cmd)) {
                 final String copyCmd = cmd;
                 LocationPresenter lp = new LocationPresenter(mContext, new ILocation() {
                     @Override
@@ -173,13 +172,13 @@ public class WebViewManager {
                         data.putString("latitude", lat);
                         data.putString("longitude", lon);
                         data.putString("city", location);
-                        sendHandler(1, "", "", copyCmd, Constants.locate, data);
+                        sendHandler(1, "", "", copyCmd, Constants.getLocation, data);
                     }
 
                     @Override
                     public void locationFailed() {
                         Log.d(TAG, "location failed");
-                        sendHandler(0, "-1", "失败", copyCmd, Constants.locate);
+                        sendHandler(0, "-1", "失败", copyCmd, Constants.getLocation);
                     }
                 });
                 lp.doLocation();
@@ -371,7 +370,10 @@ public class WebViewManager {
                     }
                 }
             } else if (Constants.Gyro.equals(cmd)) {
-                double time = (double) jsonObjParent.get("gyroUpdateInterval");
+                double time = 0;
+                if (jsonObjParent.has("gyroUpdateInterval")) {
+                    time = (double) jsonObjParent.opt("gyroUpdateInterval");
+                }
                 if (time <= 0) {
                     time = 0.1;
                 }
@@ -405,7 +407,7 @@ public class WebViewManager {
                 sendHandler(1, "", "", Constants.Logout, Constants.logout, "退出成功");
             } else if (Constants.CacheFile.equals(cmd)) {
                 String fileUrl = jsonObjParent.getString("fileUrl");
-                String targetFilepath = jsonObjParent.getString("targetFilepath");
+                String targetFilepath = jsonObjParent.optString("targetFilepath");
                 ((WebViewActivity)mContext).patchSource(fileUrl, targetFilepath);
             } else if (Constants.CacheUserAccount.equals(cmd)) {
                 String account = jsonObjParent.getString("account");
@@ -437,16 +439,14 @@ public class WebViewManager {
                 ((WebViewActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            if ("Default".equals(style)) {
-                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black1);
-                            } else if ("Light".equals(style)) {
-                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.black);
-//                        StatusBarUtil.setImmersiveStatusBar((WebViewActivity) mContext,true);
-//                        setAndroidNativeLightStatusBar((WebViewActivity) mContext, false);
-//                        StatusBarUtil.setTranslucentStatus((WebViewActivity) mContext);
-                            }
-                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                            if ("Default".equals(style)) {
+//                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.colorPrimary);
+//                            } else if ("Light".equals(style)) {
+//                                StatusBarUtil.setStatusBarColor((WebViewActivity) mContext,  R.color.colorPrimary);
+//                            }
+//                        }
+//                        StatusBarUtil.gpStatus((WebViewActivity) mContext,  R.color.colorPrimaryDark);
                     }
                 });
 
@@ -591,7 +591,7 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                 }
                 break;
-                case Constants.locate:{
+                case Constants.getLocation:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("city") != null) {
                         DataJson.addProperty("city", bundleData.getString("city"));
@@ -718,7 +718,7 @@ public class WebViewManager {
                         DataJson.addProperty("msg", "下载成功");
                     } else if ("0".equals(error)) {
                         DataJson.addProperty("msg", "下载失败");
-                        DataJson.addProperty("errorCode", "0");
+                        DataJson.addProperty("errorCode", 0);
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
