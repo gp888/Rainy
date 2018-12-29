@@ -14,4 +14,6 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="black1">#232323</color>
+
+    <color name="button_qrcode_normal_fill_color">#40c226</color>
 </resources>

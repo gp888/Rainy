@@ -47,6 +47,7 @@ import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.json.JSONException;
@@ -428,9 +429,12 @@ public class WebViewManager {
                 if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)) {
                     ActivityCompat.requestPermissions((WebViewActivity) mContext, new String[]{Manifest.permission.CAMERA}, Constants.REQUEST_CAMERA);
                 } else {
-                    Intent intent = new Intent(mContext, CaptureActivity.class);
+                    Intent intent = new Intent(mContext, ScanActivity.class);
                     ((WebViewActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE);
                 }
+
+                CodeUtils.isLightEnable(true);
+
             } else if (Constants.OpenMap.equals(cmd)) {
                 openMap(MapNaviUtils.isGdMapInstalled(), MapNaviUtils.isBaiduMapInstalled());
                 removeFunction(cmd);

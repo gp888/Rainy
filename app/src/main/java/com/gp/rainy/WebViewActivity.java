@@ -32,6 +32,8 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
@@ -183,7 +185,12 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getWindow().setFormat(PixelFormat.RGBA_8888);
+
+        Window window = getWindow();
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        int flag= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        window.setFlags(flag, flag);
+        window.setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_webview);
         mContext = this;
         webview = findViewById(R.id.webview);
@@ -901,6 +908,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
         @Override
         public void onAuthenticationError(String content) {
+            mHandler.obtainMessage(Constants.FINGERFAIL).sendToTarget();
             FingerPrintType fingerPrintType = typeMappingMap.get(mType);
             if (null != fingerPrintType) {
                 fingerPrintType.onAuthenticationError(content);
@@ -963,7 +971,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ToastUtil.showToastShort(x + "");
+                    ToastUtil.showToastShort(x + "," + y + "," + z);
                     webViewManager.sendHandler(1, "", "", Constants.Gyro, Constants.gyro, data);
                 }
             }, delayMillis);

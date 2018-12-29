@@ -135,6 +135,8 @@
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED"/>
             </intent-filter>
         </receiver>
+
+        <activity android:name=".ScanActivity"/>
     </application>
 
 </manifest>
