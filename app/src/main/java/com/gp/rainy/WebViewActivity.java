@@ -188,8 +188,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
         Window window = getWindow();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        int flag= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        window.setFlags(flag, flag);
+//        int flag= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+//        window.setFlags(flag, flag);
         window.setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_webview);
         mContext = this;
@@ -451,6 +451,9 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             url_load = Constants.mainUrl1;
         } else {
             url_load = Constants.testUrl;
+        }
+        if (BuildConfig.BUILD_TYPE.equals("release")) {
+            lg.setVisibility(View.GONE);
         }
         webview.loadUrl(url_load);
         loadHistoryUrls.add(url_load);

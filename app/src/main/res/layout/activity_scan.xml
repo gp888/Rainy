@@ -12,8 +12,8 @@ android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/light"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="bottom|center_horizontal"
         android:src="@drawable/lightsout"
         android:layout_marginBottom="20dp"
