@@ -2,7 +2,6 @@ package com.gp.rainy.fingerprint;
 
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
 import android.util.Log;
@@ -34,11 +33,9 @@ public class FingerprintManagerUtil {
 
     public boolean isSupportFingerprint() {
         try {
-            if (mFingerprintManagerCompat.isHardwareDetected()//硬件不支持
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M//版本不支持
+            if (mFingerprintManagerCompat.isHardwareDetected()//硬件不支持&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.M//版本不支持
                     && ((KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE)).isKeyguardSecure()//没有屏幕锁
-                    && mFingerprintManagerCompat.hasEnrolledFingerprints()//系统不存在指纹列表
-                    ) {
+                    && mFingerprintManagerCompat.hasEnrolledFingerprints()) {//系统不存在指纹列表
                 return true;
             }
         } catch (Exception e) {

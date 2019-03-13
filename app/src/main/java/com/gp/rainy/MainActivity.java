@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.finger:
                     Intent intent = new Intent(MainActivity.this, FingerPrintActivity.class);
-                    intent.putExtra("type", "clear");
+                    intent.putExtra("type", "login");
                     startActivity(intent);
                     break;
                 case R.id.media:

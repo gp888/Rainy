@@ -7,7 +7,7 @@ import java.io.File;
 
 public class Constants {
 
-    public static final String mainUrl = "http://test.bjyishubiyeji.com:8080/admin/dianji.html";
+    public static final String mainUrl = "http://192.168.101.66:8899/#/login";
     public static final String mainUrl1 = "https://app.bjyishubiyeji.com/#/home_page";
     public static final String testUrl = "file:///android_asset/jssdk/demo.html";
     public static final int LOCATION_PERMISSION_REQ_CODE = 100;
