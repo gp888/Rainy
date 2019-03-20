@@ -6,9 +6,16 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bg_top"
+            android:scaleType="fitXY"/>
+
         <Button
             android:id="@+id/toWebview"
             android:layout_width="wrap_content"

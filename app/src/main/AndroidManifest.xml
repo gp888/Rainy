@@ -41,8 +41,6 @@
         <activity android:name=".WebViewActivity"
             android:screenOrientation="portrait">
 
-
-
         </activity>
 
         <activity android:name=".LaunchActivity"

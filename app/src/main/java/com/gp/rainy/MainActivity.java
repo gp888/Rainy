@@ -4,17 +4,21 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -23,6 +27,8 @@ import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationManager;
 import com.gp.rainy.location.LocationPresenter;
 
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
+
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = MainActivity.class.getSimpleName();
@@ -30,6 +36,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        int flag= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        Window window = getWindow();
+        window.setFlags(flag, flag);
+
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.toWebview).setOnClickListener(listener);
@@ -257,5 +275,4 @@ public class MainActivity extends AppCompatActivity {
             super.onCancelled();
         }
     }
-
 }

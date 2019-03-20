@@ -1,16 +1,12 @@
 package com.gp.rainy.utils;
 
 import android.os.Build;
-        import android.text.TextUtils;
-        import android.util.Log;
+import android.text.TextUtils;
+import android.util.Log;
 
-        import java.io.BufferedReader;
-        import java.io.IOException;
-        import java.io.InputStreamReader;
-
-/**
- * Created by rhm on 2018/1/12.
- */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class OSUtils {
 

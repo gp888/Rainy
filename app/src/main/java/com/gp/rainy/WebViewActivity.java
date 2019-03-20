@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -27,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -64,6 +64,7 @@ import com.gp.rainy.share.ShareInterface;
 import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.ShareMenuDialog;
 import com.gp.rainy.share.SharePublicAccountModel;
+import com.gp.rainy.utils.StatusBarUtil;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
@@ -79,6 +80,7 @@ import java.util.Map;
 import de.greenrobot.event.EventBus;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+
 
 public class WebViewActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -188,20 +190,13 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Window window = getWindow();
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        if (Build.VERSION.SDK_INT >= LOLLIPOP) {
-//            View decorView = getWindow().getDecorView();
-//            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-//            decorView.setSystemUiVisibility(option);
-//            getWindow().setStatusBarColor(Color.TRANSPARENT);
-//        }
-//        int flag= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-//        window.setFlags(flag, flag);
-        window.setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_webview);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            Window window = getWindow();
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.black1));
+        }
+
         mContext = this;
         webview = findViewById(R.id.webview);
         lg = findViewById(R.id.lg);
@@ -570,7 +565,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     public WebView setWebViewConfig(final WebView webview, Context mContext) {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setBuiltInZoomControls(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= LOLLIPOP) {
             webview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         if (Integer.parseInt(Build.VERSION.SDK) >= 14) {
