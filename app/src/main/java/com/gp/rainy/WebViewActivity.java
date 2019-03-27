@@ -191,11 +191,10 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Window window = getWindow();
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.black1));
-        }
+        //当FitsSystemWindows设置 true 时，会在屏幕最上方预留出状态栏高度的 padding
+        StatusBarUtil.setRootViewFitsSystemWindows(this,false);
+        //设置状态栏透明
+        StatusBarUtil.setTranslucentStatus(this);
 
         mContext = this;
         webview = findViewById(R.id.webview);
@@ -516,6 +515,17 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onResume() {
         super.onResume();
+
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
+
         isShow = true;
         if (mFingerprintManagerUtil != null) {
             mIsSupportFingerprint = mFingerprintManagerUtil.isSupportFingerprint();
@@ -1251,4 +1261,5 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         logArray.add(log);
         adapter.notifyDataSetChanged();
     }
+
 }
