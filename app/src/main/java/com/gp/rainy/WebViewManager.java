@@ -408,7 +408,7 @@ public class WebViewManager {
                 sendHandler(1, "", "", Constants.Logout, Constants.logout, "退出成功");
             } else if (Constants.CacheFile.equals(cmd)) {
                 String fileUrl = jsonObjParent.getString("fileUrl");
-                String targetFilepath = jsonObjParent.optString("targetFilepath");
+                String targetFilepath = jsonObjParent.optString("targetFilePath");
                 ((WebViewActivity)mContext).patchSource(fileUrl, targetFilepath);
             } else if (Constants.CacheUserAccount.equals(cmd)) {
                 String account = jsonObjParent.getString("account");
@@ -669,8 +669,9 @@ public class WebViewManager {
                     ParentJson.addProperty("nonstop", 1);
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
+                    Log.d(TAG, "gyro");
+                    return;
                 }
-                break;
                 case Constants.selectImage: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {

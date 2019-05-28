@@ -299,8 +299,9 @@
         }
         function deleteCacheFile(){
             znt.deleteCacheFile({
-                      path: 'temp',
+                      path: 'gy',
                       success:function(res){
+                        alert(res.msg)
                       },
                       fail:function(res){
                       }

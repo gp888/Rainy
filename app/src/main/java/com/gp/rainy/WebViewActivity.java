@@ -26,15 +26,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
@@ -72,6 +69,7 @@ import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -124,8 +122,11 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     ListView recyclerView;
     List<String> logArray;
     ArrayAdapter<String> adapter;
+    SensorThread mThread;
 
     private ArrayList<String> loadHistoryUrls = new ArrayList<String>();//webview 历史栈
+
+    private ArrayDeque<Bundle> mSourceQueue = new ArrayDeque<>();
 
     private static class MyHandler extends Handler {
 
@@ -979,20 +980,26 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         float y = event.values[1];
         float z = event.values[2];
         int sensorType = event.sensor.getType();
-        if (sensorType == Sensor.TYPE_ACCELEROMETER && isGyro) {//
-            MyLogUtil.d(TAG + "Sensor,speed:" + ":" + x + "," + y + "," + z);
+        if (sensorType == Sensor.TYPE_ACCELEROMETER && isGyro) {
+//            MyLogUtil.d(TAG + "Sensor,speed:" + ":" + x + "," + y + "," + z);
             Bundle data = new Bundle();
             data.putDouble("x", x);
             data.putDouble("y", y);
             data.putDouble("z", z);
-            long delayMillis = (long) (time * 1000);
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToastShort(x + "," + y + "," + z);
-                    webViewManager.sendHandler(1, "", "", Constants.Gyro, Constants.gyro, data);
-                }
-            }, delayMillis);
+            mSourceQueue.add(data);
+
+            if (mThread == null) {
+                mThread = new SensorThread();
+                mThread.start();
+            }
+//            long delayMillis = (long) (time * 1000);
+//            mHandler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    ToastUtil.showToastShort(x + "," + y + "," + z);
+//                    webViewManager.sendHandler(1, "", "", Constants.Gyro, Constants.gyro, data);
+//                }
+//            }, delayMillis);
         }
     }
 
@@ -1260,6 +1267,30 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
     public void printLog(String log) {
         logArray.add(log);
         adapter.notifyDataSetChanged();
+    }
+
+    class SensorThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            while(true) {
+                if (mSourceQueue.isEmpty()) {
+                    continue;
+                }
+                Bundle data = mSourceQueue.pop();
+                if (data == null) {
+                    continue;
+                }
+
+                try {
+                    sleep((long) time * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                webViewManager.sendHandler(1, "", "", Constants.Gyro, Constants.gyro, data);
+            }
+        }
     }
 
 }
