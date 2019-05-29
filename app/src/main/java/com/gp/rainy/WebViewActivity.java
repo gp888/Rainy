@@ -453,7 +453,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         }
 
         if (BuildConfig.BUILD_TYPE.equals("release")) {
-            url_load = Constants.mainUrl1;
+            url_load = Constants.mainUrl;
         } else {
             url_load = Constants.testUrl;
         }

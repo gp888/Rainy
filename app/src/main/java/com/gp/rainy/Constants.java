@@ -7,7 +7,8 @@ import java.io.File;
 
 public class Constants {
 
-    public static final String mainUrl = "http://192.168.101.66:8899/#/login";
+    public static final String mainUrl = "http://47.104.212.137:443/#/home_page";
+//    "http://192.168.101.66:8899/#/login"
     //"https://app.bjyishubiyeji.com/#/home_page"
 //    "https://app.coderplay.top/#/home_page";
 
