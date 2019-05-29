@@ -56,9 +56,11 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
 import okhttp3.Call;
@@ -485,10 +487,12 @@ public class WebViewManager {
                 sendHandler(1, "", "", Constants.DeleteCacheFile, Constants.deleteCacheFile, "删除成功");
             } else if (Constants.JgPushReg.equals(cmd)) {
                 String tag = jsonObjParent.getString("tag");
-                JPushInterface.setAlias(mContext, 0, tag);
+                Set<String> set = new HashSet<>();
+                set.add(tag);
+                JPushInterface.setTags(mContext, 0, set);
                 sendHandler(1, "", "", Constants.JgPushReg, Constants.jgPushReg, "别名注册成功");
             } else if (Constants.RemoveJgTag.equals(cmd)) {
-                JPushInterface.deleteAlias(mContext, 0);
+                JPushInterface.cleanTags(mContext, 0);
                 sendHandler(1, "", "", Constants.RemoveJgTag, Constants.removeJgTag, "别名移除成功");
             }
         } catch (JSONException e) {
