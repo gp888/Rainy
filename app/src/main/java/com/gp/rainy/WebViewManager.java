@@ -61,6 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.jpush.android.api.JPushInterface;
 import okhttp3.Call;
 import okhttp3.Request;
 import rx.Observable;
@@ -483,6 +484,13 @@ public class WebViewManager {
                 String filePath = Environment.getExternalStorageDirectory() + "/rainy/" + path + "/";
                 FileUtils.deleteFileByDirectory(new File(filePath));
                 sendHandler(1, "", "", Constants.DeleteCacheFile, Constants.deleteCacheFile, "删除成功");
+            } else if (Constants.JgPushReg.equals(cmd)) {
+                String tag = jsonObjParent.getString("tag");
+                JPushInterface.setAlias(mContext, 0, tag);
+                sendHandler(1, "", "", Constants.JgPushReg, Constants.jgPushReg, "别名注册成功");
+            } else if (Constants.RemoveJgTag.equals(cmd)) {
+                JPushInterface.deleteAlias(mContext, 0);
+                sendHandler(1, "", "", Constants.RemoveJgTag, Constants.removeJgTag, "别名移除成功");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -656,6 +664,9 @@ public class WebViewManager {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("nickname") != null) {
                         DataJson.addProperty("nickname", bundleData.getString("nickname"));
+                        DataJson.addProperty("openid", bundleData.getString("openid"));
+                        DataJson.addProperty("iconurl", bundleData.getString("iconurl"));
+                        DataJson.addProperty("unionid", bundleData.getString("unionid"));
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
@@ -798,6 +809,24 @@ public class WebViewManager {
                     callbackJsFun(fun, ParentJson.toString());
                 }
                     break;
+                case Constants.jgPushReg:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", "别名注册成功");
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
+                case Constants.removeJgTag:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", "别名删除成功");
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                }
+                break;
                 default: {
                     //默认处理方式
                     JsonObject DataJson = new JsonObject();
@@ -950,14 +979,13 @@ public class WebViewManager {
                     Bundle data = new Bundle();
                     data.putString("openid", info.get("openid"));
                     data.putString("nickname", info.get("name"));
+                    data.putString("unionid", info.get("unionid"));
+                    data.putString("iconurl", info.get("profile_image_url"));
                     if (platform == SHARE_MEDIA.WEIXIN) {
-                        data.putString("unionid", info.get("unionid"));
                         data.putString("sex", info.get("gender"));
-                        data.putString("headimgurl", info.get("iconurl"));
                     } else if (platform == SHARE_MEDIA.QQ) {
                         data.putString("gender", info.get("gender"));
-                        data.putString("figureurl_qq_1", info.get("iconurl"));
-                        data.putString("figureurl_qq_2", info.get("iconurl"));
+                        data.putString("iconurl2", info.get("iconurl"));
                     }
                     sendHandler(1, "", "", Constants.ThirdLogin, Constants.thirdLogin, data);
                 }

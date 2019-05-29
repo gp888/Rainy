@@ -162,6 +162,13 @@
 var deleteCacheFile = function(cfg) {
       exec("DeleteCacheFile", cfg);
  };
+ var jgPushReg = function(cfg) {
+     exec("JgPushReg", cfg);
+ };
+ var removeJgTag = function(cfg) {
+     exec("RemoveJgTag", cfg);
+ };
+
 
  var znt = {
  config: config,
@@ -191,7 +198,9 @@ var deleteCacheFile = function(cfg) {
  statusBarStyle: statusBarStyle,
  playSound: playSound,
  contactList: contactList,
- deleteCacheFile: deleteCacheFile
+ deleteCacheFile: deleteCacheFile,
+ jgPushReg: jgPushReg,
+ removeJgTag: removeJgTag
  };
  w.znt = znt;
  }(window));

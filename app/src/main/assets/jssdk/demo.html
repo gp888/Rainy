@@ -140,9 +140,9 @@
 
         function thirdLogin(){
             znt.thirdLogin({
-                      third: 'wx',//qq,wx
+                      third: 'qq',//qq,wx
                       success:function(res){
-                        alert(res.nickname);
+                        alert(res.nickname + res.iconurl);
                       },
                       fail:function(res){
                          alert(res.msg)
@@ -308,6 +308,27 @@
             });
         }
 
+        function jgPushReg(){
+            znt.jgPushReg({
+                      tag: 'userId',
+                      success:function(res){
+                        alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+        function removeJgTag(){
+            znt.removeJgTag({
+                      success:function(res){
+                        alert(res.msg)
+                      },
+                      fail:function(res){
+                      }
+            });
+        }
+
+
     </script>
             
 </head>
@@ -391,6 +412,11 @@
     <br/>
     <br/>
     <input type="button" onclick="deleteCacheFile();" value="deleteCacheFile"/>
-
+    <br/>
+    <br/>
+    <input type="button" onclick="jgPushReg();" value="jgPushReg"/>
+    <br/>
+    <br/>
+    <input type="button" onclick="removeJgTag();" value="removeJgTag"/>
 </body></html>
 

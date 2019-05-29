@@ -96,6 +96,12 @@ public class Constants {
     public static final String DeleteCacheFile = "DeleteCacheFile";
     public static final int deleteCacheFile = 237;
 
+    public static final String JgPushReg = "JgPushReg";
+    public static final int jgPushReg = 238;
+
+    public static final String RemoveJgTag = "RemoveJgTag";
+    public static final int removeJgTag = 239;
+
     public static String PHOTOFILEPATH = "";
 
     public static final int CHOICE_CMARE = 20101;
