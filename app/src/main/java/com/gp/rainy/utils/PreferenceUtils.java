@@ -1,4 +1,4 @@
-package com.gp.rainy;
+package com.gp.rainy.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

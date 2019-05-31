@@ -16,4 +16,6 @@
     <color name="black1">#232323</color>
 
     <color name="button_qrcode_normal_fill_color">#40c226</color>
+    <color name="bg_biometric_prompt_dialog">#99000000</color>
+    <color name="cl_line_gray2">#d9d9d9</color>
 </resources>

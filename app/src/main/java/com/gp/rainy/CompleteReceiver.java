@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.gp.rainy.utils.FileUtils;
+import com.gp.rainy.utils.PreferenceUtils;
+
 import de.greenrobot.event.EventBus;
 
 import static com.gp.rainy.App.globalContext;

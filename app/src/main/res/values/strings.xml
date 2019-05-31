@@ -39,4 +39,7 @@
     <string name="login_no_wx_client_warning">你还未安装微信</string>
     <string name="login_fail_warning">登录失败,请重试</string>
     <string name="login_cancel">取消登陆</string>
+    <string name="fingerprint_prompt_failed">指纹不匹配</string>
+    <string name="fingerprint_prompt_error">指纹验证失败</string>
+    <string name="fingerprint_prompt_success">指纹验证成功</string>
 </resources>

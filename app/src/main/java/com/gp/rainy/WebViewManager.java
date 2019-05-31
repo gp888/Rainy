@@ -33,19 +33,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.gp.rainy.Biometric.BiometricPromptManager;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationPresenter;
 import com.gp.rainy.share.ShareInterface;
 import com.gp.rainy.share.ShareManager;
 import com.gp.rainy.share.SharePublicAccountModel;
-import com.gp.rainy.utils.StatusBarUtil;
+import com.gp.rainy.utils.DeviceUtil;
+import com.gp.rainy.utils.FileUtils;
+import com.gp.rainy.utils.MapNaviUtils;
+import com.gp.rainy.utils.PreferenceUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
-import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 
@@ -82,6 +85,7 @@ public class WebViewManager {
     private WXPayCallBackBean mWXPayCallBackBean;
     private UMShareAPI mShareAPI;
     private MaterialDialog mProgressDialog;
+    BiometricPromptManager biometricPromptManager;
 
     public WebViewManager(Context context,UMShareAPI mShareAPI) {
         this.mContext = context;
@@ -146,7 +150,18 @@ public class WebViewManager {
                 DeviceUtil.vibrateShort(mContext, 300L);
                 removeFunction(cmd);
             } else if (cmd.equals(Constants.FingerPrint)) {
-                ((WebViewActivity)mContext).initFingerPrint();
+//                ((WebViewActivity)mContext).initFingerPrint();
+
+                biometricPromptManager = BiometricPromptManager.from((WebViewActivity)mContext);
+                if (biometricPromptManager.isBiometricPromptEnable()) {
+                    showFingerprintDialog();
+                } else {
+                   sendHandler(0, "-1", "硬件不支持或没录入指纹", Constants.FingerPrint, Constants.fingerPrint);
+//                    if (!biometricPromptManager.hasEnrolledFingerprints()) {
+//                        Intent intent = new Intent(Settings.ACTION_SETTINGS);
+//                        mContext.startActivity(intent);
+//                    }
+                }
             } else if (cmd.equals(Constants.SelectImage)) {
                 String uploadUrl = jsonObjParent.getString("uploadUrl");
                 PreferenceUtils.setPreferenceString(mContext, Constants.UPLOADURL, uploadUrl);
@@ -482,6 +497,9 @@ public class WebViewManager {
                 }
             } else if (Constants.DeleteCacheFile.equals(cmd)) {
                 String path = jsonObjParent.getString("path");
+                if (TextUtils.isEmpty(path)) {
+                    path = "download";
+                }
                 String filePath = Environment.getExternalStorageDirectory() + "/rainy/" + path + "/";
                 FileUtils.deleteFileByDirectory(new File(filePath));
                 sendHandler(1, "", "", Constants.DeleteCacheFile, Constants.deleteCacheFile, "删除成功");
@@ -1223,5 +1241,42 @@ public class WebViewManager {
         }
 
         return bytes;
+    }
+
+    private void showFingerprintDialog() {
+        if (biometricPromptManager == null) {
+            return;
+        }
+
+        //请求指纹验证
+        biometricPromptManager.authenticate(new BiometricPromptManager.OnBiometricIdentifyCallback() {
+            @Override
+            public void onUsePassword() {
+
+            }
+
+            @Override
+            public void onSucceeded() {
+               sendHandler(1, "", "", Constants.FingerPrint, Constants.fingerPrint, "验证通过");
+            }
+
+            @Override
+            public void onFailed() {
+//               sendHandler(0, "-1", "指纹验证失败", Constants.FingerPrint, Constants.fingerPrint);
+            }
+
+            @Override
+            public void onError(int code, String reason) {
+                sendHandler(0, "-1", "指纹验证失败", Constants.FingerPrint, Constants.fingerPrint);
+            }
+
+            @Override
+            public void onCancel() {
+                sendHandler(0, "-1", "指纹验证取消", Constants.FingerPrint, Constants.fingerPrint);
+            }
+        });
+        if (biometricPromptManager.isAboveApi23()) {
+            biometricPromptManager.isShowPasswordView(true);
+        }
     }
 }

@@ -3,10 +3,10 @@ package com.gp.rainy;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.text.TextUtils;
-import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import com.gp.rainy.utils.DeviceUtil;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class WebViewConfig {

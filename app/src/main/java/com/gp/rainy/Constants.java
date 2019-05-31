@@ -127,5 +127,6 @@ public class Constants {
     public static final String DOWNLOAD_ID = "rainy.download_id";
     public static final String cacheStr = "cacheStr";
 
+    public static final String FINGERPRINT_ID_LIST = "fingerprint_id_list";//指纹id集合
 
 }

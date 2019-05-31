@@ -26,6 +26,9 @@ import com.gp.rainy.fingerprint.FingerPrintActivity;
 import com.gp.rainy.location.ILocation;
 import com.gp.rainy.location.LocationManager;
 import com.gp.rainy.location.LocationPresenter;
+import com.gp.rainy.utils.DeviceUtil;
+import com.gp.rainy.utils.FileUtils;
+import com.gp.rainy.utils.PreferenceUtils;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 

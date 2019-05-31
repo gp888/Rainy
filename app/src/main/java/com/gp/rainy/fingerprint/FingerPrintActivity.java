@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.gp.rainy.DeviceUtil;
+import com.gp.rainy.utils.DeviceUtil;
 import com.gp.rainy.R;
 
 import java.util.ArrayList;

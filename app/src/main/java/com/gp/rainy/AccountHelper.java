@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.gp.rainy.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;

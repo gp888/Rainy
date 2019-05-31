@@ -2,7 +2,7 @@ package com.gp.rainy.share;
 
 import android.text.TextUtils;
 
-import com.gp.rainy.DeviceUtil;
+import com.gp.rainy.utils.DeviceUtil;
 
 import java.io.Serializable;
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.gp.rainy.utils.DeviceUtil;
 
 import static com.gp.rainy.MaterialDialogUtil.showList;
 

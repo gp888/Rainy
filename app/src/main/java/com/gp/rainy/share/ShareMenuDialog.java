@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gp.rainy.Constants;
-import com.gp.rainy.DeviceUtil;
+import com.gp.rainy.utils.DeviceUtil;
 import com.gp.rainy.R;
 
 import java.util.ArrayList;

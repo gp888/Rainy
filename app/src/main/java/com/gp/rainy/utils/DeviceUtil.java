@@ -1,4 +1,4 @@
-package com.gp.rainy;
+package com.gp.rainy.utils;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -25,6 +25,11 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+
+import com.gp.rainy.App;
+import com.gp.rainy.Constants;
+import com.gp.rainy.MyLogUtil;
+
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

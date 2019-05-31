@@ -1,6 +1,8 @@
-package com.gp.rainy;
+package com.gp.rainy.utils;
 
 import android.widget.Toast;
+
+import com.gp.rainy.App;
 
 import java.util.Timer;
 import java.util.TimerTask;

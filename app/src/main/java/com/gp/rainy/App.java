@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.support.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
+import com.gp.rainy.utils.DeviceUtil;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;

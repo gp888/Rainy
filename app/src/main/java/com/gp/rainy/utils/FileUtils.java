@@ -1,4 +1,4 @@
-package com.gp.rainy;
+package com.gp.rainy.utils;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+
+import com.gp.rainy.Constants;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
