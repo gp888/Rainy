@@ -66,6 +66,7 @@ public class Constants {
     public static final String Gyro = "Gyro";
     public static final int gyro = 213;
     public static final String CloseGyro = "CloseGyro";
+    public static final int closeGyro = 199;
     public static final String NetworkStatus = "NetworkStatus";
     public static final int networkStatus = 215;
     public static final String Identify = "UniquelyIdentifies";

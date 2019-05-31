@@ -710,6 +710,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                     webViewManager.sendHandler(1, "", "", Constants.ScanCode, Constants.scanCode, result);
                 } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
                     webViewManager.sendHandler(0, "-1", "解析二维码失败", Constants.ScanCode, Constants.scanCode);
+                } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == 3) {
+                    webViewManager.sendHandler(0, "-1", "取消扫描二维码", Constants.ScanCode, Constants.scanCode);
                 }
             } else {
                 webViewManager.sendHandler(0, "-1", "解析二维码失败", Constants.ScanCode, Constants.scanCode);

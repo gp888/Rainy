@@ -399,6 +399,7 @@ public class WebViewManager {
             } else if (Constants.CloseGyro.equals(cmd)) {
                 removeFunction(cmd);
                 ((WebViewActivity)mContext).setGyro(false, 0.1d);
+                sendHandler(1, "", "", Constants.CloseGyro, Constants.closeGyro, "关闭成功");
             } else if (Constants.NetworkStatus.equals(cmd)) {
                 int status = DeviceUtil.getNetworkType(mContext);
                 sendHandler(1, "", "", cmd, Constants.networkStatus, status + "");
@@ -704,6 +705,15 @@ public class WebViewManager {
                     Log.d(TAG, "gyro");
                     return;
                 }
+                case Constants.closeGyro:{
+                    JsonObject DataJson = new JsonObject();
+                    if (bundleData.getString("data") != null) {
+                        DataJson.addProperty("msg", bundleData.get("data").toString());
+                    }
+                    ParentJson.add("data", DataJson);
+                    callbackJsFun(fun, ParentJson.toString());
+                    break;
+                }
                 case Constants.selectImage: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
@@ -775,8 +785,12 @@ public class WebViewManager {
                     DataJson.addProperty("msg", "删除成功");
                     if (bundleData.getString("jsonStr") != null) {
                         String str = bundleData.getString("jsonStr");
-                        JsonArray array = new JsonParser().parse(str).getAsJsonArray();
-                        DataJson.add("userList", array);
+                        if (TextUtils.isEmpty(str)) {
+                            DataJson.add("userList", new JsonArray());
+                        } else {
+                            JsonArray array = new JsonParser().parse(str).getAsJsonArray();
+                            DataJson.add("userList", array);
+                        }
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());

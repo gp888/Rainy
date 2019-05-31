@@ -44,6 +44,18 @@ public class ScanActivity extends AppCompatActivity {
                 }
             }
         });
+        findViewById(R.id.rlBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent resultIntent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putInt(CodeUtils.RESULT_TYPE, 3);
+                bundle.putString(CodeUtils.RESULT_STRING, "");
+                resultIntent.putExtras(bundle);
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+        });
     }
 
 
