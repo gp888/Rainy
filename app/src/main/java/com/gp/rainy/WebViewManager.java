@@ -164,7 +164,9 @@ public class WebViewManager {
                 }
             } else if (cmd.equals(Constants.SelectImage)) {
                 String uploadUrl = jsonObjParent.getString("uploadUrl");
+                String authoriz = jsonObjParent.getString("Authorization");
                 PreferenceUtils.setPreferenceString(mContext, Constants.UPLOADURL, uploadUrl);
+                PreferenceUtils.setPreferenceString(mContext, Constants.AUTHORIZATION, authoriz);
                 final String copycmd = cmd;
                 if (requestPermission(Constants.camraString, Constants.CAMERA_PERMISSION_REQ_CODE)) {
                     ListPopMenuDialogUtils menuDailogDAL = new ListPopMenuDialogUtils(mContext);
@@ -1045,10 +1047,12 @@ public class WebViewManager {
 
     public void uploadPic(File file) {
         String url = PreferenceUtils.getPreferenceString(mContext, Constants.UPLOADURL, Constants.UPLOADPIC);
+        String authoriza = PreferenceUtils.getPreferenceString(mContext, Constants.AUTHORIZATION, "");
         OkHttpUtils
                 .post()
                 .url(url)
                 .addFile("file", file.getName(), file)
+                .addHeader("Authorization", authoriza)
                 .build()
                 .execute(new MyStringCallback());
     }
