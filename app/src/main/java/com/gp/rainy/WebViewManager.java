@@ -510,11 +510,16 @@ public class WebViewManager {
                 String tag = jsonObjParent.getString("tag");
                 Set<String> set = new HashSet<>();
                 set.add(tag);
-                JPushInterface.setTags(mContext, 0, set);
-                sendHandler(1, "", "", Constants.JgPushReg, Constants.jgPushReg, "别名注册成功");
+                Set<String> set1 = JPushInterface.filterValidTags(set);
+                if(set1.size() > 0){
+                    JPushInterface.setTags(mContext, 0, set);
+                    sendHandler(1, "", "", Constants.JgPushReg, Constants.jgPushReg, "标签注册成功");
+                } else {
+                    sendHandler(0, "-1", "标签无效", cmd, Constants.jgPushReg);
+                }
             } else if (Constants.RemoveJgTag.equals(cmd)) {
                 JPushInterface.cleanTags(mContext, 0);
-                sendHandler(1, "", "", Constants.RemoveJgTag, Constants.removeJgTag, "别名移除成功");
+                sendHandler(1, "", "", Constants.RemoveJgTag, Constants.removeJgTag, "标签移除成功");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -845,11 +850,11 @@ public class WebViewManager {
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
                 }
-                    break;
+                break;
                 case Constants.jgPushReg:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("msg", "别名注册成功");
+                        DataJson.addProperty("msg", bundleData.get("data").toString());
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
@@ -858,7 +863,7 @@ public class WebViewManager {
                 case Constants.removeJgTag:{
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("msg", "别名删除成功");
+                        DataJson.addProperty("msg", "标签删除成功");
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
