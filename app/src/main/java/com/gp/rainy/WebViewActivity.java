@@ -579,6 +579,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
     public WebView setWebViewConfig(final WebView webview, Context mContext) {
         webview.getSettings().setJavaScriptEnabled(true);
+        webview.addJavascriptInterface(webViewManager, "oatongJSBridge");
         webview.getSettings().setBuiltInZoomControls(true);
         if (Build.VERSION.SDK_INT >= LOLLIPOP) {
             webview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -590,14 +591,18 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         webview.getSettings().setSupportZoom(true);
         webview.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         webview.getSettings().setBlockNetworkImage(true);
-        //开启存储
+        //开启存储(DOM storage功能)
         webview.getSettings().setDomStorageEnabled(true);
+        //开启 database storage 功能
+        webview.getSettings().setDatabaseEnabled(true);
         webview.getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
         //设置缓冲路径
         String appCachePath = mContext.getCacheDir().getAbsolutePath();
+        webview.getSettings().setDatabasePath(appCachePath);
+        ////设置  Application Caches 缓存目录
         webview.getSettings().setAppCachePath(appCachePath);
         //开启文件数据缓存
-        webview.getSettings().setAllowFileAccess(false);
+        webview.getSettings().setAllowFileAccess(true);
         //开启APP缓存
         webview.getSettings().setAppCacheEnabled(true);
 
@@ -612,7 +617,8 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         webview.getSettings().setLoadWithOverviewMode(true);
         MyLogUtil.i("userAgent------" + webview.getSettings().getUserAgentString());
         webViewManager = new WebViewManager(mContext, mShareAPI);
-        webview.addJavascriptInterface(webViewManager, "oatongJSBridge");
+        webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         return webview;
     }
 
