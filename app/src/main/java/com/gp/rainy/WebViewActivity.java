@@ -32,6 +32,8 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.webkit.ConsoleMessage;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
@@ -570,6 +572,20 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
             methodOrderArrayList.clear();
         }
         mHandler.removeCallbacksAndMessages(null);
+
+        if (webview != null) {
+            ViewParent vp = webview.getParent();
+            if (vp instanceof ViewGroup) {
+                ((ViewGroup) vp).removeView(webview);
+            }
+//            webview.loadUrl("about:blank");
+            webview.stopLoading();
+            webview.getSettings().setJavaScriptEnabled(false);
+            webview.clearView();
+            webview.removeAllViews();
+//            webview.freeMemory();
+            webview.destroy();
+        }
     }
 
     private void stopFingerprintListen() {
