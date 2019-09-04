@@ -247,6 +247,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 MyLogUtil.i("---onPageFinished--url:" + url);
                 synchronized (this) {
                     if (webview != null) {
+                        //设置网页在加载完成时加载图片
                         webview.getSettings().setBlockNetworkImage(false);
                         String title = view.getTitle();
                         if (!TextUtils.isEmpty(title)) {
@@ -590,6 +591,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         webview.getSettings().setUserAgentString(DeviceUtil.getAppVersion() + "/" + webview.getSettings().getUserAgentString());
         webview.getSettings().setSupportZoom(true);
         webview.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        //设置网页在加载的时候暂时不加载图片
         webview.getSettings().setBlockNetworkImage(true);
         //开启存储(DOM storage功能)
         webview.getSettings().setDomStorageEnabled(true);
@@ -599,9 +601,9 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         //设置缓冲路径
         String appCachePath = mContext.getCacheDir().getAbsolutePath();
         webview.getSettings().setDatabasePath(appCachePath);
-        ////设置  Application Caches 缓存目录
+        //设置  Application Caches 缓存目录
         webview.getSettings().setAppCachePath(appCachePath);
-        //开启文件数据缓存
+        //设置可以访问文件
         webview.getSettings().setAllowFileAccess(true);
         //开启APP缓存
         webview.getSettings().setAppCacheEnabled(true);
@@ -612,13 +614,16 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         } else {
             webview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         }
-        //支持显示PC宽屏页面的全部内容
+        //支持显示PC宽屏页面的全部内容, 设置webview推荐使用的窗口，使html界面自适应屏幕
         webview.getSettings().setUseWideViewPort(true);
+        //缩放至屏幕的大小
         webview.getSettings().setLoadWithOverviewMode(true);
         MyLogUtil.i("userAgent------" + webview.getSettings().getUserAgentString());
         webViewManager = new WebViewManager(mContext, mShareAPI);
         webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        //设置自动加载图片
+        webview.getSettings().setLoadsImagesAutomatically(true);
         return webview;
     }
 
