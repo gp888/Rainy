@@ -181,7 +181,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                         if (TextUtils.equals(resultStatus, "9000")) {
                             // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
                             Toast.makeText(activity, "支付成功", Toast.LENGTH_SHORT).show();
-                           activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, resultStatus);
+                            activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, resultStatus);
                         } else {
                             Toast.makeText(activity, "支付失败", Toast.LENGTH_SHORT).show();
                             activity.webViewManager.sendHandler(1, "", "", Constants.Alipay, Constants.alipay, resultStatus);
@@ -596,7 +596,6 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
 
     public WebView setWebViewConfig(final WebView webview, Context mContext) {
         webview.getSettings().setJavaScriptEnabled(true);
-        webview.addJavascriptInterface(webViewManager, "oatongJSBridge");
         webview.getSettings().setBuiltInZoomControls(true);
         if (Build.VERSION.SDK_INT >= LOLLIPOP) {
             webview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -636,6 +635,7 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         webview.getSettings().setLoadWithOverviewMode(true);
         MyLogUtil.i("userAgent------" + webview.getSettings().getUserAgentString());
         webViewManager = new WebViewManager(mContext, mShareAPI);
+        webview.addJavascriptInterface(webViewManager, "oatongJSBridge");
         webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         //设置自动加载图片
@@ -671,23 +671,23 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
                 mUploadMessage = null;
             }
         } else if (requestCode == FILECHOOSER_RESULTCODE_FOR_ANDROID_5) {
-             if (null == mUploadMessageForAndroid5) {
-                 return;
-             }
-             Uri result = (intent == null || resultCode != RESULT_OK) ? null : intent.getData();
-             if (result != null) {
-                 mUploadMessageForAndroid5.onReceiveValue(new Uri[]{result});
-             } else {
-                 mUploadMessageForAndroid5.onReceiveValue(new Uri[]{});
-             }
-             mUploadMessageForAndroid5 = null;
+            if (null == mUploadMessageForAndroid5) {
+                return;
+            }
+            Uri result = (intent == null || resultCode != RESULT_OK) ? null : intent.getData();
+            if (result != null) {
+                mUploadMessageForAndroid5.onReceiveValue(new Uri[]{result});
+            } else {
+                mUploadMessageForAndroid5.onReceiveValue(new Uri[]{});
+            }
+            mUploadMessageForAndroid5 = null;
         }else if (requestCode == FILECHOOSER_RESULTCODE) {
-             if (mUploadMessage == null) {
-                 return;
-             }
-             Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
-             mUploadMessage.onReceiveValue(result);
-             mUploadMessage = null;
+            if (mUploadMessage == null) {
+                return;
+            }
+            Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
+            mUploadMessage.onReceiveValue(result);
+            mUploadMessage = null;
         } else if (requestCode == Constants.CHOICE_PHOTO) {
             if (resultCode == Activity.RESULT_OK) {
                 if (intent != null) {
@@ -1055,17 +1055,17 @@ public class WebViewActivity extends AppCompatActivity implements SensorEventLis
         jsShareDialog = new ShareMenuDialog(mContext, Constants.TO_WEBVIEW_FROM_JS, "",
                 mShareAPI.isInstall(this, SHARE_MEDIA.SINA), true, new ShareMenuDialog.OnButtonClickListener() {
 
-                    @Override
-                    public void onButtonClick(int type, int id) {
-                        if (jsShareDialog != null && jsShareDialog.isShowing()) {
-                            jsShareDialog.setOnDismissListener(null);
-                            jsShareDialog.dismiss();
-                        }
-                        if (type == 1) {
-                            shareManager.performShare(shareModel, id, true);
-                        }
-                    }
-                });
+            @Override
+            public void onButtonClick(int type, int id) {
+                if (jsShareDialog != null && jsShareDialog.isShowing()) {
+                    jsShareDialog.setOnDismissListener(null);
+                    jsShareDialog.dismiss();
+                }
+                if (type == 1) {
+                    shareManager.performShare(shareModel, id, true);
+                }
+            }
+        });
         jsShareDialog.show();
 
         jsShareDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
