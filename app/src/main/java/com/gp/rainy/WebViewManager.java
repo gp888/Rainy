@@ -163,10 +163,7 @@ public class WebViewManager {
 //                    }
                 }
             } else if (cmd.equals(Constants.SelectImage)) {
-                String uploadUrl = jsonObjParent.getString("uploadUrl");
-                String authoriz = jsonObjParent.getString("Authorization");
-                PreferenceUtils.setPreferenceString(mContext, Constants.UPLOADURL, uploadUrl);
-                PreferenceUtils.setPreferenceString(mContext, Constants.AUTHORIZATION, authoriz);
+                PreferenceUtils.setPreferenceString(mContext, Constants.UPLOADURL, jsonObjParent.toString());
                 final String copycmd = cmd;
                 if (requestPermission(Constants.camraString, Constants.CAMERA_PERMISSION_REQ_CODE)) {
                     ListPopMenuDialogUtils menuDailogDAL = new ListPopMenuDialogUtils(mContext);
@@ -1051,13 +1048,34 @@ public class WebViewManager {
     }
 
     public void uploadPic(File file) {
-        String url = PreferenceUtils.getPreferenceString(mContext, Constants.UPLOADURL, Constants.UPLOADPIC);
-        String authoriza = PreferenceUtils.getPreferenceString(mContext, Constants.AUTHORIZATION, "");
+        Map<String, String> headers = new HashMap<String, String>();
+        String url = null;
+        String request = PreferenceUtils.getPreferenceString(mContext, Constants.UPLOADURL, Constants.UPLOADPIC);
+        JSONObject jsonObjParent = null;
+        try {
+            jsonObjParent = new JSONObject(request);
+
+            Iterator<String> keys = jsonObjParent.keys();
+            while(keys.hasNext()){
+                String key = keys.next();
+                if(key.equals("m") || key.equals("cmd")){
+                    continue;
+                }
+                if(key.equals("uploadUrl")) {
+                    url = jsonObjParent.getString("uploadUrl");
+                    continue;
+                }
+                headers.put(key, jsonObjParent.getString(key));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         OkHttpUtils
                 .post()
                 .url(url)
                 .addFile("file", file.getName(), file)
-                .addHeader("Authorization", authoriza)
+                .headers(headers)
                 .build()
                 .execute(new MyStringCallback());
     }
