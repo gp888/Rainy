@@ -10,6 +10,7 @@ import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.log.LoggerInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,11 +33,11 @@ public class App extends MultiDexApplication {
             initUMAPI();
 
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                .addInterceptor(new LoggerInterceptor("TAG"))
-                    .connectTimeout(10000L, TimeUnit.MILLISECONDS)
-                    .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                .addInterceptor(new LoggerInterceptor("", true))
+                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                .readTimeout(10000L, TimeUnit.MILLISECONDS)
                     //其他配置
-                    .build();
+                .build();
 
             OkHttpUtils.initClient(okHttpClient);
         }

@@ -1073,9 +1073,10 @@ public class WebViewManager {
 
         OkHttpUtils
                 .post()
-                .url(url)
                 .addFile("file", file.getName(), file)
+                .url(url)
                 .headers(headers)
+//                .params(headers)
                 .build()
                 .execute(new MyStringCallback());
     }
