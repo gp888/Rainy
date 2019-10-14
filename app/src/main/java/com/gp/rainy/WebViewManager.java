@@ -1075,8 +1075,8 @@ public class WebViewManager {
                 .post()
                 .addFile("file", file.getName(), file)
                 .url(url)
-                .headers(headers)
-//                .params(headers)
+//                .headers(headers)
+                .params(headers)
                 .build()
                 .execute(new MyStringCallback());
     }
@@ -1105,9 +1105,9 @@ public class WebViewManager {
             //{"msg":"图片上传成功","path":"/upload/project/dynamic/20180816/1534386533740528478.jpg","success":true}
 //            {"code":200,"data":{"msg":"图片上传成功","path":"http:\/\/59.110.169.175:8080\/uploadImgs\/upload\/project\/copyright\/20181128\/1543367848097517181.jpg","success":true},"message":"success"}
             mProgressDialog.dismiss();
-            if (response != null && response.optJSONObject("data").optBoolean("success")) {
+            if (response != null && response.optInt("code") == 1) {
                 Log.e(TAG, "onResponse：" + response);
-                String body = response.optJSONObject("data").optString("path");
+                String body = response.optJSONObject("data").optString("localPath");
                 sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, body);
             } else {
                 sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
