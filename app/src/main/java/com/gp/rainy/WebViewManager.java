@@ -721,7 +721,8 @@ public class WebViewManager {
                 case Constants.selectImage: {
                     JsonObject DataJson = new JsonObject();
                     if (bundleData.getString("data") != null) {
-                        DataJson.addProperty("imgUrl", bundleData.get("data").toString());
+                        Gson g = new Gson();
+                        DataJson = g.fromJson(bundleData.get("data").toString(), JsonObject.class);
                     }
                     ParentJson.add("data", DataJson);
                     callbackJsFun(fun, ParentJson.toString());
@@ -1104,11 +1105,14 @@ public class WebViewManager {
         public void onResponse(JSONObject response, int id) {//id 100 http, 101 https
             //{"msg":"图片上传成功","path":"/upload/project/dynamic/20180816/1534386533740528478.jpg","success":true}
 //            {"code":200,"data":{"msg":"图片上传成功","path":"http:\/\/59.110.169.175:8080\/uploadImgs\/upload\/project\/copyright\/20181128\/1543367848097517181.jpg","success":true},"message":"success"}
+
+
+//            {"code":1,"data":{"idCard":null,"filePath":"product/files/9c99bd9913d7cebd5f804efcca554cc0.jpg","busLicense":null,"token":null,"md5":"71d2fbc38b524d0c2044b1c1b53a070185da10bd123c3984f772c841a5b01edc","blockId":null,"registerId":null,
+//                    "localPath":"http://testapp.yglmart.com/upload/project/copyright/20191014/20191014152844626.jpg"},"message":"上传图片到中云成功!","totle":0}
             mProgressDialog.dismiss();
             if (response != null && response.optInt("code") == 1) {
                 Log.e(TAG, "onResponse：" + response);
-                String body = response.optJSONObject("data").optString("localPath");
-                sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, body);
+                sendHandler(1, "", "", Constants.SelectImage, Constants.selectImage, response.optJSONObject("data").toString());
             } else {
                 sendHandler(0, "-1", "上传图片失败", Constants.SelectImage, Constants.selectImage);
             }
