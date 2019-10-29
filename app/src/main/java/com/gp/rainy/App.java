@@ -1,7 +1,7 @@
 package com.gp.rainy;
 
 import android.media.MediaPlayer;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 import com.gp.rainy.utils.DeviceUtil;

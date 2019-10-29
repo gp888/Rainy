@@ -1,7 +1,7 @@
 package com.gp.rainy.Biometric;
 
 import android.os.CancellationSignal;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * 指纹验证逻辑接口
