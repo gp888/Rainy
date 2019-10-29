@@ -1,6 +1,5 @@
 package com.gp.rainy.Biometric;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -8,6 +7,7 @@ import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * Android 6.0版本指纹功能方法实现
@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
 @RequiresApi(Build.VERSION_CODES.M)
 public class BiometricPromptApi23Impl implements IBiometricPrompt {
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private BiometricPromptDialog mDialog;
     private FingerprintManager mFingerprintManager;
     private CancellationSignal mCancellationSignal;
@@ -25,7 +25,7 @@ public class BiometricPromptApi23Impl implements IBiometricPrompt {
     private FingerprintManager.AuthenticationCallback mFmAuthCallback
             = new FingerprintManageCallbackImpl();
 
-    public BiometricPromptApi23Impl(Activity activity) {
+    public BiometricPromptApi23Impl(AppCompatActivity activity) {
         mActivity = activity;
 
         mFingerprintManager = getFingerprintManager(activity);
@@ -64,7 +64,7 @@ public class BiometricPromptApi23Impl implements IBiometricPrompt {
                 }
             }
         });
-        mActivity.getFragmentManager().beginTransaction().add(mDialog, mDialog.getClass().getSimpleName()).commitAllowingStateLoss();
+        mActivity.getSupportFragmentManager().beginTransaction().add(mDialog, mDialog.getClass().getSimpleName()).commitAllowingStateLoss();
         mCancellationSignal = cancel;
         if (mCancellationSignal == null) {
             mCancellationSignal = new CancellationSignal();

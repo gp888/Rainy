@@ -1,12 +1,12 @@
 package com.gp.rainy.Biometric;
 
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AppCompatActivity;
 
 
 /**
@@ -18,7 +18,7 @@ public class BiometricPromptManager {
 
     private static final String TAG = "BiometricPromptManager";
     private IBiometricPrompt mImpl;
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
 
     public interface OnBiometricIdentifyCallback {
         /**
@@ -50,11 +50,11 @@ public class BiometricPromptManager {
         void onCancel();
     }
 
-    public static BiometricPromptManager from(Activity activity) {
+    public static BiometricPromptManager from(AppCompatActivity activity) {
         return new BiometricPromptManager(activity);
     }
 
-    public BiometricPromptManager(Activity activity) {
+    public BiometricPromptManager(AppCompatActivity activity) {
         mActivity = activity;
         if (isAboveApi23()) {
             mImpl = new BiometricPromptApi23Impl(activity);

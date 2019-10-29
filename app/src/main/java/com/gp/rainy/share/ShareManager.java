@@ -1,7 +1,7 @@
 package com.gp.rainy.share;
 
-import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 
 import com.gp.rainy.Constants;
 import com.gp.rainy.MyLogUtil;
@@ -83,19 +83,19 @@ public class ShareManager {
         ShareAction shareAction = null;
         switch (shareId) {
             case 0:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.WEIXIN);
+                shareAction = new ShareAction((AppCompatActivity) mContext).setPlatform(SHARE_MEDIA.WEIXIN);
                 break;
             case 1:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.WEIXIN_CIRCLE);
+                shareAction = new ShareAction((AppCompatActivity) mContext).setPlatform(SHARE_MEDIA.WEIXIN_CIRCLE);
                 break;
             case 2:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.QQ);
+                shareAction = new ShareAction((AppCompatActivity) mContext).setPlatform(SHARE_MEDIA.QQ);
                 break;
             case 3:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.QZONE);
+                shareAction = new ShareAction((AppCompatActivity) mContext).setPlatform(SHARE_MEDIA.QZONE);
                 break;
             case 4:
-                shareAction = new ShareAction((Activity) mContext).setPlatform(SHARE_MEDIA.SINA);
+                shareAction = new ShareAction((AppCompatActivity) mContext).setPlatform(SHARE_MEDIA.SINA);
                 break;
             default:
                 break;

@@ -1,7 +1,6 @@
 package com.gp.rainy;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -1260,7 +1259,7 @@ public class WebViewManager {
         return null;
     }
 
-    private static void setAndroidNativeLightStatusBar(Activity activity, boolean dark) {
+    private static void setAndroidNativeLightStatusBar(AppCompatActivity activity, boolean dark) {
         View decor = activity.getWindow().getDecorView();
         if (dark) {
             decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);

@@ -2,7 +2,6 @@ package com.gp.rainy.utils;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ContentUris;
 import android.content.Context;
@@ -23,6 +22,7 @@ import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -214,12 +214,12 @@ public class DeviceUtil {
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
             Constants.PHOTOFILEPATH = Constants.DIR_IMAGE_TEMP + "/" + filename;
-            ((Activity) mContext).startActivityForResult(intent, Constants.CHOICE_CMARE);
+            ((AppCompatActivity) mContext).startActivityForResult(intent, Constants.CHOICE_CMARE);
         } else {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Constants.DIR_IMAGE_TEMP, filename)));
             Constants.PHOTOFILEPATH = Constants.DIR_IMAGE_TEMP + "/" + filename;
-            ((Activity) mContext).startActivityForResult(intent, Constants.CHOICE_CMARE);
+            ((AppCompatActivity) mContext).startActivityForResult(intent, Constants.CHOICE_CMARE);
         }
     }
 
@@ -237,7 +237,7 @@ public class DeviceUtil {
             //Intent intent_photo = new Intent(Intent.ACTION_GET_CONTENT); 错误
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-            ((Activity) mContext).startActivityForResult(intent, Constants.CHOICE_PHOTO);
+            ((AppCompatActivity) mContext).startActivityForResult(intent, Constants.CHOICE_PHOTO);
         } catch (Exception ext) {
             ext.printStackTrace();
         }
@@ -274,7 +274,7 @@ public class DeviceUtil {
                 intent.putExtra("return-data", false);
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
                 intent.putExtra("noFaceDetection", true); // no face detection
-                ((Activity) context).startActivityForResult(intent, Constants.CHOICE_MEDIA);
+                ((AppCompatActivity) context).startActivityForResult(intent, Constants.CHOICE_MEDIA);
             }
         } catch (Exception e) {
             e.printStackTrace();
