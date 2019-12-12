@@ -64,7 +64,10 @@ public class BiometricPromptApi23Impl implements IBiometricPrompt {
                 }
             }
         });
-        mActivity.getSupportFragmentManager().beginTransaction().add(mDialog, mDialog.getClass().getSimpleName()).commitAllowingStateLoss();
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .add(mDialog, mDialog.getClass().getSimpleName()).commitAllowingStateLoss();
+        //没有allowstateloss
+//        mDialog.show(mActivity.getSupportFragmentManager(), mDialog.getClass().getSimpleName());
         mCancellationSignal = cancel;
         if (mCancellationSignal == null) {
             mCancellationSignal = new CancellationSignal();
